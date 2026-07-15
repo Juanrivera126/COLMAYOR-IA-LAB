@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: proyecto-de-arquitectura-saber-pro-2026-2 vf</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>proyecto-de-arquitectura-saber-pro-2026-2 vf</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "Módulo Proyecto de   Arquitectura  Guía de orientación  Saber Pro 2026-2  Módulo de competencia específica  Subdirección de Diseño de Instrumentos  Dirección de Evaluación \n2  Módulo Proyecto de   Arquitectura  Publicación del Instituto Colombiano para la   Evaluación de la Educación (Icfes)  © Todos los derechos de autor reservados,   Icfes, 2026  Bogotá, D. C., abril de 2026  ADVERTENCIA  Todo el contenido es propiedad exclusiva   y reservada del Icfes y es el resultado de   investigaciones y obras protegidas por la   legislación nacional e internacional. No se autoriza   su reproducción, utilización ni explotación a   ningún tercero. Solo se autoriza su uso para fines   exclusivamente académicos. Esta información no   podrá ser alterada, modificada o enmendada.  Presidente de la República  Gustavo Francisco Petro Urrego  Ministro de Educación Nacional  José Daniel Rojas Medellín  Viceministro de Educación Superior  Ricardo Moreno Patiño  Directora General  Elizabeth Blandón Bermúdez  Secretario General  Luis Gonzaga Martínez Sierra  Director Técnico de Evaluación  Gustavo Andrés Monsalve Londoño  Directora Técnica de Producción y Operaciones  Luz Patricia Loaiza Cruz  Director Técnico de Tecnología e Información  Luis Rodrigo Cadavid Durán  Subdirector de Diseño de Instrumentos  Heider Martínez Mena  Subdirector de Estadísticas  Cristian Fabián Montaño Rincón  Subdirectora de Análisis y Divulgación  Alejandra Neira Aroca \n3  Este documento se elaboró a partir de los   documentos conceptuales de cada prueba, con la   participación de los equipos de gestores del Icfes y   de asesores externos.  NOTA  En el contenido de la guía encontrará el ícono   de hipervínculo     , el cual simboliza que el texto   resaltado que lo acompaña es un enlace al que   puede acceder para más información.  Ejemplo:            www.icfes.gov.co  Corrección de estilo  Juan Camilo Gómez Barrera  Diseño y diagramación  Linda Nathaly Sarmiento Olaya  Equipo de la Subdirección de   Diseño de Instrumentos  Gabriel Alejandro Bernal Rojas  Raúl David Torres Reyes  Diana Rodríguez Valbuena  Olga Julieth Osman Cabezas  Jorge Durley Trujillo Díaz  Ana Milena González Martínez  Asesor externo  Gabriel Felipe Rodríguez - Coordinador   académico Asociación Colombiana de   Facultades de Arquitectura (ACFA)  Fotografía de la portada  Freepik  https://www.freepik.es/foto-gratis/dibujo-  arquitectonico-plano-tubo-hormiga-  lapiz_5075182.htm \n4  Presentación   Especificaciones Contenido   ¿A quién se dirige?  Términos y condiciones de uso para   publicaciones y obras de propiedad del Icfes  El Instituto Colombiano para la Evaluación de la Educación (Icfes) pone   a disposición de la comunidad educativa y del público en general, de   forma gratuita y libre de cualquier cargo, un conjunto de publicaciones a   través de su portal      www.icfes.gov.co . Dichos materiales y documentos   están normados por la presente política y están protegidos por derechos   de propiedad intelectual y derechos de autor a favor del Icfes. Si tiene   conocimiento de alguna utilización contraria a lo establecido en estas   condiciones de uso, por favor, infórmenos al correo prensaicfes@icfes.gov.co.  Queda prohibido el uso o publicación total o parcial de este material   con fines de lucro.  Únicamente está autorizado su uso para fines   académicos e investigativos . Ninguna persona, natural o jurídica, nacional   o internacional, podrá vender, distribuir, alquilar, reproducir, transformar 1 ,   promocionar o realizar acción alguna, de la cual se lucre directa o   indirectamente, con este material.  1     La transformación es la modificación de la obra a través de la creación de   adaptaciones, traducciones, compilaciones, actualizaciones, revisiones y, en   general, cualquier modificación que de esta se pueda realizar, de modo que el   producto resultante se constituya en una nueva obra derivada, protegida por   el derecho de autor, con la única diferencia respecto de la original de que aquella   requiere, para su realización, de la autorización expresa del autor o propietario   para adaptar, traducir, compilar, etcétera. En este caso, el Icfes prohíbe la   transformación de esta publicación.  En todo caso, cuando se haga uso parcial o total de los contenidos de   esta publicación del Icfes, el usuario deberá hacer referencia a los créditos   institucionales, respetando los derechos de autoría y su correspondiente   referencia. Las obras del Icfes se podrán utilizar con los fines aquí previstos,   transcribiendo los pasajes necesarios y citando siempre al Icfes como   fuente de autor; siempre que los pasajes no sean tantos y tan seguidos   que, razonadamente, puedan considerarse una reproducción simulada y   sustancial que redunde en perjuicio del Icfes.  Asimismo, los logotipos institucionales son marcas registradas y de   propiedad exclusiva del Icfes. Por tanto, ningún tercero podrá usar las   marcas de propiedad del Icfes ni signos idénticos o similares respecto de   cualesquiera productos o servicios prestados por esta entidad, cuando   su uso pueda causar confusión. En todo caso, este queda prohibido sin   previa autorización expresa del Icfes. La infracción de estos derechos se   perseguirá civil y penalmente, de acuerdo con las leyes nacionales y los   tratados internacionales aplicables.  El Icfes realizará cambios o revisiones periódicas a los presentes términos   de uso y los actualizará en esta publicación.  El Icfes adelantará las acciones legales pertinentes por cualquier   violación a estas políticas y condiciones de uso. \nPresentación Contenido  5  Especificaciones   ¿A quién se dirige?  Contenido  I. Presentación .........................................................................................................................................................  6  ¿Para qué sirve esta guía? ........................................................................................................................................................  6  II. El diseño arquitectónico ....................................................................................................................................  7  Figura 1.  Ejemplo de plancha del examen ..........................................................................................................................  9  III.  Condiciones para la aplicación del módulo   ................................................................................................    11  IV. Especificaciones del módulo   Proyecto de Arquitectura  .........................................................................    13  Figura 2.  Diseño Centrado en Evidencias ...........................................................................................................................  13  Competencia evaluada ..............................................................................................................................................................  14  Afirmación 1 ..................................................................................................................................................................................    14  Tabla 1.  Evidencias de la afirmación 1 .................................................................................................................................    14  Afirmación 2 ..................................................................................................................................................................................    15  Tabla 2.  Evidencias de la afirmación 2 .................................................................................................................................    15  Afirmación 3 ..................................................................................................................................................................................    16  Tabla 3.  Evidencias de la afirmación 3 .................................................................................................................................    16  V . ¿A quién se dirige el módulo? .........................................................................................................................  17 \nPresentación Contenido  6  Especificaciones   ¿A quién se dirige?  Saber Pro  Este examen está compuesto por módulos de  competencias genéricas   y específicas . Las primeras se refieren a los conocimientos, habilidades y   destrezas que se consideran necesarias para cualquier profesión, mientras   que las competencias específicas se refieren a aspectos fundamentales   para el desempeño de los futuros egresados de programas particulares de   educación superior.  ¡Tenga en cuenta!  Además de esta guía de orientación, en la       página web   del Icfes  encontrará, para cada uno de los módulos de   competencias específicas marcos de referencia, infografías   que resumen las competencias evaluadas en cada módulo   y la caja de herramientas del examen Saber Pro (la cual   contiene  cuadernillos de preguntas y ejemplos de preguntas   explicadas) , entre otros materiales de interés de este examen.  I.  Presentación  La       Ley 1324 de 2009  le confiere al Instituto Colombiano para la   Evaluación de la Educación (Icfes) la misión de evaluar, mediante exámenes   externos estandarizados, la formación que se ofrece en los distintos niveles   del servicio educativo. También establece que el Ministerio de Educación   Nacional (MEN) define lo que se debe evaluar en estos exámenes.  Para cumplir con la misión asignada, el Icfes ha avanzado en la alineación   del Sistema Nacional de Evaluación Externa Estandarizada ( SNEE ), que   posibilita la comparación de los resultados en distintos niveles educativos,   debido a que los diferentes exámenes evalúan las mismas competencias   en algunas de las áreas que los conforman.  ¿Para qué sirve esta guía?  Hemos creado esta guía de orientación para que los docentes, evaluados,   directivos de instituciones de educación superior (IES) y demás interesados   en el Examen de Estado de la Calidad de la Educación Superior, Saber Pro,   puedan acceder a la información básica acerca de las características de   este módulo de competencia específica. \nPresentación Contenido  7  Especificaciones   ¿A quién se dirige?  II.  El diseño arquitectónico  El diseño arquitectónico es un proceso complejo orientado al desarrollo   de un proyecto de arquitectura. Implica la integración de conocimientos,   habilidades y criterios adquiridos en la formación del arquitecto, que le   permiten resolver de manera autónoma los aspectos propios del diseño y,   a la vez, articular su trabajo con otras disciplinas. Asimismo, comprende   diversas fases, desde el planteamiento del problema y la formulación de   la propuesta hasta su desarrollo y ejecución. Durante todo este proceso   intervienen múltiples factores que el arquitecto debe analizar y ponderar   para dar una respuesta adecuada al encargo.  En consecuencia, la evaluación de las competencias de los estudiantes de   arquitectura se realiza a partir de dos módulos:  Estudio Proyectual  y el   de  Proyecto de Arquitectura , ambos centrados en la fase de diseño del   proyecto arquitectónico. Esta fase presenta, a su vez, diversos grados de   desarrollo, que van desde la idea inicial, pasando por el esquema básico   y el anteproyecto, hasta el desarrollo final del proyecto. En ella se ponen   en juego los procesos de conceptualización y síntesis propios del diseño   arquitectónico. De este modo, el proyecto arquitectónico, junto con las   diferentes áreas temáticas que inciden en él, permite una aproximación   tanto analítica como sintética.  Específicamente, el módulo  Proyecto de Arquitectura  se enfoca en la fase   de diseño; es decir, parte de un problema definido previamente —que en el   lenguaje arquitectónico se denomina  encargo — para proponer una solución   a nivel de esquema básico  con representación gráfica formal.  El encargo es una solicitud realizada por una persona, empresa o entidad   que requiere un espacio habitable en un contexto determinado, a la cual se   debe dar respuesta mediante un proyecto arquitectónico.  En todo proceso de diseño, más allá de la aplicación de los conocimientos   técnicos y las habilidades adquiridas durante la formación, existen múltiples   respuestas viables para un mismo encargo. Esto se debe a que se trata de   un problema abierto, en el que los procesos creativos e imaginativos juegan   un papel fundamental.  ¡Tenga en cuenta!  Además de este documento enfocado en el módulo   Proyecto de Arquitectura, consulte la guía de orientación   correspondiente al      módulo Estudio Proyectual  en el   portal web del Icfes. \nPresentación Contenido  8  Especificaciones   ¿A quién se dirige?  El módulo plantea un problema de orden arquitectónico que debe ser   resuelto en un tiempo máximo de ocho horas. El resultado debe ser una   solución a nivel de esquema básico, pero con representación gráfica formal,   mediante el cual se da respuesta al encargo, lo que implica  expresar   explícitamente las escalas de dibujo de cada sección.  Para mayor claridad,   a continuación se expone la definición del producto esperado: un esquema   básico.    » El esquema básico  La concepción de esquema básico que se presenta proviene de la   documentación sobre práctica profesional del Consejo Profesional Nacional   de Arquitectura y sus Profesiones Auxiliares:  “El esquema básico constituye la primera aproximación a una solución   específica de diseño arquitectónico y como tal, define y reúne las   características principales del proyecto o sus distintas alternativas, aunque   de una manera general o incluso hipotética, sin ofrecer soluciones en    detalle.  El Esquema Básico se desarrolla por lo común sobre la interpretación de   los contenidos, restricciones y requerimientos formulados en la fase de   prediseño, particularmente las que hacen relación con las documentaciones   de cartografía, normativa urbanística y programa cualificado de espacios y   áreas del proyecto.  La solución básica de diseño se expresa en dibujos esquemáticos de   localización, plantas generales, elevaciones principales –secciones de   cortes y fachadas–, memoria descriptiva del esquema y cuadro preliminar   de áreas y eventualmente, en una documentación tridimensional   complementaria que aporte información básica sobre la volumetría y la   materialidad constructiva del proyecto”. \nPresentación Contenido  9  Especificaciones   ¿A quién se dirige?  La organización de la plancha (un pliego de 1000 × 700 mm) en la que el   estudiante debe plantear su propuesta al encargo es la que se muestra en   la  f  gura  1 .    » Figura 1.  Ejemplo de plancha del examen  Información contextual  INTERPRETAR / ANALIZAR  Programa, normativa, localización  Memoria  CONCEPTUALIZAR - JUSTIFICAR / ARGUMENTAR  Área para   los bocetos  Propuesta  DESARROLLAR  Área para la expresión formal de la   propuesta  Como se observa en la figura 1, la plancha sobre la que se desarrolla la   propuesta está dividida en cuatro partes, que corresponden a procesos en   los que el estudiante debe demostrar su capacidad. Estas son:  1.  La información contextual , en la que aparece la información básica del   encargo por resolver.  2.  La memoria  del proyecto que el estudiante desarrolla, en la que debe   argumentar de manera gráfica las decisiones proyectuales en términos   de cada componente.  3.  La propuesta planteada , en la que la representación se da con códigos   de dibujo arquitectónico, indicando las escalas de desarrollo que llevó a   cabo un estudiante para resolver el encargo.  4.  El área para los bocetos,  que puede ser usada de dos maneras: por una   parte, para dibujar los esquemas que el estudiante realiza inicialmente   para visualizar aspectos del desarrollo del esquema básico del proyecto   de arquitectura. Por otra parte, se puede usar para el desarrollo   planimétrico de la propuesta. \nPresentación Contenido  10  Especificaciones   ¿A quién se dirige?  Estas cuatro partes dan forma a las dimensiones de la competencia. En la   plancha que se entrega a los estudiantes el día de la aplicación de la prueba   se incluyen:    » Tema por resolver y su definición.    » Programa de funciones y áreas, por zonas.    » Normativa y recomendaciones generales.    » Planimetría del contexto físico, a escalas 1:2.000 o 1:2.500; en esta   planimetría el estudiante puede incluir textos, gráficos o esquemas   de análisis de la información contextual.  En el formato de presentación de la propuesta se demarca un   espacio donde se le solicita que informe cuál es la ciudad en la que   se ubica el proyecto. Esta información es de mucha relevancia para   el ejercicio, ya que completa la definición del contexto. En especial,   permite entender el medio físico, el clima y el contexto cultural,   pues la ciudad en la que se desarrolla el proyecto determina   condiciones específicas como el clima y otras características   ambientales relevantes.    » Planimetría del lote y su contexto inmediato a escalas 1:500 a   1:1000. En esta planimetría, los estudiantes deben representar la   localización o planta de cubiertas de la propuesta; allí se pueden   incluir elementos de justificación de las decisiones proyectuales, es   decir, puede ser un complemento a la memoria de la propuesta.  Para cada aplicación del examen se proponen diferentes temas.  Para   el examen de 2026, el tema de la prueba corresponde a espacios de   atención al público.  En este caso, a cada estudiante le corresponde   elaborar una propuesta de esquema básico sobre una de las siguientes tres   opciones posibles:    » Curaduría urbana    » Sucursal bancaria    » Centro de atención de telefonía móvil  Al final de la sesión, los estudiantes deberán entregar una propuesta de   espacialización y materialización del tema indicado. Con base en base en   su ejecución, es posible obtener información sobre su capacidad de síntesis   del proyecto de arquitectura. \nPresentación Contenido  11  Especificaciones   ¿A quién se dirige?  III.  Condiciones para la   aplicación del módulo    » Cada estudiante conocerá el tema específico asignado el mismo día de   la realización del ejercicio práctico de proyecto.    » Cada estudiante desarrollará, en el transcurso de la sesión, uno de los   temas propuestos, que se relacionan con servicios de escala zonal o   localidad, complementarios a vivienda.    » El ejercicio práctico de proyecto se realizará en las aulas de taller de   todos y cada uno de los programas de arquitectura del país, los cuales   dispondrán de las instalaciones y mobiliario adecuado para la ejecución   de la prueba.    » El ejercicio práctico de proyecto se presentará en dos jornadas, de   7:00 a. m. a 12:00 m. y de 2:00 p. m. a 5:00 p. m., y será supervisada   por delegados del Icfes.    » Cada estudiante recibirá, por parte del jefe de salón del Icfes, un sobre que   contiene el pliego con la información pertinente para realizar el ejercicio   y en el que se debe desarrollar la respuesta arquitectónica solicitada.    » El día de la prueba, cada estudiante deberá llevar los siguientes   materiales (que son de uso personal , intransferible y necesarios para   desarrollar el ejercicio):  •  Un (1) pliego de papel bond de 60 g y un (1) pliego de papel   mantequilla de 60 g; estos dos pliegos son para trabajo durante las   sesiones de examen.  •  Instrumentos básicos de dibujo manual: lápices de mina negra,   lápices de colores o marcadores; borrador; escala; escuadras de   60° y 45°; regla paralela; chinches o cintas para fijar el papel;   curvígrafos; compás; sacapuntas; estilógrafo o micropunta, entre   otros.    » La técnica de representación es de libre elección: lápiz, plumones o   marcadores, tintas, lápices de colores, pastel, puede ser a mano alzada   o con instrumentos de dibujo técnico (paralela, escuadras, curvígrafos,   compás). \nPresentación Contenido  12  Especificaciones   ¿A quién se dirige?    » Al finalizar la primera jornada, a las 12:00 m., los estudiantes dejarán   el sobre, los pliegos de borrador y el pliego formato entregado por   el Icfes en su lugar de trabajo. Los instrumentos de dibujo deberán   ser recogidos por cada estudiante, dado que el Icfes o la institución   no se harán responsables por su extravío de estos. Los estudiantes   regresarán al salón a las 2:00 p. m. y no podrán ingresar documentos o   materiales diferentes a los ingresados a la primera jornada.    » Al final de la segunda jornada, se debe entregar en el sobre   correspondiente únicamente el ejercicio desarrollado en el pliego   suministrado por el Icfes, sin información adicional anexada al pliego.    » La plancha se introducirá en el sobre, doblada de la misma manera   como le fue entregada por el delegado del Icfes al iniciar la primera   jornada, de forma tal que el rótulo con el número EK del estudiante esté   siempre visible.  •  La plancha y el sobre que la contiene no deben llevar el nombre del   estudiante ni el de la institución en la que estudia.  •  La plancha entregada por los estudiantes es el único material que se   considera oficial y, asimismo, el único que se evalúa y califica.  •  El material suelto o anexo a la plancha se descartará y no se tendrá   en cuenta para la evaluación.  •  No está permitido, bajo ninguna circunstancia, llevar elaboraciones   hechas previamente. Solo se aceptarán los desarrollos realizados   por el estudiante en el sitio de aplicación de la prueba.    » El jefe de salón verificará el material entregado por los estudiantes y lo   guardará en el sobre, el cual sellará y firmará. \nPresentación Contenido  13  Especificaciones   ¿A quién se dirige?  IV.  Especificaciones del módulo   Proyecto de Arquitectura  En este apartado se presentan las características y la estructura del   módulo de competencias específicas Proyecto de Arquitectura, que, junto   con los módulos de competencias genéricas, conforman el examen Saber   Pro. Para ello, se presenta la información desagregada en competencias,   afirmaciones y evidencias que las componen, siguiendo la metodología del            Diseño Centrado en Evidencias  ( f  gura  2 ).    » Figura 2.  Diseño Centrado en Evidencias  Competencias  Son las habilidades necesarias para aplicar los conocimientos en diferentes   contextos. En este sentido, enfrentarse al examen Saber Pro no implica   solamente conocer conceptos o datos, sino que involucra saber cómo   emplear dicha información para resolver problemas en situaciones de la   vida cotidiana.  Afirmaciones  Para cada competencia se definen una o más afirmaciones que representan   aspectos específicos de un área del conocimiento o un conjunto de   habilidades y destrezas, los cuales se espera que los evaluados puedan   demostrar a través del saber-hacer.  Evidencias  Las afirmaciones, a su vez, se componen de evidencias, entendidas como   aquello que permite inferir que el evaluado posee las habilidades o los   conocimientos suficientes para dar cuenta de la afirmación relacionada.   Se trata de la formulación de aspectos observables en los evaluados que   permitan obtener información del nivel de adquisición de las afirmaciones   planteadas. \nPresentación Contenido  14  Especificaciones   ¿A quién se dirige?  Competencia evaluada  El módulo  Proyecto de Arquitectura  se compone de una sola pregunta   abierta que evalúa la competencia para proyectar creativa e integralmente   espacios arquitectónicos habitables, con el fin de dar respuesta a los   requerimientos de la sociedad, previa valoración del contexto ambiental y   cultural desde una perspectiva estética y técnica.  Esta competencia se refiere a los procesos conceptuales y sintéticos   necesarios para proyectar o diseñar proyectos de arquitectura, en   específico, aquellos relacionados con la transformación, organización y   construcción de los espacios habitables (en distintas escalas y en diferentes   contextos), a partir del planteamiento de un problema o encargo, tras la   interpretación de las diferentes variables y condicionantes: el entorno, el   emplazamiento, la normativa del programa y las posibilidades técnicas y   tecnológicas.  De igual manera, la competencia involucra los procesos que permiten   entender necesidades, variables contextuales y exigencias de normativa   para convertirlas en un problema de arquitectura solucionable mediante   la aplicación de principios que orientan la elaboración de proyectos que   producen objetos arquitectónicos y espacios habitables en un entorno   determinado.  Siguiendo la metodología propuesta por el Diseño Centrado en Evidencias   y de acuerdo con el      Marco de referencia  del módulo, la competencia   evaluada se desagrega en tres afirmaciones.    » Afirmación 1  Comprende la información contextual dada: entiende que el requerimiento   del módulo es un encargo arquitectónico a solucionar, que involucra   diferentes componentes, y es capaz de usar la información para su respuesta  Evalúa la capacidad del estudiante de entender y usar la información dada,   e implementarla en la solución al encargo. Interpretar es un proceso que se   inicia con el análisis de la información disponible y continúa con el manejo   y relación de la información, en relación con los distintos componentes del   proyecto. Comprender implica identificar con claridad las relaciones y las   jerarquías necesarias entre los componentes del proyecto  Esta afirmación se desagrega en tres evidencias, como se muestra en la   tabla 1 .    » Tabla 1.  Evidencias de la afirmación 1  Evidencias  1.1  Elabora la propuesta de acuerdo con el tema solicitado.  1.2  Se implanta en el lote propuesto.  1.3  Cumple las normas y áreas del encargo. \nPresentación Contenido  15  Especificaciones   ¿A quién se dirige?    » Afirmación 2  Convierte la información elaborada, con base en la información contextual, en argumentación de las   decisiones tomadas, para cada uno de los componentes  Evalúa la capacidad para argumentar las decisiones tomadas para soportar la solución al encargo. Se   trata de articular lógica y secuencialmente las ideas arquitectónicas, de modo que se pueda apreciar   la racionalidad de todas las decisiones proyectuales, de acuerdo con criterios claros y vigentes en el   desarrollo del proyecto propuesto, teniendo en cuenta las condiciones y necesidades establecidas en la   información contextual.  Esta afirmación se desagrega en cuatro evidencias, como se muestra en la  tabla 2 .    » Tabla 2.  Evidencias de la afirmación 2  Evidencias  2.1  Explica el proyecto desde la implantación que ha propuesto de manera gráfica y escrita.  2.2  Explica el proyecto desde la forma y espacio que ha propuesto de manera gráfica y escrita.  2.3  Explica el proyecto desde la solución técnica que ha propuesto de manera gráfica y escrita.  2.4  Explica el proyecto desde la distribución y lógica de actividades que ha propuesto de manera   gráfica y escrita. \nPresentación Contenido  16  Especificaciones   ¿A quién se dirige?    » Afirmación 3  Desarrolla la propuesta de manera coherente y coordinada articulando   cada uno de los componentes en función de los demás y la representa   utilizando los códigos propios de la comunicación en arquitectura  Evalúa la capacidad de síntesis de un estudiante para dar respuesta   coordinada a los diferentes componentes –urbano, tecnológico, funcional   y formal-espacial– involucrados en la prueba, con códigos de dibujo   arquitectónico. Consiste en representar por medio de plantas, cortes,   alzados, axonometrías, perspectivas, entre otros, la solución planteada al   encargo, de tal manera que muestre capacidad de coordinar la respuesta   correspondiente a cada componente con los demás.  Esta afirmación se desagrega en diez evidencias, como se muestra en la   tabla 3 .    » Tabla 3.  Evidencias de la afirmación 3  Evidencias  3.1  Representa el proyecto con códigos de dibujo arquitectónico.  3.2  Representa un planteamiento de cada uno de los componentes   evaluados.  3.3  Desarrolla las relaciones programáticas del proyecto.  3.4  Desarrolla un sistema estructural para el proyecto.  3.5  Desarrolla una implantación del proyecto en relación al lugar dado.  3.6  Desarrolla una forma arquitectónica.  3.7  Relaciona la forma-espacio propuesta al programa y técnica   propuesta y a la implantación propuesta.  3.8  Relaciona el programa desarrollado a la forma-espacio y a la técnica   propuesta y a la implantación propuesta.  3.9  Relaciona una técnica propuesta a un programa y una forma-  espacio propuesta y a la implantación propuesta.  3.10  Relaciona la implantación propuesta a un programa, a la forma-  espacio y a la técnica propuesta. \nPresentación Contenido  17  Especificaciones   ¿A quién se dirige?  V.  ¿A quién se dirige el módulo?  Este módulo se dirige únicamente a estudiantes que hayan aprobado por   lo menos el 75 % de los créditos académicos del programa profesional   universitario que cursan, que presentan el examen por primera vez y que   fueron inscritos directamente por su Institución de Educación Superior   (IES) para la presentación del módulo. Cada IES tiene la posibilidad de   seleccionar una de las  combinatorias  que se ofertan para cada uno de los   grupos de referencia , según lo considere pertinente para cada uno de sus   programas.  Definición de combinatoria  Es una agrupación de módulos que es presentada por los   evaluados en el examen Saber Pro. Dicha agrupación está   conformada por cinco módulos de competencias genéricas   (Razonamiento Cuantitativo, Lectura Crítica, Competencias   Ciudadanas, Comunicación Escrita e Inglés) y puede incluir   hasta tres módulos de competencias específicas, que se   ofertan según los grupos de referencia.  Definición de grupo de referencia 2  Es una agrupación de programas profesionales   universitarios con características de formación similares.   Esta agrupación es útil para delimitar la oferta de   combinatorias que brinda el Icfes a los diferentes   programas y para que los evaluados puedan comparar   sus resultados con los de otros examinandos del mismo   grupo de referencia.  2      Actualmente, conforme con la       Resolución 395 del 12 de junio del 2018 ,   se definen estos grupos de acuerdo con el Núcleo Básico del Conocimiento (NBC)   y el nivel de formación establecido para cada programa académico, según la   clasificación Sistema Nacional de Información de Educación Superior (SNIES) del   Ministerio de Educación Nacional. \nPresentación Contenido  18  Especificaciones   ¿A quién se dirige?  No obstante, para garantizar que los módulos de competencias específicas   sean afines al programa de formación de los estudiantes, se recomienda   que el(la) director(a) del programa sea quien defina, al momento del   prerregistro, qué combinatoria presentarán.  Para consultar la oferta de combinatorias de módulos disponible para su   programa académico, le recomendamos llevar a cabo los siguientes pasos:    » Paso 1:  Identifique el código  SNIES  asociado al programa.    » Paso 2:  Ingrese el      código SNIES  del programa y verifique el  NBC    asociado a este.    » Paso 3:  Consulte la      oferta de combinatorias  de módulos Saber Pro   2026-2 disponible para su  NBC .  Es importante aclarar que las IES pueden decidir que sus estudiantes no   tomen ninguno de los módulos de competencias específicas que oferta el   Icfes y, de esta manera, los evaluados solo deberán presentar los módulos   de competencias genéricas.   Los tiempos de aplicación del examen varían de acuerdo con el número   de módulos de competencias específicas que el evaluado presente. Para   mayor información, consulte la guía de orientación de los       módulos de   competencias genéricas  del examen Saber Pro en la página web del Icfes.  El módulo Proyecto de Arquitectura se oferta a los programas asociados al   NBC de  Arquitectura .  Si desea familiarizarse con los módulos   de competencias genéricas y específicas   del examen Saber Pro y con los tipos   de preguntas, consulte la      caja de   herramientas , la cual contiene marcos   de referencia, infografías, cuadernillos   de preguntas, ejemplos de preguntas   explicadas y más. \nSubdirección de Diseño de Instrumentos  Dirección de Evaluación  Calle 26 N.º 69-76, Torre 2, Piso 16, Edificio Elemento, Bogotá D. C.,   Colombia    www.icfes.gov.co  Líneas de atención al ciudadano: Bogotá D. C.,   Tel.: (60+1) 915 6101 I PBX: (60+1) 915 6101 \n";
+    const PDF_NAME = "proyecto-de-arquitectura-saber-pro-2026-2.pdf";
+    const CHATBOT_THEME = "proyecto-de-arquitectura-saber-pro-2026-2 vf";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué es el Examen Saber Pro y para qué sirve según la Ley 1324 de 2009?","¿En qué se diferencian las competencias genéricas de las competencias específicas dentro del módulo?","¿Cuál es la razón de la alineación del Sistema Nacional de Evaluación Externa Estandarizada (SNEE) y qué permite comparar?","¿Cómo está compuesto el diseño arquitectónico por fases y qué va desde la idea inicial hasta la ejecución?","¿Por qué se afirma que la evaluación del estudiante se organiza en los módulos Estudio Proyectual y Proyecto de Arquitectura y qué comparten?","¿Qué partes de la plancha de prueba se entregan a los estudiantes y qué información contextual es especialmente relevante para el ejercicio?","¿Qué tema de 2026 se propone (espacios de atención al público) y qué opciones posibles debe escoger cada estudiante?","¿Qué condiciones de aplicación debe cumplir el estudiante el día del examen, como tiempos, supervisión y entrega del sobre con el pliego?","¿Qué materiales y herramientas de dibujo manual exige la prueba y por qué la técnica de representación es de libre elección?","¿Qué evalúa la competencia específica del módulo y cómo se relaciona con convertir variables (entorno, emplazamiento, normativa, posibilidades técnicas) en un problema solucionable?","¿Cómo se desagrega la competencia en Afirmaciones 1, 2 y 3, y qué evidencias corresponde a la Afirmación 1 sobre tema, implantación y normas/áreas?","¿Qué significa desarrollar la propuesta de forma coherente y coordinada (Afirmación 3) y qué códigos de comunicación arquitectónica se deben usar (plantas, cortes, alzados, etc.)?"];
+    const INITIAL_PALETTE = {"primaryColor":"#e830bd","secondaryColor":"#ed59ca","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#e830bd","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

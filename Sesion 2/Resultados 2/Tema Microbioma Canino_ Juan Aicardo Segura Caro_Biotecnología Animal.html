@@ -1,0 +1,155 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Sesión de Chat</title>
+            <style>
+                body { font-family: sans-serif; line-height: 1.6; padding: 20px; color: #333; }
+                .user-message { background-color: #007bff; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; max-width: 80%; margin-left: auto; text-align: right; }
+                .bot-message { background-color: #e9ecef; color: #343a40; padding: 10px; border-radius: 8px; margin-bottom: 10px; max-width: 80%; }
+                .system-message { text-align: center; color: #666; font-style: italic; margin-bottom: 10px; }
+                pre { background: #333; color: #fff; padding: 10px; border-radius: 5px; overflow-x: auto; }
+                code { background: #eee; padding: 2px 4px; border-radius: 3px; }
+            </style></head><body>
+            <h2>Sesión de Chat con PDF</h2><p>Archivo: A critical review of research concerning the gut microbiome in dogs and its.pdf</p><hr>
+            <div><div class="system-message">Por favor, carga un PDF para comenzar.</div><div class="system-message">Cargando A critical review of research concerning the gut microbiome in dogs and its.pdf...</div><div class="system-message">"A critical review of research concerning the gut microbiome in dogs and its.pdf" está listo.</div><div class="system-message">Segundo documento "Recent advances in our understanding of the gut.pdf" también está listo.</div><div class="user-message">Realiza un resumen corto de cada documento</div><div class="bot-message"><strong>Chatbot:</strong> <div class="tex2jax_process" style="margin-top:5px;"><h3>Documento 1: <em>A critical review of research concerning the gut microbiome in dogs and its relationship with behaviour</em></h3>
+<p>Revisa críticamente la evidencia sobre cómo el microbioma intestinal del perro se relaciona con la conducta. Explica que, aunque hay señales emergentes de asociaciones con ansiedad, estrés, aprendizaje y comportamiento agresivo, el campo es aún inmaduro: hay poca replicación, estudios pequeños y resultados difíciles de comparar. Además, destaca limitaciones metodológicas clave: en la mayoría de trabajos se estudian solo bacterias (frecuentemente mediante secuenciación 16S rRNA), la muestra fecal refleja sobre todo la parte distal del intestino, y los estudios rara vez controlan todos los factores que alteran el microbioma (dieta, edad, sexo/esterilización, raza, condiciones de vida, problemas GI, etc.). Concluye que las hipótesis sobre el eje intestino-cerebro deben expresarse con cautela y que se necesitan metodologías estandarizadas, estudios longitudinales y medidas conductuales validadas.</p>
+<hr>
+<h3>Documento 2: <em>Recent advances in our understanding of the gut microbiome</em></h3>
+<p>Presenta una revisión narrativa sobre avances en ciencia básica y traslación clínica del microbioma intestinal en humanos (British Society of Gastroenterology). Resume cómo el campo pasó de estudios pequeños y descriptivos basados en 16S a grandes estudios multicéntricos con metagenómica “shotgun” y enfoques multi-ómicos, con tuberías bioinformáticas más robustas y mayor validación mecanística. Aborda retos persistentes como la falta de una definición consensuada de “microbioma sano”, sesgos metodológicos (recolección, extracción de ADN, secuenciación y análisis) y la dificultad para mover de correlación a causalidad. También discute aplicaciones clínicas: el uso establecido del trasplante de microbiota fecal (FMT) para infección recurrente por <em>Clostridioides difficile</em>, y el potencial (aún con barreras) de diagnósticos y terapias emergentes (pro/prebióticos, postbióticos, bacteriófagos, FMT de “siguiente generación”, etc.). Enfatiza la necesidad de estandarización, mejores controles, compartición de datos (principios FAIR) y estudios con diseño mecanístico y potencia suficiente para avanzar hacia utilidad diagnóstica/pronóstica/terapéutica real.</p>
+</div></div><div class="user-message">Que tienen en comun las investigaciones y los PDF y que queda por estudiar en la frontera de la ciencia</div><div class="bot-message"><strong>Chatbot:</strong> <div class="tex2jax_process" style="margin-top:5px;"><p>Ambos PDF coinciden en que el “gut microbiome” (microbiota/microbioma intestinal) es relevante para la salud del huésped y que, aunque existen asociaciones prometedoras, gran parte de la evidencia aún está lejos de demostrar causalidad firme.</p>
+<h2>Qué tienen en común (según ambos documentos)</h2>
+<ul>
+<li><strong>El campo es complejo y heterogéneo</strong>: en el PDF sobre <em>perros</em> se subraya que la composición del microbioma está influida por muchos factores (dieta, edad, sexo/estado de esterilización, raza, ambiente, problemas GI, etc.) y que los estudios rara vez controlan todo eso; por tanto, <strong>comparar resultados y atribuir causalidad es difícil</strong>.  </li>
+<li><strong>Muchas evidencias son correlacionales</strong>: el review de perros señala que la mayoría de estudios sobre microbioma–conducta hallan <strong>correlaciones</strong> (ansiedad, estrés, agresión, aprendizaje) pero <strong>no relaciones causales</strong>, y que los mecanismos propuestos son a menudo especulativos.  </li>
+<li><strong>Limitaciones metodológicas y estandarización</strong>:  <ul>
+<li>En perros, se discute que la investigación se centra casi exclusivamente en bacterias y con frecuencia usa <strong>16S rRNA</strong> (con limitaciones: no infiere función y suele no cubrir todo el “microbioma” interconectado).  </li>
+<li>En el otro PDF (humano), se insiste en que la falta de reproducibilidad/ comparabilidad surge de variaciones en recolección de muestras, extracción de ADN, secuenciación y bioinformática; por eso hacen falta <strong>pipelines “gold standard”</strong>, control de sesgos y mejor estandarización.</li>
+</ul>
+</li>
+<li><strong>Necesidad de enfoques más integradores</strong>: el PDF de perros remarca la falta de estudios longitudinales y de evaluaciones conductuales robustas/validadas. El PDF de “Gut” resalta el paso hacia <strong>multi-omics</strong> y validación mecanística más sólida.</li>
+<li><strong>“Gut–brain axis” y comunicación microbiota–huésped</strong>: ambos reconocen rutas como señalización vía metabolitos/neurotransmisores, inflamación, etc. En perros se plantea que el mecanismo más estudiado es la producción de mensajeros (p.ej., GABA, serotonina, noradrenalina, dopamina) y vías como la inmunidad/SCFAs, pero faltan pruebas mecanísticas en perros.</li>
+</ul>
+<h2>Qué queda por estudiar “en la frontera” (lo que ambos señalan implícitamente o explícitamente)</h2>
+<ul>
+<li><strong>Causalidad y mecanismos</strong>  <ul>
+<li>En perros: falta evidencia mecanística y causal; incluso si hay asociaciones (p.ej., con agresión, miedo o memoria), hace falta probar causalidad y medir metabolitos/neurotransmisores con mejor nivel de “metabolómica/función”.  </li>
+<li>En humanos: el campo sigue luchando con el paso de correlación a causalidad; se necesita más validación experimental y modelos que prueben mecanismos.</li>
+</ul>
+</li>
+<li><strong>Evolución en el tiempo (longitudinalidad)</strong>: el review de perros indica que casi no hay estudios que midan microbioma y conducta repetidamente (muchos evalúan una sola vez). El documento humano también insiste en que, sin rigor y estandarización, es difícil avanzar hacia predicción/traslación fiable.</li>
+<li><strong>Qué es un “microbioma saludable” y cómo definirlo operacionalmente</strong>: el PDF humano discute que no hay una definición universal aceptada de “normal/healthy microbiome”. En perros, además, se destaca que no se sabe qué debería controlarse “rutinariamente” en estudios y que las poblaciones de referencia deben ser interpretadas con cautela.</li>
+<li><strong>Mejor diseño experimental y validación de medidas</strong>: en perros, se critica el uso de escalas conductuales no validadas o evaluaciones subjetivas sin comprobar confiabilidad/validez. En el PDF humano, el énfasis es en reproducibilidad (controles, blanks, mock communities, documentación estricta).</li>
+<li><strong>Más allá de taxonomía: función y “holobioma”</strong>: en perros se señala que 16S no permite inferir función y que la investigación suele centrarse en bacterias. En el PDF humano se aboga por integrar no solo bacterias sino también componentes como viroma, micobioma/arqueas, y por estudiar funcionalidad (metabolismo/actividad).</li>
+</ul>
+<p>Si quieres, puedo ayudarte a convertir esto en un párrafo tipo “respuesta de examen” o en una tabla comparando <em>perros (conducta)</em> vs <em>humano (traslación clínica)</em>.</p>
+</div></div><div class="user-message">genera una pregunta de investigacion para el proyecto de aula</div><div class="bot-message"><strong>Chatbot:</strong> <div class="tex2jax_process" style="margin-top:5px;"><p>¿Cómo influye la composición y diversidad del microbioma intestinal (medida mediante <mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="0" style="font-size: 113.1%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mn class="mjx-n"><mjx-c class="mjx-c31"></mjx-c><mjx-c class="mjx-c36"></mjx-c></mjx-mn><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D446 TEX-I"></mjx-c></mjx-mi></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mn>16</mn><mi>S</mi></math></mjx-assistive-mml></mjx-container> rRNA y/o metagenómica) en los niveles de agresividad y miedo en perros, considerando y controlando factores de confusión como dieta, edad, esterilización y condiciones de vida, y evaluándolo en un diseño longitudinal?</p>
+</div></div><div class="user-message">ahora un glosario para los estudiantes</div><div class="bot-message"><strong>Chatbot:</strong> <div class="tex2jax_process" style="margin-top:5px;"><h2>Glosario (microbioma intestinal y conducta en perros)</h2>
+<ul>
+<li><strong>Microbioma</strong>: conjunto de microorganismos (bacterias, virus, hongos, etc.) que viven en asociación con un organismo y/o entorno.  </li>
+<li><strong>Gut microbiome / microbioma intestinal</strong>: microbioma localizado en el tracto gastrointestinal.  </li>
+<li><strong>Guta—brain axis / eje microbiota–cerebro (gut-brain axis)</strong>: vía de comunicación bidireccional entre el intestino y el sistema nervioso central.  </li>
+<li><strong>Vías comunicativas del gut-brain axis</strong>: mecanismos propuestos por los que el microbioma puede influir en el comportamiento, por ejemplo:<ul>
+<li><strong>Neurotransmisores y hormonas</strong> (p. ej., GABA, serotonina, noradrenalina, dopamina).</li>
+<li><strong>Vía inmunitaria</strong> (modulación del sistema inmune).</li>
+<li><strong>SCFAs</strong> (ácidos grasos de cadena corta) y otros metabolitos.</li>
+</ul>
+</li>
+<li><strong>16S rRNA sequencing (secuenciación del gen 16S rRNA)</strong>: técnica frecuente para estudiar comunidades bacterianas usando un gen presente en bacterias/arqueas, con regiones variables útiles para diferenciar taxones.  </li>
+<li><strong>Metagenomic sequencing</strong>: secuenciación “metagenómica” que permite una visión más amplia de la comunidad microbiana (bacterias, arqueas, virus, hongos y protozoos).  </li>
+<li><strong>Faecal samples / muestras fecales</strong>: en estudios caninos, suelen usarse para inferir el microbioma intestinal (principalmente del tramo distal).  </li>
+<li><strong>Alpha diversity (diversidad alfa)</strong>: diversidad dentro de una comunidad localizada; valores más altos suelen indicar un ecosistema más variado (p. ej., con el índice de Shannon).  </li>
+<li><strong>Beta diversity (diversidad beta)</strong>: comparación de la composición entre dos comunidades distintas; mayor disimilitud implica mayor diferencia entre microbiomas.  </li>
+<li><strong>Dysbiosis (disbiosis)</strong>: desequilibrio del microbioma, frecuentemente asociado a mala salud intestinal. En el texto se discute que no hay un “gold standard” universal para medirla.  </li>
+<li><strong>Dysbiosis index (índice de disbiosis)</strong>: modelo matemático (basado en qPCR) que combina el <strong>recuento total de bacterias</strong> y abundancias de <strong>siete grupos bacterianos</strong> alterados en perros con inflamación intestinal.  </li>
+<li><strong>qPCR (PCR cuantitativa)</strong>: técnica molecular usada para cuantificar abundancias bacterianas (mencionada como base del índice de disbiosis).  </li>
+<li><strong>Shannon diversity index (índice de Shannon)</strong>: métrica ecológica usada para expresar diversidad alfa.  </li>
+<li><strong>Taxón / taxa</strong>: grupo biológico (p. ej., phylum, familia, género, especie).  </li>
+<li><strong>Causalidad vs. correlación</strong>:<ul>
+<li><strong>Correlación</strong>: asociación estadística entre microbioma y comportamiento.</li>
+<li><strong>Causalidad</strong>: evidencia de que el microbioma causa el cambio conductual. El artículo remarca que en perros predominan los estudios correlacionales y que la causalidad no está demostrada.</li>
+</ul>
+</li>
+<li><strong>Confounding factor (factor de confusión)</strong>: variable que puede influir tanto en el microbioma como en el comportamiento (p. ej., <strong>dieta, edad, sexo/esterilización, ambiente de vida</strong>), dificultando interpretar asociaciones.  </li>
+<li><strong>Efectos longitudinales</strong>: estudiar microbioma y conducta <strong>a lo largo del tiempo</strong>; el texto señala que muchos estudios toman medidas <strong>una sola vez</strong>, por lo que faltan datos sobre cambios dinámicos.  </li>
+<li><strong>Type 1 error (error tipo I)</strong>: concluir que existe una relación cuando en realidad es espuria (“falso positivo”); se menciona como riesgo en esta fase temprana del campo.  </li>
+<li><strong>Behavioural phenotyping / fenotipado conductual</strong>: evaluación y clasificación del comportamiento; el artículo advierte sobre limitaciones cuando se usa opinión subjetiva o cuestionarios sin validar.  </li>
+<li><strong>Validez y fiabilidad de instrumentos conductuales</strong>:<ul>
+<li><strong>Instrumento validado</strong>: cuestionario o escala con propiedades psicométricas evaluadas.</li>
+<li>En el texto se contrasta el uso de herramientas validadas (p. ej., <strong>C-BARQ</strong>) frente a escalas no validadas.</li>
+</ul>
+</li>
+<li><strong>C-BARQ</strong>: cuestionario validado para perfilar rasgos de temperamento/conducta en perros; aparece en estudios sobre agresión/ansiedad/miedo.  </li>
+<li><strong>EDED (Evaluation of Dog Emotional Disorders)</strong>: escala clínica para evaluar disfunción emocional; usada en un estudio piloto con medidas conductuales y fisiológicas.  </li>
+<li><strong>Cortisol salival</strong>: marcador endocrino (estrés) medido en saliva; se menciona como ejemplo de “correlatos fisiológicos” en un estudio.  </li>
+<li><strong>Testosterona salival</strong>: otra variable endocrina usada en el mismo contexto.  </li>
+<li><strong>Cognición (performance cognitiva / memoria de trabajo)</strong>: capacidades mentales evaluadas por pruebas; el texto describe un estudio centrado en memoria de trabajo y su relación con composición microbiana.  </li>
+<li><strong>Working memory (memoria de trabajo)</strong>: componente cognitivo evaluado en el estudio (recordar ubicación de un premio tras un intervalo).  </li>
+<li><strong>IBD / Inflammatory Bowel Disease (enfermedad inflamatoria intestinal)</strong>: condición gastrointestinal asociada a cambios del microbioma y disbiosis.  </li>
+<li><strong>SCFAs (short-chain fatty acids / ácidos grasos de cadena corta)</strong>: metabolitos producidos por fermentación microbiana; se presentan como una vía potencial hacia el eje intestino–cerebro.  </li>
+<li><strong>GABA (ácido gamma-aminobutírico)</strong>: neurotransmisor; el texto lo menciona como señal relacionada con la comunicación microbiota–cerebro.  </li>
+<li><strong>Serotonina (5-HT)</strong>, <strong>noradrenalina</strong> y <strong>dopamina</strong>: mensajeros bioquímicos relevantes en el contexto de posibles mecanismos del microbioma sobre comportamiento.</li>
+</ul>
+<p>Si quieres, puedo convertir este glosario en una <strong>tabla</strong> (término → definición → dónde aparece en el artículo) o en <strong>tarjetas tipo flashcards</strong> para estudiar.</p>
+</div></div><div class="user-message">ahora preguntas y respuestas basicas clave para que los estudiantes puedan realizar la pregunta de investigación</div><div class="bot-message"><strong>Chatbot:</strong> <div class="tex2jax_process" style="margin-top:5px;"><p>Aquí tienes <strong>preguntas y respuestas (básicas clave)</strong> para que los estudiantes puedan redactar y justificar una <strong>pregunta de investigación</strong> sobre el tema del documento 1: <em>microbioma intestinal en perros y su relación con comportamiento</em>.</p>
+<hr>
+<h3>1) ¿Qué significa “microbioma”?</h3>
+<p><strong>R:</strong> El documento define el “microbiome” como el conjunto de microorganismos (incluyendo bacterias, virus, parásitos, protozoos y hongos) que viven en relación simbiótica con el animal y/o el entorno. En el perro, el <strong>microbioma intestinal</strong> es de los más diversos y abundantes.</p>
+<hr>
+<h3>2) ¿Por qué es difícil saber si el microbioma causa cambios en el comportamiento?</h3>
+<p><strong>R:</strong> Porque la literatura revisada muestra evidencia principalmente <strong>correlacional</strong>. Además, el microbioma está influido por muchos factores (dieta, edad, sexo/esterilización, entorno, problemas GI, etc.), por lo que la dirección causal es difícil de establecer.</p>
+<hr>
+<h3>3) ¿Qué es el “eje intestino-cerebro” (gut-brain axis)?</h3>
+<p><strong>R:</strong> Es la comunicación bidireccional entre microbiota intestinal y sistema nervioso central, a través de rutas como:</p>
+<ul>
+<li>producción/efecto de neurotransmisores y hormonas (p.ej., GABA, serotonina, norepinefrina, dopamina),</li>
+<li>vías inmunes,</li>
+<li>metabolitos como <strong>ácidos grasos de cadena corta (SCFAs)</strong>,
+y también comunicación vía sistema nervioso autónomo (motilidad, secreción, permeabilidad).</li>
+</ul>
+<hr>
+<h3>4) ¿Qué técnicas se usan para estudiar el microbioma intestinal en perros?</h3>
+<p><strong>R:</strong> El documento explica que comúnmente se usa <strong>secuenciación 16S rRNA</strong>, que identifica bacterias (y arqueas, aunque la mayoría de estudios se centran solo en bacterias). También menciona <strong>metagenómica (shotgun)</strong> para una visión más completa (bacterias, arqueas, virus, hongos, protozoos), aunque es más costosa y requiere más ADN de buena calidad.</p>
+<hr>
+<h3>5) ¿Por qué importa el tipo de muestra (heces)?</h3>
+<p><strong>R:</strong> Porque las heces reflejan principalmente comunidades del <strong>extremo distal del intestino</strong>, no necesariamente todo el tracto gastrointestinal. Esto limita la interpretación cuando se intenta conectar con mecanismos del eje intestino-cerebro en todo el intestino.</p>
+<hr>
+<h3>6) ¿Qué es la disbiosis y cómo se mide en perros (según el documento)?</h3>
+<p><strong>R:</strong> Disbiosis se refiere a un <strong>desequilibrio</strong> del microbioma asociado típicamente a mala salud intestinal. El documento indica que existe un <strong>dysbiosis index</strong> basado en qPCR, con un modelo matemático usando recuentos de grupos bacterianos alterados en perros con inflamación intestinal.</p>
+<hr>
+<h3>7) ¿Qué factores pueden “confundir” la relación microbioma–comportamiento?</h3>
+<p><strong>R:</strong> El documento destaca que estudios suelen no controlar bien factores como:</p>
+<ul>
+<li><strong>dieta</strong>,</li>
+<li><strong>edad</strong>,</li>
+<li><strong>sexo y estado de esterilización</strong>,</li>
+<li><strong>raza</strong>,</li>
+<li><strong>relación genética</strong> (p.ej., camada),</li>
+<li><strong>BCS (body condition score)</strong> y tamaño,</li>
+<li><strong>localización geográfica</strong>,</li>
+<li><strong>condiciones de vida</strong> (rural/suburbano, exposición ambiental),</li>
+<li><strong>problemas gastrointestinales/inflamación</strong>.</li>
+</ul>
+<hr>
+<h3>8) ¿La revisión indica que ya existe consenso sobre qué bacterias “explican” cada conducta?</h3>
+<p><strong>R:</strong> No. Señala que el campo es <strong>inmaduro</strong>, con poca replicación y estudios no fácilmente comparables. Por eso, “asociaciones y explicaciones mecanísticas” deben tratarse con <strong>cautela</strong>.</p>
+<hr>
+<h3>9) ¿Qué comportamientos se han estudiado más?</h3>
+<p><strong>R:</strong> Principalmente:</p>
+<ul>
+<li><strong>agresión</strong>,</li>
+<li><strong>miedo/temeridad/fobia (fearful behaviour)</strong>,</li>
+<li><strong>ansiedad</strong>,
+y también se menciona <strong>cognición</strong> (memoria de trabajo).</li>
+</ul>
+<hr>
+<h3>10) ¿Por qué la medición del comportamiento es un problema?</h3>
+<p><strong>R:</strong> Porque a menudo se usan escalas sin validación o evaluaciones con reporte subjetivo/cuestionarios cuya <strong>fiabilidad/validez</strong> no siempre se asegura. El documento sugiere usar instrumentos validados (p.ej., <strong>C-BARQ</strong>) o, si no, reportar muy claramente cómo se definió el fenotipo conductual.</p>
+<hr>
+<h2>Plantillas rápidas para una pregunta de investigación (basadas en lo que el documento exige)</h2>
+<h3>A) Pregunta orientada a asociación</h3>
+<p><strong>R:</strong> “¿Se asocia la diversidad/composición del microbioma intestinal con (agresión / miedo / ansiedad) en perros, controlando dieta, edad y condiciones de vida?”</p>
+<h3>B) Pregunta orientada a mecanismo (limitada por evidencia disponible)</h3>
+<p><strong>R:</strong> “¿Existen señales microbiológicas asociadas a marcadores fisiológicos del estrés (p.ej., cortisol) que apoyen hipótesis del eje intestino-cerebro en perros?”</p>
+<p><em>(El documento advierte que faltan estudios mecanísticos con metabolómica/neurotransmisores en perros.)</em></p>
+<h3>C) Pregunta orientada a diseño longitudinal (recomendación del documento)</h3>
+<p><strong>R:</strong> “¿Cómo cambia el microbioma intestinal a lo largo del tiempo y cómo se relaciona ese cambio con la evolución del comportamiento en perros?”</p>
+<hr>
+<p>Si quieres, dime qué conducta te interesa (agresión, miedo o ansiedad) y si tu estudio sería <strong>transversal</strong> o <strong>longitudinal</strong>, y te redacto 3–5 <strong>preguntas de investigación</strong> bien formuladas (con variables y controles alineados con el documento).</p>
+</div></div></div></body></html>
