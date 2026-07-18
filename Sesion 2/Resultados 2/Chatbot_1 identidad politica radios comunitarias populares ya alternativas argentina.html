@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: 1 identidad politica radios comunitarias populares ya alternativas argentina</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>1 identidad politica radios comunitarias populares ya alternativas argentina</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "Historia Actual Online , 54 (1), 2021: 75-88   ISSN: 1696-2060  ©  Historia Actual Online , 54 (1), 2021: 75-88   75  LA  IDENTIDAD  POLÍTICA  DE  LAS  RADIOS  COMUNITARIAS  ,  POPULARES Y ALTERNATIVAS ARGENTINAS  THE    POLITICAL    IDENTITY    OF    ARGENTINE    COMMUNITY,   POPULAR AND ALTERNATIVE RADIO STATIONS Larisa Kejval * * Universidad de Buenos Aires, Argentina. E-mail: larisakej@yahoo.com.ar Recibido: 24 noviembre 2020 / Revisado: 19 febrero 2021 / Aceptado: 25 febrero 2021 / Publicado: 26 febrero 2021  Resumen:    El  artículo  aborda  las  reconfiguracio -  nes de la identidad política colectiva de las radios   comunitarias,  populares  y  alternativas  argenti -   nas desde su surgimiento en la década de 1980   hasta diciembre de 2015. Para eso se parte de la   siguiente hipótesis: la Ley de Servicios de Comu -  nicación Audiovisual de 2009 no sólo enfrentó a   las radios a una nueva situación legal, sino tam -   bién  a  la  reconfiguración  de  las  significaciones   que las dotaron de identidad. El análisis político   del  discurso  iniciado  por  Laclau  y  Mouffe  es  el   enfoque  desde  el  cual  comprendemos  las  lógi -  cas de constitución de la identidad política de las   emisoras argentinas.  Palabras clave:  comunicación alternativa, comu -  nicación  comunitaria,  radios  populares,  radios   comunitarias, análisis político del discurso  Abstract:    The article addresses the reconfigura -  tions of the collective political identity of Argen -  tine  community,  popular  and  alternative  radio   stations since their emergence in the 1980s until   December 2015. For this, we start from following   hypothesis: the Audiovisual Communication Ser -  vices Law of 2009 not only confronted radio sta -  tions with a new legal situation, but also with the   reconfiguration of the meanings that gave them   identity.  The  political  analysis  of  the  discourse   initiated by Laclau and Mouffe is the perspective   from which we understand the logic of constitu -  tion of the political identity of Argentine stations.  Keywords:     alternative  communication,  commu -  nity communication, popular radios, community   radios, political analysis of discourse  INTRODUCCIÓN  En  Argentina  las  radios  comunitarias,  popu -  lares  y  alternativas  empezaron  a  surgir  en   el  contexto  de  recuperación  democrática  luego de la más cruenta dictadura cívico militar   de  la  historia.  Muchos  las  llamaron  “piratas”  o   “truchas”   por nacer al margen de un sistema le -  gal  que  vedaba  su  existencia 1 .  En  realidad,  “co -  munitarias”, “populares” y “alternativas” son los   tres  calificativos  con  los  que  las  mismas  radios,   las  redes  nacionales  e  internacionales  a  través   de  las  que  se  nuclearon,  el  ámbito  académico   y  algunos  centros  de  comunicación/educación 2   identificaron a este conjunto de medios, a veces   privilegiando uno de estos calificativos, otras uti -   lizándolos indistintamente. Así se expresa en di -  versas publicaciones de estas entidades, analiza -   das para la investigación que aquí presentamos,   tal como especificaremos más adelante.  Desde la emergencia de estos medios de comu -  nicación ha sido difícil lograr consensos estables   1  Dimos cuenta de este proceso de surgimiento y sus  formas de identificación en una investigación anterior   publicada  en  formato  libro:  Kejval,  Larisa,   Truchas.     Los proyectos político-culturales de las radios comu-  nitarias, alternativas y populares argentinas , Buenos  Aires, Prometeo, 2009. 2  A nivel nacional, nos referimos al Centro de Comuni -  cación La Crujía, al Centro Nueva Tierra, al Instituto de   Cultura Popular (INCUPO), al Colectivo de Educación   Popular  Abrojos  y  al  Centro  de  Producciones  Radio -  fónicas  (CPR).  A  nivel  internacional,  nos  referimos,   principalmente,  al  Centro  Internacional  de  Estudios   Superiores de Comunicación Social para América Lati -   na (CIESPAL) con sede en Quito. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-8876 sobre  los  modos  de  definirlos  y  delimitarlos,   tanto  desde  el  campo  académico  como  desde   las  mismas  experiencias  y  sus  asociaciones 3 .  En  principio, todas estas radios son gestionadas por   organizaciones o colectivos que no persiguen el   fin  de  lucro.  Asimismo,  si  bien  realizan  sus  ac -   ciones  desde  distintas  orientaciones  políticas  o   priorizan  problemas  diferentes,  comparten  el   horizonte  de  contribuir  a  procesos  de  resisten -   cia o de transformación del orden comunicacio -  nal  y social.  Sus  acciones  se sustentan  en  explí -  citas  relaciones  entre  comunicación  y  política.   No obstante, las nociones de radio comunitaria,   de radio popular y de radio alternativa también   están atravesadas por debates y diferencias, tal   como  analizaremos  en  las  próximas  páginas.  A   partir de aquí, algunos de los propios trabajos de   investigación  han  estado  orientados  por  la  pre -   gunta acerca de las significaciones ligadas estas   nociones 4 . O, lo que es lo mismo desde nuestra  perspectiva,  por  la  pregunta  sobre  la  identidad   política colectiva de este tipo de emisoras.  La  investigación  desarrollada  en  el  marco  de  la   propia  Tesis  Doctoral 5   se  interroga  acerca  de  la  identidad  política  colectiva  de  las  radios  comu -  3   Así  lo  expresaban,  por  ejemplo,  los  editores  de  la  revista  Cara y Señal  de la Asociación Mundial de Ra -  dios  Comunitarias-América  Latina  y  Caribe  (AMARC-  ALC) en el primer número de la publicación: “Las dis -  cusiones sobre dónde reside el carácter comunitario,   popular  o  alternativo  de  un  medio  de  comunicación   están  lejos  de  poder  sintetizarse.  Este  debate  es  en   sí mismo parte importante de la historia de las radios   del continente latinoamericano. El modo de nombrar -  se, las identidades de cada proyecto y los aspectos en   los que cada experiencia pone el énfasis han genera -   do  discusiones  en  diversos  ámbitos  –foros,  publica -   ciones,  charlas  entre  compañeros–  sobre  si  se  debe   utilizar una u otra palabra para referirse a las radios y   sobre qué implica el uso en cada caso de una de ellas   y  el  descarte  de  las  otras”.  Ver:  Cara  y  Señal,  “Expe -  riencias diversas, objetivos comunes”,  Cara y Señal , 1  (2004), p� 34�4  Kejval, Larisa, “En busca de la comunidad perdida”,  en  Cicalese,  Gabriela  (coord.),    Comunicación  comu - nitaria: apuntes para abordar las dimensiones de la   construcción colectiva , Buenos Aires, La Crujía, 2010,   pp. 33-49 y Kejval, Larisa,  Libertad de antena , Buenos  Aires, Punto de Encuentro, 2018. 5   Kejval,  Larisa,    Ante la ley. Reconfiguraciones de la  identidad política de las radios comunitarias, popula- res y alternativas argentinas (1983-2015)  (Tesis Doc -  toral),  Universidad  de  Buenos  Aires, 2017.  En  el  año   2017 esta tesis recibió el Primer Premio del Concurso   Internacional  de  Tesis  Doctorales  organizado  por  la   Federación Latinoamericana de Facultades de Comu -  nicación Social. nitarias,  populares  y  alternativas  argentinas  en -   tre  su  surgimiento  a  mediados  de  los  años  80   hasta diciembre de 2015. El estudio partió de la   siguiente hipótesis: la Ley de Servicios de Comu -  nicación Audiovisual (LSCA) sancionada en 2009   no sólo enfrentó a las radios a un nuevo estatu -   to legal, sino también a la reconfiguración de las   significaciones que las dotaron de identidad.  La   nueva norma se propuso regular los servicios de   comunicación audiovisual de modo que garanti -   zase  el  derecho  a  la  información  y  a  la  libertad   de  expresión,  un  mapa  mediático  caracterizado   por la diversidad y el pluralismo y la desconcen -  tración de la propiedad de los medios de comu -  nicación.  Un  gran  número  de  radios  comunita -   rias,  populares  y  alternativas 6   coprotagonizaron  el  proceso  de  elaboración  y  sanción  de  la  ley  a   través de su activa participación  en la Coalición   por una Radiodifusión Democrática, en los foros   organizados por el Poder Ejecutivo Nacional para   que la ciudadanía participaran en la elaboración   de  la  norma,  en  las  audiencias  públicas  organi -  zadas por el Congreso de la Nación y en decenas   de  movilizaciones  y  debates  públicos  realizados   antes y después de la sanción de la ley. De aquí   se  derivó  el  interrogante  que  orientó  la  indaga -   ción: ¿Qué transformaciones sufrió la identidad   política colectiva de las radios comunitarias, po -  pulares  y  alternativas  argentinas  a  partir  de  la   LSCA?  Esta  pregunta  supuso  responder  y  poner   en  relación  un  conjunto  de  preguntas  de  carác -   ter más específico:  a)    ¿Qué  significantes  condensaron  la  iden -  tidad  de  estas  radios  entre  su  surgimiento   a  mitad  de  la  década  de  1980  y  mediados   de 2008, momento en que el gobierno  na -   cional  impulsó  el  proceso  de  elaboración  y   sanción de la LSCA?  b)  ¿Qué  significaciones  estuvieron  ligadas  a estos significantes, con sus regularidades   y  dispersiones,  continuidades  y  desplaza -   mientos?  c)    ¿Qué  nuevas  configuraciones  de  senti -  do  implicaron  la  elaboración,  la  sanción  y   la  paulatina  aplicación  de  la  LSCA  para  los   6  Fundamentalmente, las radios nucleadas en torno al  Foro Argentino de Radios Comunitarias (FARCO), que   para la época reunía más de 90 emisoras, y las articu -   ladas en el capítulo argentino de la Asociación Mun -  dial  de  Radios  Comunitarias  (AMARC-Arg),  que  para   entonces reunía cerca de 30 radios de acuerdo con los   sitios web institucionales de ambas redes. \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   77 proyectos  político-comunicacionales  de  las   emisoras? Orientada  por  estos  interrogantes,  en  este  artí -   culo recuperaremos las principales conclusiones   de aquella Tesis Doctoral.  Nuestra indagación se inscribe en el campo aca -  démico  de  la  comunicación  comunitaria,  popu -  lar  y  alternativa.  No  obstante,  el  incipiente  de -  sarrollo  de  la  tarea  investigativa  en  el  seno  de   este campo, sumado a otras dificultades teóricas   ante las que nos hemos enfrentado –y que esbo -   zaremos  en  el  próximo  apartado–,  nos  llevaron   a enfocar nuestra pregunta desde el análisis po -  lítico del discurso iniciado por Laclau y Mouffe7 �   En  este sentido, compartimos  con  otras investi -  gaciones recientes la búsqueda por contribuir a   la  conformación  del  campo  de  la  comunicación   comunitaria,  popular  y  alternativa  desde  el  en -   trecruzamiento  con  perspectivas  teóricas  que   hasta el momento habrían resultado ajenas.  La  superficie  discursiva  a  la  que  nos  acercamos   para  responder  estos  interrogantes  estuvo  con -  formada por un  corpus  de 84 publicaciones 8 re-  feridas  al  quehacer  de  las  radios  comunitarias,   populares y alternativas argentinas y latinoame -   ricanas.  Estas  publicaciones  comprenden  libros,   cuadernillos,  capítulos  de  libros,  artículos  de   revistas  académicas  y  declaraciones  producidas   entre 1983 y 2015 por las mismas emisoras o por   algunos de sus integrantes; por las redes nacio -  nales  y  latinoamericanas  en  torno  a  las  que  se   nuclearon;  y  por  centros  de  comunicación/edu -   cación,  organismos  públicos  estatales  e  intelec -  tuales  del  campo  académico  que  promovieron   el  fortalecimiento  de  este  tipo  de  medios.  Para   abordar  el  análisis  en  su  dimensión  histórica,   estas  publicaciones  fueron  organizadas  en  dos   períodos. Siguiendo con la hipótesis recién plan -  teada, la decisión del gobierno nacional de san -   cionar una nueva legislación que democratizara   las comunicaciones y garantizara el derecho a la   comunicación a mediados de 2008, antesala in -  mediata de la sanción de la LSCA, fue el punto de   inflexión  que  permitió  distinguir  los  dos  perío -   dos:  diciembre  de  1983  hasta  marzo  de  2008  y   7 Laclau, Ernesto y Mouffe, Chantal,  Hegemonía y es -  trategia  socialista ,  Buenos  Aires,  Fondo  de  Cultura   Económica, 2010 y Laclau, Ernesto,  La razón populis -  ta,  Buenos Aires, Fondo de Cultura Económica, 2011. 8  Por una cuestión de extensión no es posible citar di -  chas referencias en este artículo. Para encontrar una   relación detallada, ver: Kejval, Larisa,  Ante la ley. Re - configuraciones... , op. cit., pp. 82-88. abril de 2008 hasta diciembre de 2015. A su vez,   los 25 años comprendidos en el primer período   fueron organizados en tres etapas:  a)    De  diciembre  de  1983  hasta  julio  de  1989,  lo  que  comprende  los  años  de  recu -   peración de la democracia y el gobierno de   Raúl Alfonsín.  b)  Desde  julio  de  1989  hasta  diciembre  de  2001, lo que comprende los años de profun -  dización de las políticas de corte neoliberal   en  todas  las  esferas  de  lo  social  durante  el   gobierno  de  Carlos  Menem  y  hasta  la  pro -  funda crisis política, económica y social que   culminó con el gobierno de Fernando de La   Rua.  c)    De  2002  hasta  marzo  de  2008,  lo  que  comprende  los  años  posteriores  a  dicha   crisis  y  los  primeros  años  de  los  gobiernos   kirchneristas  hasta  la  puesta  en  debate  de   la LSCA. En  tanto  en  este  artículo  se  recuperan  las  prin -  cipales conclusiones de la propia Tesis Doctoral,   todas las afirmaciones realizadas en adelante se   sostienen  a  partir  de  la  evidencia  empírica  que   emergió  de  la  lectura,  el  análisis  y  la  contrasta -   ción de las publicaciones que han formado parte    del  corpus  de investigación.  1. DERIVAS TEÓRICAS   Si  bien  en  el  campo  académico  existen  vastas   trayectorias  en  torno  a  la  comunicación  comu -  nitaria, popular y alternativa, en Argentina estas   trayectorias  han  estado  más  enfocadas,  por  un   lado, en la docencia en la currícula universitaria   y, por otro, en la extensión; pero no así en la in -  vestigación. Para sostener esta afirmación basta   con  advertir  que,  si  bien  casi  todas  las  carreras   de  comunicación  y  periodismo  han  desarrolla -  do  materias,  orientaciones  o  áreas  dedicadas  a   la comunicación comunitaria, popular y/o alter -  nativa 9 , recién en la actual década nos encontra -  mos con tesis de posgrado –y junto con esto, con   un impulso al desarrollo de investigaciones– so -   bre radios y televisoras de este tipo. Esta consta -   tación nos enfrentó ante una primera dificultad:   nuestro  trabajo  se  inscribe  en  una  tradición  –y   9  En este sentido, en el año 2014 se conformó la Red  Interuniversitaria  de  Comunicación  Comunitaria,  Al -   ternativa  y  Popular  que  nuclea  a  espacios  académi -   cos –cátedras, áreas, orientaciones– dedicados a este   tipo de comunicación de 15 universidades nacionales   de Argentina. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-8878 con  ello  en  una  zona  de  experiencias,  temas  y   problemas–  que  en  el  momento  de  encarar  in -  vestigaciones se encuentra en un proceso de in -  cipiente conformación en el país.  Por  otra  parte,  en  las  currículas,  publicaciones,   congresos  e,  incluso,  en  las  investigaciones  de -   dicadas a la comunicación comunitaria, popular   y alternativa el específico abordaje de las radios   –o de otros medios de comunicación– ocupa un   lugar marginal en comparación con otro tipo de   prácticas  comunicativas  como  las  de  interven -   ción  territorial  o  en  organizaciones  sociales 10�   Los  propios  recorridos  permiten  atestiguar  esta   apreciación    en    primera    persona.    En    noviem -   bre  de  2015  se  realizó  en  la  ciudad  de  Paraná   el  Encuentro  de  Cátedras  y  Espacios  Pedagógi -  cos  de  Comunicación  Comunitaria,  Alternativa   y  Popular,  en  el  marco  de  la  reunión  de  la  Red   Interuniversitaria  de  Comunicación  Comunita -   ria,  Alternativa  y  Popular  fundada  en  2014.  En   dicho  encuentro  se  compartieron  y  analizaron   los  programas  de  alrededor  de  20  de  materias   vinculadas a la temática. Una de las conclusiones   del análisis fue, precisamente, que los medios de   comunicación ocupan en estos recorridos un lu -  gar menor en relación con otras cuestiones. Esta   constatación  nos  enfrentó,  entonces,  ante  una   segunda dificultad: el lugar relativamente margi -   nal que ocupan los medios de comunicación en   la  perspectiva  de  la  comunicación  comunitaria,   popular  y  alternativa  tiene  como  consecuencia   un marco conceptual que, muchas veces, resul -  ta insuficiente para pensar las complejidades de   radios y televisoras en el contexto de sociedades   mediatizadas.  10  A modo ilustrativo, en 2015 integrantes de la orien -  tación en comunicación comunitaria y alternativa de   la Carrera de Ciencias de la Comunicación de la Uni -   versidad Nacional de Salta (UNSa) publicaron el libro    Comunicación popular y alternativa en contextos de   frontera: mapeo de actores y experiencias en secto-   res populares de Salta . Tal como relata su editor, Ra -   món  Burgos,  los  autores  se  propusieron  allí  “poner   en  común  el  trayecto  recorrido  por  lxs  integrantes   de  las  cátedras,  los  proyectos  de  investigación  y  de   extensión  que  vienen  contribuyendo  a  dar  forma  a   la  orientación  en  comunicación  comunitaria  y  alter -  nativa”  de  esta  Carrera.  El  libro  está  compuesto  por   trece  artículos.  Entre  ellos,  sólo  tres  artículos  están   dedicados a medios de comunicación. Burgos, Ramón    (ed�),    Comunicación popular y alternativa en contex- tos de frontera: mapeo de actores y experiencias en    sectores  populares  de  Salta,   Córdoba,  Gráfica  29  de    mayo, 2015, p� 25�  Por  otro  lado,  la  dimensión  teórica  de  lo  que   en  el  campo  académico  se  ha  denominado  co -   municación  comunitaria,  popular  y  alternativa   está  constituida  por  una  trama  conceptual  que   no  sólo  se  propone  tornar  inteligibles  determi -  nadas  experiencias  y  procesos,  también  se  pro -   pone  explícitamente  como  orientadora  de  una    praxis   que  aspira  a  ser  transformadora.  De  ahí  que algunos de los conceptos y las nociones de   esta  trama  no  sean  tanto  de  carácter  explica -   tivo  como  de  carácter  prescriptivo  o  del  orden   del  “deber  ser”.  Esto  ocurre,  por  ejemplo,  con   la  noción  de  participación.  Más  que  permitir  la   comprensión  de  una  práctica,  la  participación   se erige como un horizonte a alcanzar por cual -  quier  experiencia  de  comunicación  que  se  defi -   na  como  comunitaria,  popular  y/o  alternativa.   Algo  similar  ocurre  con  la  idea  de  transforma -   ción  social:  antes  que  una  categoría  explicativa   la  noción  nombra  genéricamente  el  proyecto  al   cual  debieran  contribuir  las  prácticas  de  comu -  nicación  que  se  identifiquen  del  mismo  modo.   Esto ha llevado, en ocasiones, a que las investi -   gaciones  dedicadas  a  las  radios  y  televisoras  de   este  tipo  concluyan,  con  o  sin  intención,  valo -  rando los logros, las dificultades, las estrategias   y  los  desplazamientos  en  el  camino  de  realizar   un tipo de comunicación fiel a estos horizontes.   Esto ocurre, por ejemplo, en el cierre de la inves -   tigación desarrollada por Vinelli en  La televisión  desde  abajo 11 .  Este  gesto  se  reitera  también  en  otros  autores 12 .  Esta  tercera  constatación,  nos  enfrentó  a  una  última  dificultad:  la  decisión  de   inscribir nuestro trabajo en una perspectiva que    no proponga,  a priori , categorías que resulten en  una valoración del referente empírico al cual nos   acercamos.  La  opción  ha  sido  tomar  distancia   de  este  tipo  de  acercamiento,  por  dos  motivos.   En  primer  lugar,  porque  el  hecho  de  anteponer   conceptos  que  impliquen  una  valoración  sobre   las  experiencias  y  sus  lógicas  puede  obturar  la   consideración de los múltiples elementos que se   articulan en la constitución de la identidad polí -  tica, cuestión que nos interesa particularmente a   partir de los interrogantes recién planteados. En   segundo  lugar,  porque  consideramos  que  en  el   desarrollo y el fortalecimiento de una comunica -   ción de carácter transformador el rol del campo   11   Vinelli,  Natalia,    La  televisión  desde  abajo,   Buenos  Aires, El río suena, 2014. 12  Mangone, Carlos, “Qué hay de nuevo viejo, alterna -  tividad y clases sociales”,  Cuadernos Críticos de Comu-  nicación  y  Cultura ,  1  (2005),  pp.  195-202  y  Pulleiro,  Adrián,    La radio alternativa en América Latina ,  Bue -  nos Aires, El río suena, 2012. \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   79 académico  debe  ser,  prioritariamente,  el  de  la   comprensión  de  un  campo  signado  por  la  com -   plejidad,  las  diferencias  y  las  tensiones.  Preferi -   mos  como  opción  político-epistemológica  que   el  modo  en  que  se  diriman  estas  diferencias  y   tensiones esté encabezado por las mismas expe -   riencias antes que por la más distante valoración   académica.  Hasta  aquí  nos  hemos  detenido  en  algunas  de   las  dificultades  que  encontramos  para  inscribir   nuestro  trabajo  de  investigación  en  el  campo   de  la  comunicación  comunitaria,  popular  y  al -   ternativa para acercarnos a perspectivas que no   se han ocupado de los medios de comunicación   que en este trabajo nos interesan. Esta búsque -  da  no  la  hacemos  en  soledad.  Si  bien  páginas   atrás señalamos que las trayectorias en torno a   la comunicación comunitaria, popular y alterna -   tiva desde el campo académico han estado más   cerca de las tareas de enseñanza y de extensión   que de las de investigación, en los últimos años   podemos constatar un incremento de la investi -   gación  sobre las radios  de este tipo.  Esto se ex -  presa, tal como detallaremos seguidamente, en   la culminación de diversas tesis de posgrado, las   primeras en Argentina, sobre la temática. Todas   ellas  comparten  el  interés  por  el  mismo  tema:   las radios comunitarias, populares y alternativas.   Asimismo,  tienen  en  común  el  compromiso  de   sus autores y autoras respecto del fortalecimien -  to  de  este  tipo  de  experiencias  como  condición   para democratizar las comunicaciones. Un breve   recorrido por estos trabajos nos llevó a concluir   que también otros investigadores e investigado -  ras decidieron enriquecer sus enfoques desde el   acercamiento  a  diversas  perspectivas  teóricas.   Fasano, en su Tesis Doctoral, se enfoca desde la   antropología  para  analizar  la  trayectoria  de  Ra -   dio Doña María de Paraná, Entre Ríos, entre los   años 1998 y 2008 13 . También Lizondo se acerca a  la antropología para analizar las diferencias y las   intersecciones entre la comunicación con identi -   dad y la comunicación comunitaria en su análisis   de la FM La Voz Indígena, de la localidad salteña    de Tartagal14 . Por su parte, Ramos se enfocó des -  13  Fasano, Patricia,  Cambio de estilo. Etnografía sobre   comunicación  comunitaria,  iglesia  católica,  cultura     popular, radio, política y participación en un barrio de   Argentina  (Tesis Doctoral), Río Grande Do Sul, Univer -  sidade Federal do Rio Grande Do Sul, 2011. 14   Lizondo,  Liliana,    Comunicación  con  identidad  o   comunicación  comunitaria.  El  caso  de  la  FM  La  Voz     Indígena  (Tesis de la Maestría), La Plata, Universidad  Nacional de La Plata, 2015. de  el  análisis  sociosemiótico  para  analizar  frag -   mentos  de  la  programación  de  tres  radios  que   se definen alternativas y que son protagonizadas   por  jóvenes  en  contextos  urbanos  de  Argenti -  na15 . Mientras que Iglesias asumió la perspectiva  de la economía política de la comunicación y la   cultura  para  analizar  “los  modelos  de  gestión  y   negocio  de  las  emisoras  sin  fines  de  lucro  den -   tro del mercado de medios audiovisuales argen -   tino  y  su  adecuación  frente  a  la  modificación   del marco regulatorio entre 2005 y 2015” 16� Por   último,  Gerbaldo  entrecruzó  los  estudios  cultu -  rales  latinoamericanos  con  la  filosofía  política  y   el  campo  de  la  comunicación/educación  en  su   investigación  sobre  las  luchas  por  democratizar   las comunicaciones de las radios nucleadas en el   Foro Argentino de Radios Comunitarias (FARCO)   durante el período 1980-201317 �  Nuestro  trabajo  dialoga  con  las  investigaciones   recién sintetizadas. Por un lado, tiene en común   con  ellas  el  referente  empírico.  También,  com -   parte el compromiso de los autores de contribuir   al proceso de democratización de las comunica -   ciones y al fortalecimiento del sector. Por último,   dialoga  en  el  intento  de  nutrir  la  investigación   y  la  reflexión  sobre  este  tipo  de  medios  desde   el acercamiento a otros enfoques teóricos, más   allá de lo que ha sido constituido como el campo   de la comunicación comunitaria, popular y alter -  nativa.  En  este  mapa  nuestro  aporte  específico   apunta  a  la  pregunta  por  la  constitución  de  la   identidad política de las radios, siendo el prime -   ro en nuestro país que aborda este interrogante   desde la perspectiva del análisis político del dis -  curso iniciado por Laclau y Mouffe.  No obstante, un rasgo nos ha diferenciado de las   indagaciones recién mencionadas. La mayoría de   ellas comienza, en sus primeras páginas, toman -  15   Ramos,  Pablo,    Travesías resistentes: estrategias y  prácticas alternativas en el discurso de las radios jó-  venes de Argentina  (Tesis Doctoral), Córdoba, Univer -  sidad Nacional de Córdoba, 2013. 16  Iglesias, Martín,  A contramano: modelos de gestión,  modos organizativos y estrategias económicas de las   emisoras comunitarias argentinas en búsqueda de la   sustentabilidad (2005-2015)  (Tesis de Maestría), Quil -  mes, Universidad Nacional de Quilmes, 2015, p. 14.17  Gerbaldo,  Judith,    Radios  Comunitarias,  Comuni -  cación  Popular  y  Ciudadanía.  Disputas  por  la  demo -  cratización de la palabra pública. El caso del Foro Ar- gentino de Radios Comunitarias –FARCO –  Argentina   (1980-2013)   (Tesis  de  la  Maestría),  Córdoba,  Centro  de Estudios Avanzados de la Universidad Nacional de   Córdoba, 2014. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-88 80  do  posición  sobre  el  modo  en  que  sus  autores   definen a la comunicación comunitaria o popular   o alternativa. O a los más específicos medios de   comunicación  de  este  tipo.  Y  en  esa  definición   tienden  a  inscribir,  y  por  tanto  a  comprender,  a   las radios. Nuestra investigación renunció a este   gesto  inicial  pues  su  propósito  ha  sido,  precisa -   mente, comprender las regularidades y las dife -   rencias, las continuidades y los desplazamientos   en los modos en que se han ido definiendo estas   emisoras  a  lo  largo  de  la  historia.  Desprovistos,   por decisión epistemológica, de estos posiciona -  mientos iniciales debimos salir a buscar un lugar   teórico desde donde comprender las lógicas que   operan en la constitución de las identidades po -  líticas. Fue, precisamente, la perspectiva del aná -   lisis del discurso iniciada por Laclau y Mouffe la   que facilitó un marco conceptual adecuado para   comprender estas lógicas.  Sintetizando,  preguntarnos  por  la  identidad  po -  lítica de las radios comunitarias, populares y al -  ternativas desde este enfoque teórico nos llevó a   centrar la atención en:  –  Las  condiciones  de  producción  que  inci -  dieron en la emergencia y en la constitución   de la identidad política de las emisoras.  –  Las relaciones de antagonismo que resul -  taron  constitutivas  de  la  identidad  política   de las radios y ante las cuales se configura -  ron relaciones de equivalencia.  –  Los    principales    significantes    que    ope -  raron  como  puntos  nodales,  y  eventual -  mente  como  significantes  vacíos,  capaces   de condensar la identidad de las emisoras.  –  Los  significados  y  demandas  articulados  en términos de regularidades a esos signifi -  cantes –o, dicho en otros términos, las huel -  las de la lógica de la equivalencia–.   –  Los  significados  y  demandas  que  per -  manecieron  como  momentos  diferenciales   –o,  también,  las  huellas  de  la  lógica  de  la   diferencia–.  –  Las  continuidades  y  desplazamientos  en  este conjunto de relaciones a lo largo de la   historia.  2. ANTES DE LA LEY (1983-2008)  Uno de los supuestos teóricos que orientó nues -  tra investigación puede sintetizarse del siguiente   modo:  la  identidad  política  de  las  radios  comu -  nitarias, populares y alternativas –como de toda   identidad política– es el resultado de la tensión   entre dos lógicas sociales, la lógica de la diferen -   cia  y  la  lógica  de  la  equivalencia.  Recuperamos   este  supuesto  para  subrayar  que  durante  los   años  comprendidos  entre  el  surgimiento  de  las   radios comunitarias, populares y alternativas en   los años ochenta y el momento en que el gobier -  no nacional decidió hacer propia la demanda por   una  nueva  ley  de  radiodifusión  de  carácter  de -   mocrático, la lógica de la equivalencia prevaleció   a la lógica de la diferencia en la configuración de   la identidad política colectiva de las radios comu -  nitarias,  populares  y  alternativas.  Veamos  con   más detalle en qué consistió este predominio de   la lógica de la equivalencia.  Los  significantes  “comunitarias”,  “populares”  y   “alternativas” con los que se nombraron predo -   minantemente  las  radios  no  tuvieron  su  origen   en  nuestro  país.  Por  el  contrario,  luego  de  la   vertiginosa  emergencia  de  las  emisoras  de  baja   potencia  en  Argentina  entre  mediados  y  fines   de  la  década  de  1980,  numerosas  experiencias   comenzaron a reflexionar sobre sus proyectos y   se fueron apropiando de nociones que ya tenían   sus  propias  trayectorias  en  otras  regiones  de   América  Latina:  Brasil,  Bolivia,  Colombia,  Ecua -   dor, Perú, Venezuela y Centroamérica. En esa ta -   rea jugaron un papel fundamental las estrategias   de las redes latinoamericanas de radios como la   Asociación Latinoamericana de Educación Radio -  fónica (ALER) y la Asociación Mundial de Radios   Comunitarias  (AMARC),  algunos  centros  de  co -   municación/educación con activo protagonismo   regional  como  el  ya  mencionado  CIESPAL  y  un   conjunto  de  intelectuales  dedicados  a  la  comu -  nicación    comunitaria,    popular    y/o    alternativa   que  habían  padecido  el  exilio  durante  los  años   de  la  última  dictadura  cívico  militar.  Entre  las   condiciones de emergencia de cada uno de estos   significantes  identificamos  diferentes  orígenes   institucionales,  perspectivas  teóricas  y  énfasis   en las lecturas acerca de los contextos sociopo -  líticos en que fueron fundados. No obstante, los   significantes  “comunitarias”,  “populares”  y  “al -   ternativas”     fueron  reapropiados  por  las  emiso -  ras argentinas como equivalentes –que no es lo   mismo que iguales. De acuerdo con lo analizado   en  la  propia  investigación,  estas  equivalencias   tuvieron continuidad hasta marzo de 2008.  Como  observamos  a  partir  del  análisis  del    cor -  pus  con el que hemos trabajado, a lo largo de los   veinticinco  años  de  historia  recorridos  en  este   primer período, podemos reconocer diversos in - \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   81  tentos  por  delimitar  y  precisar  las  nociones  de   radio  comunitaria,  de  radio  popular  y  de  radio   alternativa 18 . Si bien estos intentos no fueron va -  nos, pues alimentaron la reflexión y la búsqueda   de identidad de muchos proyectos, ninguno tuvo   como resultado que gran parte de las experien -   cias se apropiara o se identificara con alguno de   los  conceptos  en  detrimento  de  los  otros.  Más   que en el éxito o en el fracaso de la delimitación   conceptual, debemos encontrar la explicación a   este resultado en el funcionamiento de la lógica   de la equivalencia.  El  trazado  de  un  antagonismo  resultó  constitu -  tivo de la identidad política de las radios comu -  nitarias, populares y alternativas, como de toda   identidad política. Durante más de 25 años, este   antagonismo  estuvo  constituido  por  la  articula -   ción  entre  el  sistema  de  medios  hegemónico  y   los  sucesivos  gobiernos  nacionales 19 .  Fue  ante  este  antagonismo  que  las  emisoras  se  articula -   ron  como  equivalentes.  Las  radios  configura -   ron  su  identidad  en  oposición  a  un  sistema  de   medios    conformado    predominantemente    por   empresas  orientadas  por  el  fin  de  lucro,  cre -   cientemente concentradas y más colaboradoras   con  la  legitimación  del  orden  social  que  con  su   crítica  y  transformación.  Asimismo,  los  sucesi -   vos gobiernos nacionales fueron explícitamente   cuestionados y confrontados por sus políticas de   comunicación  orientadas  a  facilitar  la  privatiza -   ción,  la  concentración  y  la  transnacionalización   de  este  sistema  de  medios.  En  otras  palabras,   el  poder  político  mantuvo,  entre  1983  y  2008,   relaciones  de  alianza,  complicidad  o  subordina -  ción  respecto  de  las  empresas  mediáticas  más   poderosas del país. Esto se expresó en la vigen -   cia de la Ley 22.285 de Radiodifusión decretada   por la última dictadura cívico militar en 1980, en   sus sucesivas modificaciones, en la dilación de la   sanción  de  una  nueva  norma  que  regulara  de -   mocráticamente los servicios audiovisuales y en   la situación de ilegalidad o precaria legalidad que   padecieron todas las emisoras comunitarias, po -  18  Un ejemplo ilustrativo en este sentido es el artículo  de  María  Cristina  Mata,  “¿Radio  popular  o  comuni -  taria?”. Ver: Mata, María Cristina, “¿Radio popular o   comunitaria?”,  Chasqui , 47 (1993), pp. 57-59. 19  Luego de la recuperación de la democracia, en Ar -  gentina  se  sucedieron  los  siguientes  presidentes  al   frente  del  gobierno  nacional:  Raúl  Alfonsín  (1983-  1989),  Carlos  Menem  (1989-1999),  Fernando  De  La   Rúa    (1999-2001),    Eduardo    Duhalde    (2001-2003),   Néstor  Kirchner  (2003-2007),  Cristina  Fernández  de   Kirchner  (2007-2015),  Mauricio  Macri  (2015-2019)  y   Alberto Fernández (2019 y continúa). pulares y alternativas. Frente a esta articulación   entre medios concentrados y gobiernos naciona -  les las radios se constituyeron en unidad de rup -   tura.  Como  consecuencia,  la  demanda  de  una   ley de radiodifusión democrática se convirtió en   articuladora del conjunto de emisoras 20�  El  antagonismo  que  acabamos  de  sintetizar  su -   frió sutiles variaciones a lo largo de las tres eta -   pas en las que subdividimos el período previo a   la  LSCA.  Entre  mediados  de  los  años  ochenta  y   fines  de  1989  el  principal  antagonismo  que  fa -   cilitó la construcción de equivalencias se centró   en  la  confrontación  con  un  sistema  de  medios   caracterizado por la homogenización, la falta de   pluralidad  y  la  verticalidad.  La  democratización   de las comunicaciones y, con ello, la democrati -   zación de la sociedad en su conjunto, se convir -  tieron  en  demandas  compartidas  por  las  radios   comunitarias, populares y alternativas de cara a   un gobierno nacional que no transformó sustan -   tivamente  las  políticas  de  comunicación  here -   dadas de la última dictadura cívico militar, a ex -  cepción de la intervención del Comité Federal de   Radiodifusión (COMFER) y la sanción del Decreto   1.151/84  que  suspendió  el  llamado  a  concurso   para  el  otorgamiento  de  nuevas  licencias  hasta   la sanción de una nueva ley.  Iniciada  la  década  neoliberal,  cuyo  comienzo   a  nivel  nacional  fijamos  en  1989  a  partir  de  la   asunción del gobierno de Carlos Menem, el prin -  cipal antagonismo que facilitó la construcción de   equivalencias no se focalizó tanto en un sistema   de  medios  de  comunicación  cada  vez  más  con -  centrado sino que se amplió e incluyó al conjun -  to  de  las  políticas  de  corte  neoliberal  en  todas   las esferas de lo social, implementadas por el go -   bierno de Carlos Menem en alianza con el capital   financiero  y  transnacional  y  con  los  medios  de   comunicación hegemónicos. De lo que se trata -   ba era de resistir al neoliberalismo.  En  estos  contextos  los  significantes  “radio  co -  munitaria”, “radio popular” y “radio alternativa”   operaron  como  puntos  nodales  y  significantes   vacíos capaces de condensar múltiples y diferen -   tes significados a lo largo de los veinticinco años   abordados previamente a la LSCA. No es la pre -   cisa  definición  de  cada  uno  de  estos  conceptos   20   Las  expresiones  que  nos  permiten  sostener  esta  conclusión y que surgen de las publicaciones que han   conformado nuestro  corpus  de análisis pueden leerse  con  más  detalle  en  Kejval,  Larisa,    Libertad  de  ante -  na... , op. cit. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-88 82  lo  que  ha  hecho  posible  esta  operación  sino  su   relativa ambigüedad.  Una serie de regularidades y continuidades entre   los significados ligados a las radios comunitarias,   populares  y  alternativas  se  sostuvieron  durante   el primer período en que dividimos nuestro  cor -  pus :  el  horizonte  de  contribuir  a  la  transforma -   ción de las estructuras sociales o formas de vida   injustas  a  partir  de  proyectos  de  comunicación,   la ausencia de fin de lucro, la propiedad colectiva   del medio, la participación como idea fuerza, la   valoración de la acción colectiva frente al resque -   brajamiento del tejido social consecuencia de la   dictadura y de la lógica individualizante del neo -   liberalismo, la tarea política de promover la arti -   culación de las disputas en sociedades fragmen -  tadas, la construcción de relaciones dialógicas o   menos asimétricas entre emisores y receptores,   la pretensión de incidir en la disputa de las agen -   das mediáticas y en la opinión pública, el desafío   de ampliar los públicos más allá de los límites de   los círculos afines a los proyectos y de construir   mayores  niveles  de  masividad,  la  búsqueda  por   transformar los códigos y lenguajes que regulan   las formas dominantes de comunicar a través de   los medios masivos, la intención de construir for -  mas de gestión colectivas, democráticas y parti -   cipativas  capaces  de  lograr  los  objetivos  de  las   radios y su sostenibilidad a lo largo del tiempo.  Pero también, las diferencias entre los significa -  dos atribuidos a las radios comunitarias, popula -  res y alternativas entendidas como configuración   discursiva. Si ensayamos una mirada abarcadora   sobre el período que inicia en 1983 y que finaliza   en  2008,  podemos  concluir  que  las  principales   diferencias quedaron expresadas en el modo en   que las publicaciones analizadas comprendieron   las  desigualdades  y  los  conflictos  sociales,  los   procesos  de  transformación,  los  actores  prota -   gonistas o motores de estos procesos, el rol del   Estado y, fundamentalmente, el estatuto dado a   la  comunicación  y  a  los  medios  en  los  procesos   de transformación social. A pesar de estas dife -   rencias, y tal como venimos sosteniendo, las ra -   dios comunitarias, populares y alternativas cons -  tituyeron una totalidad equivalencial.  3. ANTE LA LEY (2008-2015)  En  nuestra  investigación  asumimos  la  decisión   teórica  de  no  concebir  a  las  radios  comunita -  rias,  populares  y  alternativas  como  un  dato  de   la estructura social o un grupo social dado, sino   como  una  totalidad  –o  una  identidad  política  colectiva– que ha sido instituida a partir de una   pluralidad de demandas y elementos relaciona -  dos entre sí. El análisis desplegado nos permitió   constatar  que  fue,  precisamente,  la  sanción  de   una  ley  que  regulara  democráticamente  la  ra -   diodifusión y que las incluyera como sujetos de   plenos derechos, en pos de democratizar las co -   municaciones, una de las principales demandas   compartidas y articuladoras de las radios duran -   te más de 25 años. La sanción de la nueva norma   en  octubre  de  2009  significó,  precisamente,  la   institucionalización de esa demanda en el marco   jurídico estatal argentino 21�  De  ahí  que  la  hipótesis  a  partir  de  la  cual  des -   plegamos nuestra investigación fuera sintetizada   en los siguientes términos: la nueva LSCA no sólo   enfrentó  a  las  radios  comunitarias,  populares   y  alternativas  a  una  nueva  situación  legal,  sino   también  a la  reconfiguración  de las  significacio -  nes que las dotaron de identidad. ¿En qué con -  sistió esta reconfiguración de las identidades po -  líticas de las emisoras?  Toda  frontera  social  es  ambigua  e  inestable  y   puede  sufrir  desplazamientos.  Dicho  en  otros   términos, el antagonismo es el resultado de una   construcción discursiva y, como tal, es de carác -   ter polisémico. De este modo, nos enfrentamos   a  la  imposibilidad  de  fijación  última  del  sentido   de toda lucha. De ahí que la disputa política sea   una relación en el que la identidad de las fuerzas   enfrentadas no está fijada de antemano. A partir   de  aquí,  concluimos  que  la  decisión  del  gobier -  no nacional de impulsar la sanción de la LSCA o,   dicho  en  los  términos  que  utilizamos  más  arri -   ba, la institucionalización de la demanda por de -   mocratizar  las  comunicaciones,  tuvieron  como   consecuencia  la  desarticulación  del  antagonis -  mo  frente  al  cual  las  radios  habían  constituido   equivalencias y rasgos compartidos. La identidad   de  las  emisoras  continuó  siendo  definida  por   oposición  a  los  medios  de  comunicación  orien -   tados por el fin de lucro y concentrados. Es de -   cir, este punto de antagonismo tuvo continuidad   entre los dos períodos analizados. No obstante,   lo que se dejó de compartir fue el antagonismo   o  la  confrontación  respecto  de  las  políticas  de   comunicación y otras políticas públicas impulsa -  21  Entre las publicaciones que analizan el proceso de  sanción y los contenidos de la LSCA puede consultarse   Baranchuk, Mariana y Rodríguez Usé, Javier (coord.),    Ley 26.522. Hacia un nuevo paradigma en comunica-   ción  audiovisual ,  Buenos  Aires,  AFSCA  y  Universidad  de Lomas de Zamora, 2011. \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   83  das  por  el  gobierno  nacional.  Mientras  algunas   concepciones continuaron antagonizando con el   Estado y su gobierno, otras vieron en el gobierno   de  Cristina  Fernández  una  alianza  para  avanzar   en  la  confrontación  respecto  de  la  concentra -   ción  mediática 22 .  La  desarticulación  de  este  an -  tagonismo  tuvo  como  correlato  un  proceso  de   diferenciación de la identidad política de las emi -   soras.  Es  decir,  si  durante  el  período  anterior  la   lógica  de  la  equivalencia  había  prevalecido  a  la   lógica  de  la  diferencia  en  la  configuración  de  la   identidad  política  colectiva  de  las  radios  comu -  nitarias, populares y alternativas; nos encontra -   mos ahora ante la prevalencia de la lógica de la   diferencia por sobre la de la equivalencia.  Con  todo  esto,  podemos  concluir  que  las  dis -  persiones,  debates  y  tensiones  que  estuvieron   relativamente  latentes  durante  más  de  veinti -   cinco años se profundizaron y se radicalizaron a   partir de 2008, una vez que el gobierno nacional   extremó su enfrentamiento con algunos grupos   concentrados  de  medios  de  comunicación,  hizo   propia la necesidad de una nueva ley en materia   de  radiodifusión  de  carácter  democrático,  mo -   torizó  debates  públicos  al  respecto,  sancionó  la   LSCA  y  comenzó  paulatinamente  su  implemen -  tación.  Es  decir,  una  vez  que  se  resquebrajó  la   relación de alianza o subordinación entre poder   político  y  grupos  mediáticos,  frente  al  cual  las   radios habían establecido equivalencias y articu -   laciones. El origen de estas diferencias no radica   en la sanción de la nueva norma. Utilizando una   metáfora propia de la química, podemos pensar   que la LSCA actuó como un catalizador. Es decir,   podemos ubicar el origen de estas diferencias en   las trayectorias y tradiciones políticas que histó -   ricamente han confluido y han estado presentes   en las radios. Lo que la sanción y aplicación de la   LSCA catalizó fue la manifestación más evidente   de estas diferencias o dispersiones.  Este  privilegio  de  la  lógica  de  la  diferencia  se   expresó  en  seis  procesos  de  diferenciación:  las   diferentes  valoraciones  que  merecieron  los  go -   biernos kirchneristas; las distintas concepciones   22  Este contraste se puede apreciar en la comparación  entre las publicaciones editadas por el Foro Argentino   de Radios Comunitarias y la Red Nacional de Medios   Alternativos: Busso, Néstor, y Jaimes, Diego,  La cocina  de  la  ley.  El  proceso  de  incidencia  en  la  elaboración    de  la  Ley  de  Servicios  de  Comunicación  Audiovisual     en Argentina,  Buenos Aires, FARCO, 2011 y RNMA,  La  nueva  Ley  de  Servicios  de  Comunicación  Audiovisual     y los medios comunitarios, alternativos y populares,     Buenos Aires, RNMA, 2013. acerca del Estado; las diferentes posiciones que   las  redes  de  emisoras  asumieron  frente  al  pro -   ceso  de  elaboración,  debate,  sanción  y  aplica -   ción  de  la  LSCA;  la  diferenciación  de  los  signifi -  cantes  que  habían  nombrado  a  las  emisoras;  la   emergencia  de  nuevos  significantes  capaces  de   estructurar  la  identidad  de  las  radios;  y  el  sur -  gimiento  de  nuevas  redes  articuladoras  de  las   emisoras.  En primer lugar, el accionar de los gobiernos de   Néstor Kirchner, retrospectivamente, y el de Cris -   tina  Fernández,  contemporáneamente,  comen -   zaron a ser valorados de manera diferente por las   diversas  publicaciones  analizadas.  Por  un  lado,   algunas  consideraron  positivamente  el  accionar   del  gobierno  por  recuperar  la  iniciativa  política   para  conducir  el  país,  por  revitalizar  las  institu -   ciones  democráticas  y  de  participación  política;   por  hacer  propias  e  institucionalizar  demandas   históricas  de  movimientos  y  organizaciones  po -  pulares;  y  por  fortalecer  el  rol  del  Estado  en  su   capacidad  de  garantizar  y  ampliar  derechos.  En   este contexto la sanción de la LSCA fue compren -   dida  como  un  hito  en  el  complejo  y  conflictivo   proceso  de  democratizar  las  comunicaciones  y   en el más amplio proceso de democratización de   la sociedad en su conjunto. Por otro lado, algu -  nas  publicaciones  evitaron  las  caracterizaciones   generales sobre el tiempo histórico contemporá -   neo.  En  su  lugar  dirigieron  críticas  a  específicas   políticas  y acciones  de  los  gobiernos  kirchneris -   tas, sin  ahondar  en  caracterizaciones  más  abar -  cativas. Por último, frente a esta polarización, al -   gunas publicaciones asumieron el rol de brindar   información precisa y de desarrollar argumentos   sólidos  para  valorar  positivamente  o  para  cues -   tionar  acciones  o  políticas  públicas  determina -   das, según su contenido. Es decir, dieron cuenta   de  los  proyectos  político-comunicacionales  de   las  radios  sin  sugerir  adhesión  o  confrontación   respecto del gobierno nacional y su proyecto de   país.  En segundo lugar, las distintas valoraciones acer -  ca    de    los    gobiernos    kirchneristas    estuvieron   ligadas  a  la  puesta  en  evidencia  de  las  diferen -   tes  concepciones  acerca  del  Estado.  Durante  el   período  anterior  las  radios  comunitarias,  popu -  lares y alternativas, junto con sus redes, habían   confrontado  con  el  Estado  por  facilitar  los  pro -   cesos de privatización, concentración y transna -  cionalización de los medios de comunicación. A   diferencia de aquellos años, en el nuevo período   comenzaron a ponerse en escena concepciones   divergentes sobre el modo en que se compren - \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-88 84  dieron  las  relaciones  de  las  emisoras  con  el  Es -  tado. Por un lado, aún a pesar de las disputas o   tensiones  que  lo  atraviesan,  el  Estado  fue  con -  cebido como espacio estratégico para motorizar   procesos de ampliación de derechos y de trans -   formación social. Por lo tanto, ocupar lugares en   la estructura estatal o generar articulaciones con   el Estado a través del desarrollo de políticas pú -  blicas fueron considerados estratégicos. Por otro   lado,  el  Estado  continuó  siendo  comprendido   desde  su  funcionalidad  o  articulación  respecto   de  los  intereses  dominantes  de  la  sociedad.  En   este sentido, fue cuestionado por procurar licuar   la potencia disruptiva o confrontativa de las emi -   soras, a través del establecimiento de exigencias   para  adecuarse  a  la  legalidad  reconocida  en  la   LSCA. Por último, también se recurrió a la noción   de  autonomía  para  comprender  las  relaciones   de las radios con el Estado. Autonomía significó   asumir una actitud de discernimiento para discri -  minar  con  cuáles  políticas  públicas  motorizadas   desde el Estado tener un rol de acompañamien -  to, participación o articulación; y con cuáles una   actitud de cuestionamiento fundamentado.  En tercer lugar, las redes de radios comunitarias,   populares y alternativas asumieron distintas po -  siciones  en  el  proceso  de  debate,  elaboración,   sanción y paulatina aplicación de la LSCA. Si, du -  rante el período anterior todas las redes habían   coincidido en demandar al Estado una nueva le -   gislación en la materia, la voluntad del gobierno   nacional  de  avanzar  en  este  sentido  disparó  las   diferencias.  Los  posicionamientos  del  Foro  Ar -  gentino  de  Radios  Comunitaria  (FARCO)  y  de  la   Red Nacional de Medios Alternativos (RNMA) –y   con ellos los de decenas de radios comunitarias,   populares y alternativas– fueron polares. Por un   lado,  FARCO  asumió  la  ley  como  una  conquista   propia. En este sentido, se propuso articular con   el Estado y diversos organismos gubernamenta -   les  para  incidir  en  la  aplicación  de  la  ley  enten -   dida como construcción. Por otro lado, la RNMA   priorizó el rol de la demanda y la confrontación   con  el  gobierno  nacional  y  el  Estado.  Por  un   lado,  FARCO  caracterizó  el  escenario  posterior   a la sanción de la nueva ley como propicio para   la  construcción  de  políticas  públicas  orientadas   a  la  democratización  de  las  comunicaciones.  El   principal  blanco  de  sus  ataques  fueron  los  gru -   pos  concentrados  de  medios.  Por  otro  lado,  la   RNMA  configuró  escenarios  caracterizados  por   el conflicto y la amenaza a los medios comunita -   rios, populares y alternativos. El principal centro   de sus críticas fue el gobierno nacional en tanto  conducción  del  Estado  –aunque  esto  no  supu -  siera  desconocer  la  concentración  de  las  comu -  nicaciones. Frente a esta polarización, la Asocia -   ción Mundial de Radios Comunitarias-Argentina   (AMARC-Arg)  procuró  asumir  una  posición  pro -   pia caracterizada por el apoyo a las políticas pú -  blicas orientadas a la democratización de las co -   municaciones, pero con la suficiente autonomía   respecto del gobierno nacional y del Estado para   continuar demandando ante las contradicciones   del  propio  Estado.  La  comunicación  entendida   como derecho humano y la democratización de   las comunicaciones como condición de la demo -   cratización  de  las  sociedades  asumieron  para   AMARC  el  estatuto  de  proyecto  político,  inde -  pendientemente  de  otras  valoraciones  políticas   respecto del gobierno nacional.  En  cuarto  lugar,  si  durante  el  período  anterior   los  significantes  “comunitarias”,  “populares”  y   “alternativas”  habían  sido,  predominantemen -  te, utilizados como equivalentes para nombrar y   dotar  de  identidad  colectiva  a  las  radios,  en  el   nuevo  período  identificamos  la  erosión  de  las   equivalencias en los modos de nombrar. Si bien   estas  tres  nociones  continuaron  nombrando  de   modo general a las emisoras, algunas publicacio -  nes  comenzaron  a  privilegiar  unos  significantes   sobre otros.  De  este  modo,  lo  popular  fue  actualizado  con   una  fuerza  creciente.  Esto  tiene su  correlato  en   la  revitalización  de  la  categoría  sociopolítica  de   pueblo para nombrar a sujetos políticos en una   dinámica de transformación social, con el forta -   lecimiento de los grandes relatos políticos dado -  res de identidad y con el renovado protagonismo   de  las  agrupaciones  y  de  los  partidos  políticos   como  espacios  para  vehiculizar  la  participación   política. Pero también, lo popular fue disputado   desde  posiciones  y  perspectivas  distintas:  por   un  lado,  por  quienes  valoraron  positivamente   el  proyecto  nacional  y  popular  conducido  por   el  kirchnerismo;  por  otro  lado,  por  quienes  avi -   zoraron  en  la  construcción  de  poder  popular  la   capacidad  de  las  organizaciones  y  movimientos   para construir tramas de poder alternativo en un   momento  histórico  en  el  que  el  choque  frontal   con el Estado no es posible.  Por otra parte, la noción de radio o de comuni -  cación  alternativa  fue  circunscribiendo  su  pre -  sencia. Si bien continuó identificando con fuerza   algunos proyectos y perspectivas, su ausencia es   elocuente  en  otras  publicaciones.  En  este  sen -   tido,  lo  alternativo  continuó  nombrando  a  las  \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   85  radios  y  perspectivas  de  comunicación  que  se   reconocieron  ligadas  explícitamente  a  posicio -  nes políticas de izquierda y que confrontaron, en   mayor  o  menor  medida,  con  los  gobiernos  na -   cionales de Néstor Kirchner y Cristina Fernández.   Pero fue crecientemente abandonado por quie -  nes  acompañaron  o  adhirieron  al  denominado   proyecto  nacional  y  popular  conducido  por  el   kirchnerismo.  A su vez, la noción de radio comunitaria perma -  neció  vigente  en  su  capacidad  de  nombrar  al   conjunto  de  las  experiencias.  Ligada  a  los  signi -  ficados  de  “construir  en  común”  y  de  “compar -  tir”,  no  resultó  especialmente  enfatizada.  No   obstante, en un contexto en el que la noción de   territorio emergió con fuerza en el desarrollo de   políticas públicas, lo comunitario permitió aludir   más explícitamente y con mayor contundencia a   esta idea.  En quinto lugar, el proceso de diferenciación que   venimos sintetizando se expresó en la emergen -   cia de nuevos significantes capaces de estructurar   la identidad de las radios. Emisoras que durante   el período anterior habían sido contenidas en los   significantes  “radio  comunitaria”,  “radio  popu -  lar” o “radio alternativa”   enfatizaron otros signi -  ficantes  para  ser  nombradas.  Radios  cooperati -   vas y radios indígenas resultaron los emergentes   más sobresalientes. Desde la perspectiva teórica   que asumimos en esta investigación, interpreta -   mos  que  la  emergencia  de  nuevos  significantes   no  necesariamente  se  corresponde  con  claras   delimitaciones conceptuales entre los términos.   En  su  lugar,  comprendemos  que  durante  déca -   das  los  significantes  “comunitario”,  “popular”  y   “alternativo”  permitieron  articular  a  un  conjun -  to amplio y diverso de actores que luchaban por   el reconocimiento y el ejercicio de sus derechos   comunicacionales  en  sociedades  mediatizadas.   Una vez que estas demandas comenzaron a ser   reconocidas  por  el  Estado,  una  vez  que  comen -   zaron a institucionalizarse en el marco jurídico o   a través de políticas públicas, se acentuó el pro -   ceso  de  diferenciación  de  estos  actores.  Como   consecuencia, emergieron las nuevas formas de   identificación y de nominación en el espacio pú -  blico. De ahí que nuestro interés no radique en la   pregunta  por  los  límites  conceptuales  entre  los   términos, sino por los significados que los modos   de nombrar permiten acentuar.  Por  un  lado,  en  el  contexto  de  despliegue  de   políticas  de  comunicación  desde  el  movimiento   cooperativo y de la economía solidaria, algunas  emisoras comenzaron a hacer propia o a enfati -   zar  la  noción  de  cooperativa.  De  este  modo,  lo   que quedó acentuado fue la relevancia que fue   asumiendo  la  cuestión  de  la  sostenibilidad  o  la   dimensión  económica  de  los  proyectos  de  las   radios.  En  contraposición  a  las  tendencias  pre -   dominantes durante el período anterior, el nue -   vo énfasis en la noción de cooperativa permitió   acentuar la centralidad otorgada al trabajo, a la   producción de valor y a la cooperación con otras   cooperativas. Permitió proyectar a las radios en   el marco de la construcción de economías solida -  rias alternativas a las de mercado 23�  Por otro lado, a partir del debate del anteproyec -  to  de  la  LSCA  emergieron  con  fuerza  los  signifi -  cantes de radio indígena y de comunicación con   identidad, como un gesto de clara diferenciación   de las radios comunitarias, populares y alterna -   tivas.  Si  bien  en  Argentina  la  emergencia  de  ra -   dios  gestionadas  por  pueblos  originarios  tenía   una trayectoria previa a la sanción de la LSCA, de   lo  que  se  trataba  ahora  era  de  distinguir  a  este   tipo de medios respecto de la más amplia comu -  nicación  comunitaria,  popular  y  alternativa.  Las   nociones  de  radio  indígena  y  de  comunicación   con identidad permitieron acentuar la visibilidad   de los pueblos originarios en el espacio público   “massmeditazado”;  la  expresión  y  la  recupera -   ción  de  sus  propias  lenguas,  sus  saberes  y  sus   cosmovisiones; las luchas por la recuperación de   sus tierras; y sus procesos organizativos. Aunque   de  manera  más  incipiente,  también  otros  signi -  ficantes,  además  de  los  de  radio  cooperativa  y   radio  indígena,  fueron  utilizados  para  nombrar   a  las  emisoras  que  históricamente  habían  sido   nombradas  como  comunitarias,  populares  y  al -   ternativas: los de radio campesina, radio rural y   radio villera.  En sexto lugar, y por último, el proceso de dife -  renciación  de  la  identidad  política  de  las  radios   tuvo  su  correspondencia  en  el  surgimiento  de   nuevas redes articuladoras de las emisoras. Des -   de su surgimiento en los años ochenta las radios   se habían articulado en redes de medios de co -   municación,  así  como  en  redes  junto  con  otro   tipo de organizaciones. Más aún, históricamente   la articulación en red fue considerada acción es -   tratégica  de  los  proyectos  comunicacionales  de   23  Esto se expresa en forma elocuente en el libro en el  que FM En Tránsito relata sus propios 25 años de his -  toria:  Cooperativa  de  Trabajo  para  la  Comunicación   Social – FM En Tránsito,  Retumba. Historias de una ra -  dio comunitaria,  Castelar, Gráfica Cooperativa, 2012. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-88 86  las emisoras en pos de la construcción de fuerzas   sociales o políticas de creciente incidencia. Una   vez  sancionada  la  nueva  ley,  la  construcción  en   red emergió con una renovada potencia para in -  cidir en la efectiva reconfiguración del mapa co -   municacional, para la interlocución con el Estado   en el proceso de aplicación de la norma y para la   implementación de políticas públicas que forta -   lecieran a las emisoras. No obstante, las redes ya   existentes  fueron  diferenciando  sus  posiciones   políticas respecto de la LSCA, del gobierno nacio -  nal y del Estado. Además, de manera incipiente   fueron surgiendo nuevas redes. Algunas de ellas   se    expresaron    en    nuevas    institucionalidades   que  coexistieron,  en  un  mapa  de  múltiples  im -   bricaciones,  junto  con  las  más  antiguas  FARCO,   AMARC y RNMA 24�  El  proceso  de  diferenciación  que  hemos  sinte -   tizado  hasta  aquí  no  fue  total,  ni  completo.  Si   bien  la  democratización  de  las  comunicaciones   dejó  de  expresarse  en  los  términos  de  la  nece -  sidad  de  sancionar  una  nueva  ley  que  regulara   los  servicios  audiovisuales,  estaba  lejos  de  ser   un  proceso  acabado.  La  persistencia  del  anta -   gonismo respecto de los medios concentrados y   orientados por el fin de lucro continuaba tornan -  do  a  las  emisoras  como  equivalentes.  La  LSCA   fue concebida un punto de inflexión en un mapa   mediático que continuaba estando marcado por   la desigualdad de los actores en disputa. De ahí   que, si bien la lógica de la diferencia fue prepon -  derante respecto de la lógica de la equivalencia,   las radios comunitarias, populares y alternativas   continuaron    constituyendo    una    configuración   discursiva. La persistencia de la lógica de la equi -  valencia nos permite comprender cómo, en oca -   siones, las radios continuaron siendo nombradas   por diversos significantes al mismo tiempo. Esto   es, el uso simultáneo de los calificativos “comu -  nitarias”,  “populares”  y  “alternativas”     nos  sigue  hablando de una configuración que, pese al pre -   dominio  de  la  lógica  de  la  diferencia,  continuó   constituyendo una totalidad.  Lo anterior también nos permite entender que,   luego de la sanción de la LSCA, la identidad polí -  24   La  Red  Colmena  que  nuclea  a  medios  de  comu -  nicación    gestionados    por    cooperativas    de    trabajo   y  las  siguientes  redes  regionales  son  algunos  de  los   ejemplos  en  este  sentido:  Unión  de  Comunicadores   Audiovisuales  y  Afines  de  La  Matanza  (UCAYA),  Red   de  Comunicadores  Regionales  de  Punilla  (Recorre),   Colectivo  de  Medios  Comunitarios  de  Cuyo  (COME -  CUCO), Red de Comunicación Comunitaria, Pública y   Popular de Avellaneda (RECOPPA). tica de las radios comunitarias, populares y alter -  nativas no sólo estuvo signada por la dispersión.   A lo largo de nuestra investigación hemos iden -  tificado  que  las  emisoras  acentuaron  algunas   significaciones  o  demandas  comunes.  Es  preci -   samente, la confrontación respecto de un siste -   ma de medios concentrado, lo que nos permite   comprenderlas. Si a partir del 10 de octubre de   2009 la sanción de una nueva ley que regulara a   los servicios de comunicación audiovisuales dejó   de ser una de las principales demandas articula -   doras de las radios; en su lugar fueron tomando   forma  otras  demandas  compartidas:  la  plena  y   efectiva legalidad; el desarrollo de políticas para   contribuir  a  la  sostenibilidad  económica  de  las   emisoras,  sea  a  través  de  lo  previsto  por  la  ley,   sea  a  través  de  nuevas  iniciativas;  el  fortaleci -   miento  tecnológico  para  enfrentar  el  obstáculo   de  la  precariedad  técnica  y  para  profundizar  su   capacidad  de  incidencia;  y  la  multiplicación  de   los  emisores  como  camino  para  profundizar  la   democratización    de    las    comunicaciones.    Este   conjunto  de  demandas,  formuladas  fundamen -  talmente de cara al Estado –independientemen -  te de cómo el Estado fuera concebido– tornaron   a las radios equivalentes.  Finalmente, la persistente oscilación entre la ló -  gica  de  la  equivalencia  y  la  lógica  de  la  diferen -  cia  ubicó  a  las  radios  comunitarias,  populares   y  alternativa  frente  a  una  tensión:  por  un  lado,   reconocerse  como  sector  o  movimiento  comu -  nicacional con características propias dentro del   mapa comunicacional y articularse en torno a un   conjunto  de  demandas  compartidas  de  cara  al   Estado y a sus gobiernos; por otro lado, recono -  cerse  como  integrantes  de  proyectos  políticos,   más  allá  de  su  especificidad  comunicacional  o   radiofónica,  diferentes.  Y,  desde  este  reconoci -  miento,    posicionarse    divergentemente    frente   al  Estado  y,  más  particularmente,  frente  al  go -   bierno  nacional.  Durante  los  años  ochenta,  los   noventa y los primeros años del nuevo siglo, las   radios  se  habían  erigido  en  espacios  de  partici -   pación política en un contexto de erosión de las   filiaciones  políticas  tradicionales.  La  revitaliza -   ción de los partidos políticos, la restitución de la   iniciativa  política  de  los  gobiernos  kirchneristas   a  través  de  la  conducción  del  Estado  y  las  dife -   rentes  valoraciones  acerca  de  estos  gobiernos   ubicaron a las radios frente a la tensión de pro -   yectarse  –o  ser  proyectadas–  como  medios  de   comunicación  alineados  con  agrupaciones  polí -  ticas que desbordan el accionar comunicacional.   O bien, proyectarse como medios de comunica - \nLarisa Kejval   La identidad política de las radios comunitarias  ©  Historia Actual Online , 54 (1), 2021: 75-88   87 ción que, aun estando orientadas por proyectos   político-comunicacionales,    permiten    expresar,   contener e incluso articular diferentes filiaciones   políticas.  Dicho  en  otras  palabras,  seguir  dando   vida a espacios públicos mediatizados no alinea -  dos  ni  normativizados  por  una  institucionalidad   política  por  fuera  de  la  dinámica  de  las  mismas   emisoras.  4. SERÁN LOS DÍAS MÁS FELICES...   “Serán los días más felices que puedas tú vivir”.   Así reza el estribillo de “Tengo”, el tema musical   de Sandro, cantante argentino. Recurro a la cita   de una canción popular al cierre de este artícu -   lo  como  una  licencia.  Lejos  del  romanticismo  al   que  literalmente  refiere  la  canción,  los  dos  ver -  sos  resonaron  en  mi  mente  con  una  frecuencia   involuntaria luego del 10 de diciembre de 2015.   Por  algún  motivo  incierto  se  transformaron  en   la silenciosa banda de sonido que me recordaba   que el tiempo histórico que estaba concluyendo   fue mucho más dichoso y prometedor que el que   estaba  comenzando.  Precisamente,  el  cierre  de   nuestra  investigación  coincidió  con  la  finaliza -   ción de una etapa política y el inicio de otra sig -   nada por el desmantelamiento de la LSCA y por   la  implementación  de  un  conjunto  de  políticas   de  comunicación  regresivas  respecto  del  ejerci -   cio del derecho a la comunicación. Coincide con   el inicio de un gobierno que, a pocos días de asu -   mir,  ejecutó  una  serie  de  medidas  económicas   que tuvieron como consecuencia la rápida trans -   ferencia de recursos económicos de los sectores   populares  a  las  clases  dominantes,  fundamen -  talmente al capital agroexportador y financiero.   Más específicamente, a poco de iniciar su man -   dato  en  diciembre  de  2015,  el  gobierno  nacio -  nal  de  Mauricio  Macri  introdujo  cambios  en  la   regulación de las comunicaciones e implementó   políticas  macroeconómicas,  laborales,  educati -   vas  y  culturales  que  han  impactado  regresiva -   mente en el ejercicio de los derechos comunica -   cionales.  Las  nuevas  políticas  se  fundan  en  una   maximización de la concepción de la comunica -   ción como mercancía, marginando al paradigma   de  los  derechos  humanos  y  la  preservación  de   la  diversidad  cultural.  El  cambio  en  materia  de   políticas  comunicacionales  no  es  menor.  Todas   las  medidas  favorecieron  a  las  grandes  corpo -  raciones audiovisuales y de telecomunicaciones   en detrimento del sector sin fines de lucro y de   otros  actores  como  las  pequeñas  y  medianas   empresas  de  medios  y  producción  audiovisual,   de las emisoras universitarias, de los trabajado -  res  de  la  comunicación  y  de  los  públicos 25�  No    nos dedicaremos aquí a analizar en profundidad   las características y las consecuencias de la nue -   va etapa política, por desbordar la periodización   que hemos delimitado en este artículo.  5. EN BUSCA DE DEFINICIONES   La investigación desplegada en la Tesis Doctoral   pretendió contribuir a dar respuesta a la proble -  mática  pregunta  sobre  la  definición  acerca  de   las  radios  comunitarias,  populares  y  alternati -   vas. O, dicho en los términos del enfoque teóri -   co desplegado, sobre la identidad política de las   emisoras.  La  decisión  de  “suspender  la  sed  de   definiciones” 26  y de enfocar el interrogante des -  de  el  análisis  político  del  discurso  nos  permitió   concluir en un punto de relativa fijación de senti -   do que torna asible al referente empírico al que   nos referimos cuando hablamos de las emisoras.   Quien  busque  una  definición  precisa  acerca  de   qué son las radios comunitarias, populares y al -   ternativas puede encontrar una respuesta en las   regularidades  que  a  lo  largo  de  una  historia  de   casi  30  años  constituyeron  la  identidad  política   de  las  emisoras.  Pero  al  mismo  tiempo,  esta  fi -   jación es apenas parcial e inestable. Estas regu -   laridades encuentran su explicación, fundamen -  talmente, en la voluntad transformadora que las   inspira y en el antagonismo respecto del sistema   de medios hegemónico que las ha erigido en uni -  dad de ruptura. No obstante, estas regularidades   no logran clausurarse como un conjunto de cer -  tezas  cerradas  o  de  características  claramente   delimitadas.  Al  mismo  tiempo,  las  diferencias,   los debates, las tensiones y los desplazamientos   tornan  a  las  emisoras  un  referente  empírico  no   del todo asible.  Este juego entre la necesidad y la imposibilidad   de  una  definición  acabada  deja  abierto  un  con -  junto de interrogantes. ¿Cómo encarar las futu -  ras  prácticas  investigativas  desde  definiciones   25  Un análisis de las consecuencias de las nuevas polí -  ticas en el sector puede leerse en Segura, Soledad et   al.,  “Regresión.  Las  nuevas  políticas  para  medios  co -   munitarios en Argentina”,  Revista Logos,  24/1 (2017),  pp. 37-51.   También en Kejval, Larisa; Guichandut, Do -  lores  y  Maffullo,  Eliana,  “Radiografía  de  un  retroce -   so.  Mapeo  colectivo  del  impacto  de  las  políticas  del   macrismo en los medios comunitarios”, en Loreti, Da -   mián et al. (eds.),  Futuro por pasado. Regresión de de - rechos en las políticas de comunicación del gobierno    de Mauricio Macri , Buenos Aires, IEALC, CCOM, 2020,    pp� 99-118�26  Lizondo, Liliana,  Comunicación con... , op. cit., p. 55. \nLa identidad política de las radios comunitarias   Larisa Kejval  ©  Historia Actual Online , 54 (1), 2021: 75-88 88  precarias?  ¿Cómo  resolver  la  inclusión  de  defi -  niciones  acerca  de  estos  medios  en  la  formula -  ción de legislaciones y políticas públicas? ¿Cómo   definir  cuando  se  trata  de  proyectar  redes  que   articulen  –y  no  dispersen–  a  este  tipo  de  prác -   ticas? Las respuestas a estas preguntas siempre   implican la toma de una decisión. Y al decir esto   subrayamos  que  es  decisión  política.  Esto  nos   aleja  de  la  objetividad  de  toda  definición  para   poner  en  evidencia  la  opción  política  implicada   en  la  definición  de  cada  objeto.  Lo  que  nuestra   investigación  proyectó  aportar  es  –apenas,  qui -  zás– un terreno de comprensión para que quie -  nes  asuman  estas  decisiones  políticas  puedan   dimensionar las complejidades y las consecuen -  cias que se juegan al definir. Esto es, brindar un   terreno fértil para avizorar lo que cada definición   permite disputar, incluir o excluir, acentuar o in -  visibilizar, precisar o dejar abierto a la ambigüe -   dad de la significación. \nCopyright   of   Historia   Actual   On-   Line   is   the   property   of   Asociacion   de   Historia   Actual   and   its content   may   not   be   copied   or   emailed   to   multiple   sites   or   posted   to   a   listserv   without   the copyright   holder's   express   written   permission.   However,   users   may   print,   download,   or   email articles   for   individual   use. \n";
+    const PDF_NAME = "1 identidad politica radios comunitarias populares ya alternativas argentina.pdf";
+    const CHATBOT_THEME = "1 identidad politica radios comunitarias populares ya alternativas argentina";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿En qué contexto histórico surgieron en Argentina las radios comunitarias, populares y alternativas después de la dictadura cívico-militar?","¿Por qué muchos llamaron a estas radios “piratas” o “truchas” y qué implicaba esa forma de nombrarlas en términos legales y políticos?","¿Qué importancia tuvo la Ley de Servicios de Comunicación Audiovisual de 2009 para reconfigurar la identidad política de estas radios?","¿Cómo influye el enfoque de “análisis político del discurso” de Laclau y Mouffe en la manera de comprender la identidad política de las emisoras?","¿Qué dificultades plantea estudiar este campo si los medios suelen ocupar un lugar menor frente a otras cuestiones en la formación académica?","¿Por qué se considera que el marco conceptual de “comunicación comunitaria, popular y alternativa” a veces resulta insuficiente para pensar sociedades mediatizadas?","¿Cómo se relaciona la noción de participación con un horizonte “a alcanzar” más que con una categoría puramente explicativa en estas investigaciones?","¿Qué antagonismos permitieron construir equivalencias entre las radios y las demandas de democratización (primero antes de 1989 y luego en la etapa neoliberal)?","¿Qué significantes funcionaron como puntos nodales y “significantes vacíos” para condensar múltiples significados en el período abordado?","¿Qué regularidades sostuvieron la identidad política durante el primer período (por ejemplo, ausencia de lucro, participación, acción colectiva y disputa por la agenda mediática)?","¿Cómo cambió, hacia el nuevo período, el uso de los significantes (por ejemplo, la erosión de equivalencias y la mayor centralidad de “lo popular”)?","¿Qué problemas y decisiones políticas deja abiertos el apartado “En busca de definiciones” sobre cómo definir estas radios para legislaciones y políticas públicas?"];
+    const INITIAL_PALETTE = {"primaryColor":"#175dcf","secondaryColor":"#124aa6","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#175dcf","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

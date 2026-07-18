@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: ChatBot CONDICIONES DE TRABAJO I - HIGIENE Y SEGURIDAD INDUSTRIAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>ChatBot CONDICIONES DE TRABAJO I - HIGIENE Y SEGURIDAD INDUSTRIAL</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "  CONDICIONES DE TRABAJO I -  HIGIENE Y SEGURIDAD INDUSTRIAL   Ignacio Rodríguez  EJE 2 Analicemos la situación Fuente: Shutterstock/531560926 \nÍNDICE La higiene industrial  6 Actuaciones en higiene ocupacional  10 Higiene teórica  10 Higiene de campo  10 Higiene analítica  10 Higiene operativa  10 ¿Qué estudia  la higiene ocupacional?  13 Ruido ocupacional  14 Consideraciones legales  15 Tipos de ruido  15 ¿Con qué equipos se mide?  16 Valores límites permisibles  17 ¿Cuáles son las fuentes de exposición?  17 Efectos del ruido en los trabajadores  18 Evaluación ambiental  19 Técnicas de evaluación médica  19 Vibraciones  21  Tipos de vibración y fuentes de exposición  22 ¿De qué depende la gravedad de los efectos biológicos?  22 Medición de la vibración  22 Control de las vibraciones  23 Radiaciones ionizantes  23 Fuentes de exposición  23 Aspectos legales  24 \nÍNDICE Efectos de las radiaciones ionizantes  24 Protección contra radiaciones ionizantes  24 Radiaciones no ionizantes  25  Clasificación de las radiaciones no ionizantes    26  Radiaciones ultravioleta  26 Radiaciones infrarrojas  26 Efectos de las radiaciones no ionizantes  27 Controles   27 Iluminación  29  ¿Cuáles son los beneficios de una buena iluminación?     30  Aspectos técnicos  30 Métodos de alumbrado  31 Mejoras para las condiciones de iluminación  32 Exposición a ambientes térmicos  32 Efectos generados por el calor  33 Evaluación ambiental  34 Medidas de control  34 Control en la fuente  35 Control en el medio  35 Control en el trabajador  35 Control de peligros por temperaturas bajas  36 Riesgo psicosocial  37 Peligros biológicos  38 Riesgo ergonómico o biomecánico  38 Valoración de los factores de riesgo ergonómico  39 Métodos objetivos  40 \nINTRODUCCIÓN En  este  módulo  estudiaremos  la  higiene  industrial  como  herramienta  funda- mental para la protección y promoción de la salud y el bienestar de la población   trabajadora, mediante acciones preventivas y de control en los ambientes labora-  les. Por lo tanto, contiene elementos claves relativos a los alcances y las actividades   relacionadas con la higiene ocupacional, vista como una ciencia que se encarga de    la identificación, la evaluación, la priorización y el control de los agentes de riesgo    (físicos, químicos, biológicos, ergonómicos y psicosociales) que pueden causar en-  fermedades ocupacionales. Abordaremos los conceptos de higiene industrial y enfermedad laboral, así como  los peligros relacionados, las técnicas de medición y las medidas de intervención y   control encaminadas a prevenir las enfermedades laborales. Nos  apoyaremos  en  lecturas  complementarias  de  normas  legales  y  técnicas,   entre  las  cuales  se  destacan  el  Decreto  614  de 1984,  el  cual  establece  la  organi-  zación  y  administración  de  la  salud  ocupacional;  la  Ley 1562  de  2012;  el  Decreto    1477 de 2014, que indica la tabla de enfermedades laborales; la Ley 1562 de 2012, la    cual modifica el sistema general de riesgos laborales; el Decreto 1072 de 2015, que    establece el Decreto Único Reglamentario del Sector Trabajo; y la Resolución 1409   de  2012  sobre  trabajo  seguro  en  alturas.  Igualmente,  se  han  incorporado  video-  cápsulas sobre los peligros higiénicos como el ruido, las radiaciones ionizantes, las   radiaciones no ionizantes, los riesgos psicosociales, la bioseguridad y la ergonomía,   que contribuirán con en el aprendizaje de los temas. \nLa higiene  industrial \n6 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  La American Conference of Governmental Industrial Hygienists (Acgih) es una auto- ridad internacional en higiene industrial que expone a la comunidad los valores límites  permisibles (VLP) para contaminantes en los lugares de trabajo.  Higiene industrial: según la Acgih, es la ciencia y arte dedicados al reconocimiento, evaluación, comparación y control de aquellos factores ambientales o tensiones emanadas o provocadas por el lugar de trabajo y que pueden ocasionar  enfermedades, destruir la salud y el bienestar o crear algún malestar significativo entre los trabajadores.   En este sentido, el Decreto 614 de 1894  indica que la higiene industrial “compren-  de el conjunto de actividades destinadas a    la identificación, a la evaluación y al con -  trol de los agentes y factores del ambiente   de trabajo que puedan afectar la salud de   los trabajadores” (art. 9.°). Sugerimos re-  visar el decreto aquí . En 1998,  la  Organización  Mundial  de  la   Salud (OMS) y la Organización Internacio-   nal del Trabajo (OIT) consensuaron la defi -  nición de higiene industrial:   ”   Ciencia  de  la  anticipación,  re-  conocimiento  y  evaluación,  de    riesgos  y  condiciones  perjudi-  ciales  en  el  ambiente  laboral,    así  como  el  desarrollo  de  estra-  tegias  de  prevención  y  control,    con  el  objetivo  de  proteger  y    promover  la  salud  y  el  bienestar    de  los  trabajadores,  salvaguar- dando  también  la  comunidad    y  el  medio  ambiente  en  general    (Van  der  Haar  y  Goelzer,  2001).    Figura 1. Fuente: shutterstock/92939401 El especialista en seguridad y salud en el  trabajo  debe  tener  sólidos  conocimientos    en higienista industrial. En particular, debe   prever  y  reconocer  los  riesgos  potenciales    para la salud provenientes de los procesos   de  trabajo,  las  máquinas,  las  herramien-  tas, los materiales, etc., y tomar las medi-  das  necesarias  para  prevenirlos  desde  las    etapas  de  planeación,  diseño,  selección,    entre otras.  \n7 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  El reconocimiento está ligado a la  identificación  de las  condiciones  ambientales  relacionadas  con  los  lugares  de    trabajo  que  tienen  riesgos  potenciales  de  causar  daño  o    efectos  adversos  a  la  población  trabajadora.  En  la  iden-   tificación de los peligros higiénicos deben ser tenidos en    cuenta  los  procesos,  las  materias  primas  e  insumos  uti-  lizados,  las  máquinas  y  los  equipos  requeridos.  Se  reco-  nocen  los  factores  de  riesgo,  el  número  de  trabajadores    expuestos,  las  fuentes  generadoras  y  los  efectos  proba-  bles. Por lo tanto, la visita a las instalaciones industriales   es obligatoria para el reconocimiento.  Identificación del peligro:  proceso para   establecer si existe un peligro y definir las carac -  terísticas de este (Decreto 1072 de 2015).  Evaluación del riesgo: proceso para de-terminar el nivel de riesgo asociado al nivel de  probabilidad de que dicho riesgo se concrete y al   nivel de severidad de las consecuencias de esa   concreción (Decreto 1072 de 2015).  Cuantificar en higiene ocupacional es el proceso de  evaluar los  riesgos con instrumentos calibrados, según parámetros técnicos.   La cuantificación de los riesgos permite conocer si en los lugares    de  trabajo  son  sobrepasados  los  VLP.  En  tal  caso,  el  higienista    debe proponer las acciones de control en la fuente, el medio o el   trabajador. Los  valores  permisibles  han  sido  estu- diados y propuestos por organismos inter- nacionales  como  la Acgih,  el  Niosh,  entre    otros.  Algunas  hojas  de  seguridad  de  las    sustancias químicas los incluyen como in-  formación  de  prevención  y  control  en  las    organizaciones. Una  vez  valorados  los  riesgos  higiéni- cos es indispensable hacer la comparación   con los VLP. Cuando estos son sobrepasa-  dos,  es  obligatorio  implementar  medidas    de prevención y control.  Estas  medidas  pueden  ser  de  control   administrativo,  por  ejemplo:  rotación  de    los  trabajadores,  organización  del  traba-  jo  y  programación  de  máquinas,  equipos    y  procesos  contaminantes  en  horarios  en    los que no se exponga a los trabajadores.   También se pueden implementar controles   de  ingeniería  como:  sistemas  de  ventila-  ción local exhaustiva, ventilación forzada,   natural  o  mixta,  sistemas  de  amortigua- ción  para  ruido  en  máquinas  y  equipos,    barreras interpuestas entre los riesgos y los   trabajadores, encerramientos, cambios en   los  procesos,  señalización  y  demarcación    de áreas y lugares de trabajo. Además, se puede actuar sobre los tra- bajadores  con  elementos  de  protección    personal  y  exámenes  como  audiometrías,    espirometrías,  etc.  También  es  importan-  te  considerar  planes  de  entrenamiento  y    capacitación para que los trabajadores re-  conozcan  los  factores  de  riesgo  higiénico    y las medidas de prevención y control que   deben  tener  en  cuenta  para  evitar  enfer- medades laborales. La higiene industrial debe ser vista como  una  herramienta  de  seguridad  y  salud  en    el trabajo que está incrustada entre la me-  dicina preventiva y del trabajo, la ergono-  mía, la psicología y la seguridad industrial.   Cuando  se  presentan  riesgos  higiénicos    que  sobrepasan  los  VLP,  es  necesario  im- \n8 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  plementar sistemas de vigilancia epidemiológica para prevenir y contrarrestar los efec-  tos adversos de los contaminantes. La higiene ocupacional tiene un enfoque multidis-  ciplinario, puesto que implica acciones conjuntas de prevención de las enfermedades y   promoción de la salud.  Es significativo leer el documento del National Safety Council, titulado  Fundamental  of industrial hygiene.  En él encontraremos los aspectos esenciales de la higiene ocupa-  cional y las técnicas de medición y control.  Lectura complementaria    Lo invitamos a consultar lo pertinente a la identificación de riesgos (pp. 487-  561) y a los controles de riesgos higiénicos (pp. 585-667).  Fundamental of industrial hygiene.   National Safety Council. \n9 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Actuaciones en higiene  ocupacional  El higienista industrial debe identificar,   evaluar  y  controlar  las  condiciones  y  el    medioambiente de trabajo. Existen cuatro  etapas de la higiene industrial:   Condiciones  y  medioambiente  de   trabajo:  elementos,  agentes  o  factores  que   tienen  influencia  significativa  en  la  generación    de  riesgos  para  la  seguridad  y  salud  de  los  tra-   bajadores. Quedan específicamente incluidos en   esta definición, entre otros: a) las características    generales de los locales, instalaciones, máquinas,   equipos, herramientas, materias primas, produc-  tos y  demás  útiles  existentes  en  el  lugar  de  tra-  bajo; b) los agentes físicos, químicos y biológicos   presentes en el ambiente de trabajo y sus corres-  pondientes  intensidades,  concentraciones  o  ni-  veles de presencia; c) los procedimientos para la   utilización de los agentes citados en el apartado    anterior, que influyan en la generación de ries -  gos para los trabajadores y; d) la organización y   ordenamiento de las labores, incluidos los facto-  res  ergonómicos  o  biomecánicos y  psicosociales    (Decreto 1072 de 2015).  Higiene teórica  Hace referencia a los estudios científi - cos con los que determinan las relaciones   dosis-respuesta  en  los  trabajadores  para    los contaminantes. Mediante el estudio de   las  relaciones  se  establecen  los  valores  lí-  mites permisibles o valores estándar en los   lugares de trabajo.  Figura 2. Fuente: shutterstock/168773732  Higiene de campo  Corresponde a los estudios ambienta- les en los puestos de trabajo para cono-  cer la concentración del contaminante,   el tiempo de exposición, etc. Se requie-  re  aplicar  metodologías  encaminadas    a  la  toma  de  las  muestras,  calibración    de  equipos,  posición  del  higienista,  en-  tre otros aspectos. Las metodologías se   pueden encontrar en la Acgih.  Higiene analítica  Permite  medir  de  forma  cualitativa   y  cuantitativa  los  contaminantes  pre-  sentes  en  el  ambiente  de  trabajo.  Se    encuentra  estrechamente  relacionada    con  la  higiene  teórica  y  la  higiene  de    campo.   Higiene operativa  Hace  referencia  a  las  medidas  de   control  e  intervención  que  deben  te-  nerse en cuenta. Se espera que las me- \n10 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  didas eviten el contacto con los contami-  nantes  o  disminuyan  sus  concentraciones    mediante  controles  administrativos,  en  la    fuente, en el medio y en el trabajador.  Otro factor determinante en la higiene  ocupacional es el concepto de TLV (thres- hold limit value: valor umbral límite). Conforme lo establece la Acgih:  Valor límite permisible (threshold limit   value, TLV): concentración de una sustancia en el aire por debajo de la cual la mayoría de los  trabajadores pueden exponerse sin sufrir efectos   adversos para la salud.   ”   Son  todos  aquellos  valores  máximos  permitidos  de  exposición  ocupa-  cional  a  una  sustancia  química  a  la  cual  se  puede  exponer  un  traba-  jador  sin  riesgo  de  efectos  adversos  a  la  salud.  Estos  datos  están  con-  tenidos  en  las  hojas  de  seguridad  de  las  sustancias  (Suratep,  2001).   ”   Refleja  la  máxima  concentración  a  que  puede  exponerse  el  trabajador,  de  for - ma  continua  durante  periodos  de  quince  (15)  minutos,  siempre  que  no  exis-  tan  más  de  cuatro  de  tales  periodos  al  día  y  que  los  intervalos  entre  los  mismos    sean  de  al  menos,  sesenta  minutos  y  además  cuidando  que  el  TLV  para  la  jor- nada  diaria  no  se  sobrepase  (Ministerio  de  Trabajo  y  Seguridad  Social,  2002).  Además, es importante el concepto de TWA ( time-weigthed average : media ponde- rada en el tiempo):   “Concentración media calculada para un día usual de ocho horas  de trabajo a la cual se cree que todos los trabajadores pueden estar expuestos repeti-  damente día a día sin sufrir efectos adversos” (Ministerio de Trabajo y Seguridad Social,   2002). Así como el concepto de STEL ( Short time exposure limit:  límite de exposición de   corta duración):  Existe  una  estrecha  relación  entre  la   higiene  industrial  y  la  enfermedad  labo- ral:  a  mayor  concentración  de  un  riesgo,   mayores  efectos  adversos,  puesto  que  se    presentan  mayores  dosis  ocupacionales.    En Colombia, el Ministerio del Trabajo, me-  diante el Decreto 1477 de 2014, estableció   la tabla de enfermedades laborales.  Visitar página  La ley 1562 de 2012, en el Artículo 4.°, estable- ce el concepto de enfermedad laboral como “la   contraída como resultado de la exposición a fac-  tores  de  riesgo  inherentes  a  la  actividad  laboral    o  del  medio  en  el  que  el  trabajador  se  ha  visto    obligado a trabajar”. http://www.alcaldiabogota.gov.co/sisjur/ normas /Norma1.jsp?i=48365  \n11 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Lectura complementaria    Decreto 1477 de 2014.   Presidencia de la República de Colombia.   http://www.fasecolda.com/files/2714/0846/2229/16._d-1477-14mintrabajo.pdf  Higiene ocupacional en América Latina: una guía para el desarrollo .  Rudolf van der Haar y Berenice Goelzer.   http://www.who.int/occupational_health/regions/en/oehhigiene.pdf \n¿Qué estudia   la higiene  ocupacional? \nLa higiene ocupacional debe identificar, evaluar y controlar los peligros relacionados   con las condiciones del medioambiente de trabajo; por lo tanto, estudia en particular los   contaminantes físicos, como ruido, vibraciones, radiaciones ionizantes y no ionizantes,   iluminación y temperaturas extremas, y los contaminantes químicos, biológicos e, igual-  mente, la ergonomía y los factores de riesgo psicosocial.    Ruido ocupacional  El sonido se define como una forma de energía ondulatoria no electromagnética,   es decir, de origen mecánico, que consiste en variaciones de presión en un gas, líquido   o sólido que son detectados por el oído humano y, según la OMS, el ruido es un sonido   molesto e indeseado.  Figura 3. Fuente: shutterstock/202562011 \n14 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Visitar página  Contaminación por ruido:  cualquier emisión de sonido que afecte adversa- mente la salud o seguridad de los seres humanos, la propiedad o el disfrute de la   misma (Resolución 8321 de 1983). http://www.alcaldiabogota.gov.co/sisjur/normas /Norma1.jsp?i=6305   Consideraciones legales  En Colombia se cuenta con varias normas de referencia:  •  Ley 9ª de 1979 (Código Sanitario Nacional).  •  Resolución 2400 de 1979, artículos del 88 al 93 (Estatuto de Seguridad Industrial). •  Resolución 8321 de 1983, artículos del 41 al 60, por la cual se dictan normas sobre   protección y conservación de la audición de la salud y el bienestar de las personas   por causa de la producción y emisión de ruidos. •  Resolución 1792 de 1990, que establece los valores permisibles para ruido.  •  Decreto 1295 de 1994 (Sistema General de Riesgos Profesionales), que establece los   sistemas de vigilancia epidemiológica para riesgos prioritarios.  Tipos de ruido  Figura 4. Fuente: propia \n15 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  ¿Con qué equipos se mide?  El sonómetro es muy utilizado. Se trata de un equipo eléc-  trico  utilizado  para  cuantificar  las  intensidades  de  presión   sonora presentes en ambientes laborales. Por otra parte, se   utiliza el dosímetro, aparato que detecta e integra automáti-  camente los diferentes tipos de ruido que se presentan duran-  te la jornada laboral e indica las dosis de ruido acumuladas,   como porcentaje de la exposición diaria máxima permisible:   el 100 % corresponde al valor límite permisible. El concepto de   dosimetría  o  dosis  de  ruido  se  basa  en  determinar  la  canti-  dad de energía acústica o su nivel equivalente en decibelio A   (dBA) que recibe un trabajador en cada jornada.  Visitar página  Ver http://www.alcaldiabogota.gov.co/sisjur/normas /Norma1.jsp?i=6305   Sonómetro: cualquier instrumento usado para medir niveles de presión  sonora (Resolución 8321 de 1983).   Figura 5. Fuente: shutterstock/272620916 \n16 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Tammbién  es  requerido  el  analizador  de  bandas  de  octava,  el  cual  se  utiliza  para   obtener la composición o distribución del ruido. El análisis de octava de banda se basa   en el uso de filtros especiales en el sonómetro, a fin de medir el nivel de intensidad del    sonido en ocho bandas: 20-75, 75-150, 150-300, 300-600, 600-1200, 1200-2400, 2400-  4800, 4800-9600.  Valores límites permisibles  Conforme a la Acgih, se han establecido los valores límites permisibles, los cuales han  sido acatados en Colombia mediante requisitos legales para ruido continuo de 85 dB,   con exposición ocupacional de 8 horas correspondientes a la jornada diaria de trabajo.  Lectura complementaria      Ver la norma sobre TLV para ruido.   Resolución 1792 de 1990.  Ministerios de Trabajo y Seguridad Social y Salud.  ¿Cuáles son las fuentes de exposición?   Se considera fuente de exposición la maquinaria, el equipo o el proceso que genera  ruidos de intensidad igual o superior a los 85 decibeles. En los ambientes de trabajo a   veces se requiere el uso de productos químicos que tienen efectos reconocidos sobre el   aparato auditivo; se trata de las sustancias ototóxicas: arsénico, plomo, mercurio, cia-  nuro,  anilinas,  clorofenato,  tolueno,  cobalto,  litio,  torio,  benceno, yodo,  estireno,  entre    otros. También es probable que los trabajadores, debido a su estado de salud, estén con-  sumiendo  medicamentos  ototóxicos,  como  estreptomicina,  kanamicina,  gentamicina,    quinina, silicatos, neomicina y furosemida. Así, es importante establecer cuántos traba-  jadores se encuentran expuestos a un ruido superior a los 85 decibeles y a sustancias o   medicamentos ototóxicos, dado que estos son más susceptibles a desarrollar daño au-  ditivo y, por lo tanto, es necesario establecer medidas de prevención y control rigurosas. \n17 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Figura 6. Fuente: shutterstock/90456355  Efectos del ruido en los trabajadores  •  Sordera  profesional:   conocida  como  la  sordera  inducida  por  ruido,  altera  fre-  cuencias de la conversación de 500 a 3000 hercios (Hz).  •  Sordera  por  trauma  físico :  causada  por  lesiones  en  la  cabeza,  explosión,  que-   maduras por sustancias químicas, flamas o escorias de soldadura que penetran el   conducto auditivo.  •  Sordera ototóxica:  producida por ototoxinas, antibióticos (gentamicina), diuré-  ticos de asa (furesamida), antineoplásicos y salicilatos (aspirina). \n18 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Se  presentan,  además,  los  siguientes   efectos:  dilatación  de  las  pupilas,  secre-  ción de la hormona tiroidea, aumento del   ritmo  cardíaco,  secreción  de  adrenalina,    secreción  de  las  hormonas  de  la  corteza    suprarrenal, contracción de los vasos san-  guíneos, irritación y agresividad.  Evaluación ambiental  En  lo  que  respecta  a  la  evaluación  am-  Figura 7. Fuente: shutterstock/675376489 biental es importante contar con un sonómetro calibrado, levantar planos de las áreas afec-  tadas por el ruido, identificar las máquinas, los equipos o los procesos generadores del ruido,   identificar las tareas ejecutadas y su duración, indicar la localización del puesto de trabajo    y las fuentes primarias, tener en cuenta la duración de las medidas, la fecha y hora de las   mediciones, así como las lecturas obtenidas en el instrumento. Es relevante la posición del   observado y del micrófono, este debe ser colocado a la altura del pabellón auditivo; asimis-  mo, hay que considerar la temperatura ambiental, puesto que, a mayor temperatura, ma-  yor velocidad del sonido en el aire.  Técnicas de evaluación médica  Dado que es obligatorio realizar exámenes ocupacionales de audiometría a los tra- bajadores  expuestos  a  niveles  de  ruido  por  encima  de  los valores  establecidos,  se  han    identificado una serie de pruebas, como las pruebas de las palabras habladas, de diapa -  sones, de Rinne y de Weber, timpanometría o audiometría por impedancia, audiometría   de respuesta evocada y audiometría de tonos puros. \n19 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Los controles para ruido ocupacional son variados:  Se trata de encerramiento de máquinas,   equipos o procesos ruidosos, sistemas de   encapsulamiento y apantallamiento,   entre otros. Aquí, es importante   considerar la PT (pérdida de   transmisión), que es la capacidad de   una pared para obstruir la transmisión   del ruido: mientras más alta sea la PT,   mayor será el poder aislador de la pared.   Se refiere a la posibilidad de realizar ajustes    a máquinas o procesos ruidosos,   empotramiento de máquinas y equipos,   lubricación de maquinaria, equipos y   herramientas e implementar programas de   mantenimiento.  Monitoreo biológico con audiometrías de   ingreso, periódicas y de retiro, suministro   y reposición de elementos de protección   personal, capacitación, supervisión e   incentivos o sanciones.  Estudiar la posibilidad de contratar a   personas con discapacidad neurosensorial.   Los empleadores que las contraten tendrán   exoneración de ciertos impuestos,    reestructuración de puestos de trabajo,    creación de una política de compra de   equipos menos ruidosos, adaptación de    nuevos programas de trabajo, división del   trabajo expuesto a excesivos niveles de ruido   entre varios trabajadores, acuerdos sobre el   tiempo de utilización de máquinas ruidosas   y deben ajustar los trabajos que pudiesen    producir un nivel de ruido más elevado en   aquellas horas en que hay un menor número   de personal expuesto.   Control en el medio Control en el trabajador Control en la fuente Control administrativo  Figura 8. Fuente: propia \n20 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Vide o  Los invitamos a ver la siguiente videocápsula sobre el ruido industrial  y a desarrollar la videopregunta sobre el tema. https://www.youtube.com/watch?v=E9Qpb-lghRc  Vibraciones   El concepto de la Administración de Se- guridad  y  Salud  Ocupacional  (OSHA,  por    sus siglas en inglés) sobre vibración es sig-  nificativo en higiene industrial. Veamos las    variables que deben ser consideradas:  Vibración: movimiento transmitido al cuerpo humano por estructuras sólidas capaces de producir un efecto nocivo o   cualquier otro tipo de molestia. La OSHA define la vibración    como el movimiento oscilante de un sistema mecánico   elástico, respecto a una posición de referencia inicial o de   equilibrio.  •  Frecuencia:  dada  por  el  número  de    veces  por  segundo  que  se  realiza  el    ciclo. Se mide en Hz.  •  Amplitud:  indica  la  intensidad  de  la    vibración. Se puede medir en unida-  des  de  velocidad  m/s.  Normalmen-  te,  la  intensidad  de  la  vibración  se    expresa en unidades de aceleración.  •  Vías de ingreso al organismo, es de-  cir, mano brazo o cuerpo entero.  •  Eje espacial x, y, z. •  Tiempo de exposición.  Las  vibraciones  se  originan  por  máqui- nas y equipos en procesos de transforma-  ción, por fallas en máquinas y también las   hay  de  origen  natural.  Normalmente  se    presentan por falta de sistemas de amor- tiguación de máquinas y equipos, por mo-  vimientos  rotatorios  alternativos,  equipos   Figura 9. Fuente: shutterstock/85167850 \n21 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  y  herramientas  de  manipulación  manual    sin  mangos  con  material  absorbente,  fal-  ta  de  anclajes  elásticos  en  maquinaria,    desgaste u holgura de piezas en contacto,    deficiente mantenimiento y lubricación de    máquinas y herramientas o desbalance de   piezas en revolución.  Tipos de vibración y fuentes de   exposición  Existen  las  vibraciones  globales  o  de   cuerpo  completo,  que  pueden  causar  da-  ños  en  la  zona  lumbar.  También  son  fre-  cuentes  las  vibraciones  mano-brazo ,   las    cuales  generan  trastornos  vasculares  y    palidez intermitente en los dedos (síndro-  me del dedo blanco inducido por vibracio-  nes) .   En  lo  que  respecta  a  las  fuentes  de    exposición,  se  presentan  en  vehículos  de    transporte,  ferrocarril,  tractores,  retroex- cavadoras, taladros, vibrocompactadores,   ranas,  canguros,  herramientas  manuales,    martillos  neumáticos,  remachadoras,  en-  tre otros.  ¿De qué depende la gravedad de los   efectos biológicos?  La  gravedad  de  los  efectos  biológicos   depende  de  varios  aspectos:  espectro  de    frecuencias, magnitud, duración de la ex- posición,  efecto  acumulativo  hasta  la  fe-  cha,  magnitud  y  dirección  de  las  fuerzas    aplicadas  por  el  trabajador  sobre  la  he-  rramienta o zona de trabajo y factores de   predisposición del individuo.  •  Vibraciones de muy baja frecuen-  cia  (1  Hz):   generadas  por  el  movi-  miento y balanceo de un avión, bar- co  o  tren,  provocan  trastornos  del    sistema  nervioso  central  y  pueden    producir mareos y vómito.  •  Vibraciones  generadas  por  media    frecuencia  (1  a 20  Hz):   se  presen-  tan  en  el  manejo  de  maquinaria  de    obras  públicas,  tractores,  maqui-  naria  agrícola  y  vehículos  de  trans-  porte.  Pueden  generar  lumbalgias,    hernias,  agravan  lesiones  raquídeas    menores  e  inciden  sobre  trastornos    debidos  a  malas  posturas.  Se  pre-  sentan  también  síntomas  neuroló-  gicos,  variación  del  ritmo  cerebral,    dificultad del equilibrio y trastornos   de visión por resonancia.  •  Vibraciones  de  alta  frecuencia    (20  a  1000  Hz):   causadas  por  he-  rramientas  manuales  rotativas  o    percutoras  como  pulidoras,  moto-  sierras,  desbarbadoras,  martillos ,    neumáticos ,   etc.  Generan  trastor- nos  osteoarticulares  como  artrosis    de codo y articulaciones, lesiones de   muñeca,  calambres  en  mano  y  sín-  drome del túnel carpiano, y aumen-  tan  la  incidencia  de  enfermedades    estomacales.  Medición de la vibración  Se utilizan vibrómetros o acelerómetros  piezoeléctricos,  los  cuales  miden  acelera-  ción,  velocidad  de  desplazamiento  y  fre-  cuencia. El vibrómetro se debe ubicar justo   en  el  punto  donde  se van  a  transmitir  las    vibraciones al cuerpo y se hace la pondera-  ción y los análisis de frecuencias. El acele-  rómetro se pone en contacto con la super-  ficie vibrante (asiento, empuñadura, suelo,    etc.)  y  trasforma  la  energía  mecánica  en    una señal eléctrica.  En cuanto a la metodología de medición  es indispensable determinar el lugar donde   va a colocarse el acelerómetro, considerar   el tipo de vibración, la temperatura, la hu- \n22 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  medad y los campos acústicos y eléctricos,   tomar medidas en diferentes puntos de la   máquina o del sistema para determinar las   áreas con mayor nivel de vibración, datos   de la máquina o equipo, como fabricante,   tipo, modelo, número de serie, condiciones   de funcionamiento y material del asidero y   por último, tener en cuenta que las medi-  ciones  se  efectuarán  en  condiciones  nor- males de funcionamiento.  Control de las vibraciones  Deben  tomarse  medidas  preventivas,   elaborar  profesiogramas  con  los  corres-  pondientes  perfiles  de  cargos  y  realizar    control  médico  permanente.  Veamos  al-   gunos controles específicos:  •  Control  en  la  fuente:   se  deben    considerar  aspectos  técnicos,  como    el diseño ergonómico de herramien-  tas, adquirir equipos o herramientas   de vibración reducida, control remo-   to  o  mandos  a  distancia,  verificar    que  los  sistemas  de  suspensión  de    vehículos estén en buen estado, rea-  lizar balanceo dinámico de equipos y   considerar el régimen de trabajo es-  tablecido por el fabricante, y contar   con herramientas con empuñaduras   de goma u otro sistema de amorti-  guación.  •  Control  en  el  medio:   es  indispen-  sable  interponer  materiales  aislan-  tes entre la fuente y el receptor, ins-  talando  tapetes  o  plataformas  de    poliuretano,  corcho,  caucho,  etc.,    contar con estructuras independien-  tes  para  dificultar  la  transmisión  y    colocar  con  anclaje  elástico  para    maquinaria  que  vibra  y  soportes  de    equipos y tuberías.  •  Control  en  el  individuo:   algunas    medidas  son  atenuar  la  transmisión    de  la vibración  colocando  manijas  o    material  elástico,  reducir  el  tiempo    de exposición e implementar pausas,   usar  guantes  antivibratorios,  plan-  tillas  o  calzado,  establecer  proce-  dimientos,  capacitar  al  trabajador,    señalizar  las  áreas  de  trabajo,  hacer    interrupciones de exposición 10 minu-  tos por cada hora de trabajo o tener   en  cuenta  las  recomendaciones  ex- presadas por escrito en los manuales   del  fabricante  y  considerar  las  reco-  mendaciones médicas de ingreso.  Radiaciones ionizantes  Las  radiaciones  ionizantes  están  esta- blecidas  en  varias  normas  colombianas,    entre ellas la Ley 9.ª de 1979 y la Resolución   2400 de 1979.  Radiaciones ionizantes: son radiaciones electromag-néticas o corpusculares capaces de producir iones, direc- ta o indirectamente, a su paso a través de la materia y   comprende las radiaciones emitidas por los tubos de rayos   X y substancias radiactivas. Se encuentran dos tipos de   radiaciones ionizantes: las naturales, producidas por radio,    uranio, plutonio, americio, torio, entre otros, y las artificiales,    producidas por centrales nucleares y rayos X (Ministerio de   Trabajo y Seguridad Social, 1979).  Fuentes de exposición  Son  muchas  las  fuentes  de  exposición   a las radiaciones ionizantes, ya que tienen   aplicaciones  en  medicina  nuclear,  trata-  mientos  contra  el  cáncer,  odontología,    plantas  de  energía  atómica,  laboratorios,    ingeniería  para  ensayos  no  destructivos    mediante  el  uso  de  fuentes  radiactivas  y    gammagrafía, entre otros. \n23 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Aspectos legales  Vamos a encontrar aspectos técnicos y  legales sobre radiaciones ionizantes en las   siguientes normas nacionales: •  Ley  9.a  de  1979,  artículos  149-154.   Código Sanitario Nacional.  •  Resolución 2400 de 1979, capitulo V.   Estatuto de Seguridad Industrial.  •  Resolución  9031  de  1990.  Normas  y    procedimientos  con  equipos  de  ra-  yos X. •  Decreto 2090 de 1993.  •  Decreto 1281 de 1994. Actividades de   alto riesgo.  En cuanto a las actividades de alto ries- go, se consideran en Colombia las siguien-  tes: trabajos en minería socavón, trabajos   con  exposición  a  altas  temperaturas,  tra-  bajos  con  exposición  a  radiaciones  ioni-  zantes y trabajos con exposición a sustan-  cias cancerígenas.  Video  Ahora veamos la videocápsula so- bre radiaciones ionizantes. https:// www.youtube.com / wat- ch?v=0Ls6o1DW6lg  Efectos de las radiaciones ionizantes  Entre  los  efectos  adversos  en  la  pobla- ción  trabajadora  que  se  exponga  sin  me-  didas de prevención y control están: daño    celular, modificaciones genéticas, cáncer,   leucemia,  ceguera,  esterilidad  y  muerte.    En cuanto a los efectos por exposición pre-  natal pueden presentarse daño letal en el   embrión,  malformaciones  y  cambios  es-  tructurales,  retardo  mental,  inducción  de    malignidad, incluyendo leucemia y efectos   hereditarios. Para medir las radiaciones ionizantes se  cuenta con dosímetros de lectura directa y   lectura retardada, contadores Geiger-Mü-  ller, cámaras de ionización y contadores de   centelleo. Conforme  a  la  Comisión  Internacional    de Protección Radiológica, se ha fijado en   Colombia la dosis máxima permisible de 5   rems  (radiaciones  electromagnéticas)  al    año y,  en  lo  que  respecta  a  los  exámenes    ocupacionales, el artículo 100 de la Resolu-  ción 2400 establece que “los trabajadores   dedicados  a  procesos  donde  se  empleen    sustancias  radiactivas,  serán  sometidos  a    exámenes médicos a intervalos no mayo-  res de seis meses”.  Protección contra radiaciones   ionizantes  •  Se  aumentará  la  distancia  (ley  del    cuadrado inverso) que establece que   por  cada  metro  que  se  aleje  de  las    fuentes radiactivas las dosis van re-  duciendo a la mitad. •  Se instalarán pantallas o escudos los   cuales servirán de barrera protecto-  ra entre la fuente de exposición y el   receptor. •  Se limitará el tiempo de exposición. •  Se  utilizarán  elementos  de  protec-  ción personal plomados, conforme a   la Resolución 2400 (artículo 109), la  \n24 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  cual indica que todo personal que esté expuesto a radiaciones ionizantes llevará   consigo un dispositivo (dosímetro de bolsillo) o de película que le permita medir   las dosis acumulativas de exposición. •  Se realizará monitoreo biológico al trabajador expuesto cada seis meses para vi-  gilar su estado de salud.  Radiaciones no ionizantes  En higiene industrial son muy estudiadas las radiaciones no ionizantes.  Radiaciones no ionizantes: son radiaciones electromagnéticas que se producen siempre que se tienen partículas con carga eléctrica en movimiento acelerado. Las radiaciones electromagné- ticas están constituidas por un campo eléctrico que oscila asociado a un campo magnético. Se   caracterizan por su capacidad de transmitirse a través del vacío. La radiación no ionizante es una    forma de transmisión de la energía y se clasifica de acuerdo con su magnitud en ultravioleta, infra -  rrojo, luz visible, microondas, radiofrecuencia, laser y ELF, que corresponden a los campos electro-  magnéticos de frecuencia extremadamente baja. Provienen de todos los aparatos eléctricos que se   usan en la vida doméstica, social y laboral.  Figura 10. Onda electromagnética Fuente:  https://commons.wikimedia.org/wiki/File:Onda_e_y_ma_20.JPG \n25 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Una onda electromagnética está formada por campos eléctricos y magnéticos cruzados, que viajan a la velocidad de la   luz. La distancia entre puntos de igual valor del campo eléctrico es la longitud de onda. La frecuencia es la rapidez con que   cambian en el tiempo (Báez, 1967).   Clasificación de las radiaciones no ionizantes  Se clasifican en ultravioleta (ABC), visible, infrarrojo (CMC) cercano, medio y lejano,   microondas,  ondas  de  radio  cortas,  ondas  de  televisión y  de  radio  FM,  ondas  de  radio    AM, ondas de radio largas y frecuencia ultra baja.  Desde el punto de vista físico, las radiaciones no ionizantes se clasifican según su   frecuencia, que corresponde al número de ondas que pasa por un punto del espacio en   unidad de tiempo Hz; por su longitud de onda, que es la distancia medida a lo largo de   la línea de propagación entre dos puntos en fase de ondas adyacentes; y por la energía   de fotón, la cual es proporcional a la frecuencia, su unidad es el eV.  •  Radiaciones ultravioleta  Las  encontramos  en  el  sol,  como  fuente  natural, y    artificiales en procesos de soldadura y corte de me -  tales,  fundición,  arcos  con  electrodos,  lámparas  de    halógeno,  hornos,  lámparas  de  vapor  de  mercurio    (germicida),  lámparas  solares  de  fototerapia,  arcos     eléctricos, fotocopiadoras y reflectores de alta inten -  sidad, entre otras fuentes de exposición.  •  Radiaciones infrarrojas  Cualquier superficie que esté a mayor temperatura   que  el  receptor  es  fuente  de  radiación  infrarroja y  su    origen puede ser natural o artificial. Son fuentes de    exposición el trabajo en caliente con metales, la fabri-  cación de vidrio y cerámica, los procesos de soldadura,   corte de metales, fotograbado, etc.   Radiaciones ultravioleta: son aquellas radiaciones comprendidas entre el intervalo del espectro solar que  se extiende desde la más larga longitud de onda de los   rayos X y la más corta longitud de onda del espectro   visible y cuya longitud de onda es menor de 3.800 Ao.   (Ángstrom).  Radiaciones infrarrojas: son aquellas situadas al otro lado del rojo visible en el espectro solar y cuya longi- tud de onda es mayor de 7.800 Ao. (Ángstrom). \n26 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Efectos de las radiaciones no ionizantes  Los  efectos  dependen  del  número  de   fotones absorbidos por los cromóforos ce-  lulares, el número de moléculas en estado   de  excitación  que  sufren  reacción  foto-  química y el grado de respuesta biológica   de  los  individuos.  Las  radiaciones  no  ioni-  zantes  generan  además  efecto  térmico,    fotobiológico,  cáncer  de  piel,  cataratas,    vejez  prematura,  alteraciones  inmunoló-  gicas  y,  en  la  naturaleza,  disminución  del    fitoplancton. Dentro de los efectos agudos    generados  por  la  radiación  ultravioleta  se    menciona la fotoqueratitis o fotoquerato-  conjuntivitis, la cual aparece de 2 a 4 horas   después de la exposición acompañada de   lagrimeo y fotofobia; el cuadro clínico dura   de uno a cinco días.  La  radiación  infrarroja  penetra  poco  la   piel, sin embargo, puede provocar lesiones   en capilares y terminaciones nerviosas. En   los ojos, puede generar opacidades y cata-  ratas en el cristalino y, en ocasiones, lesio-  nes en la retina, esclerótica y coroides. Por acción de las microondas y radiofre- cuencia  se  producen  en  el  interior  de  los    sistemas  biológicos  campos  eléctricos  y    magnéticos;  por  tanto,  su  efecto  depen-  derá  de  la  capacidad  de  absorción  de  la    materia y  de  la  intensidad  de  los  campos    inducidos.  Las  ondas  electromagnéticas    producen  transferencia  de  energía,  con    aumento  de  energía  cinética  molecular  y    de la temperatura corporal. En cuanto a los límites de exposición ocu- pacional,  el  Comité  Internacional  para  Ra-  diaciones No Ionizantes (Inirc) y la Acgih ex- presan que la aplicación de los valores límites   presenta complejidades, ya que el umbral de   daño varía con la longitud de onda, el tiempo   de exposición, el tipo de piel de individuo, etc. Para la detección y medición de las ra- diaciones  no  ionizantes  se  utilizan  detec-  tores  químicos  que  requieren  una  placa     fotográfica en la cual reacciona acetona    con azul de metileno, generando una des-  composición  fotoquímica  del  ácido  oxáli-  co. También se utilizan los detectores bio-  lógicos que indican a través de la piel y los   microorganismos,  y  se  encuentran  detec-  tores físicos como dispositivos radiométri-  cos,  fotoeléctricos,  espectroradiómetros  y    el luxómetro.  Controles   •  Control en la fuente:  para los con-  troles en la fuente se pueden consi-  derar el diseño adecuado de las ins-  talaciones.  En  los  equipos  se  debe    emitir  la  potencia  mínima  que  re-  quiera  el  trabajo,  el  cerramiento  de    las zonas de operación, la utilización   de  pantallas y  atenuadores,  colocar     cubiertas a las superficies de trabajo    y un adecuado mantenimiento.  •  Control  en  el  medio:   se  requiere    hacer  un  buen  recubrimiento  anti-   rreflectante de las paredes de los lu -  gares donde se manejen equipos que   produzcan  radiaciones,  señalización    de  las  zonas  de  operación,  utilizar    las fotocopiadoras siempre con tapa,   instalar mamparas en soldadura pin-  tadas de negro mate, ya que absor- ben radiaciones. Cuando se trabaja a   la  intemperie,  es  importante  utilizar    parasoles  o  toldillos  para  proteger  a    los  trabajadores,  limitación  de  ac-  ceso a las personas no autorizadas y   una adecuada ventilación, dado que   la UV produce ozono. \n27 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  •  Control  en  el  trabajador:   es  in-  dispensable que utilice bloqueador   solar, protección ocular, protección   del cuerpo y que se realice monito-   reo biológico. Este debe ser notifi -  cado  de  los  riesgos  y  las  medidas    de  prevención  y  control  que  esta-  blezca  la  empresa.  Se  debe  tener    en  cuenta  que  la  Resolución 2400    de 1979, en su capítulo V, establece   que  “todo  trabajador  sometido  a    radiaciones  ultravioleta,  en  canti-  dad nociva, será instruido en forma   repetitiva verbal y escrita, sobre los   riesgos  a  que  está  expuesto  y  los    medios apropiados de protección”.   En  lo  que  respecta  a  las  medidas    para  protección  ocular  de  los  tra-  bajadores  es  importante  tener  en    cuenta la NTC 1836. Figura 11. Fuente: shutterstock/531560926  Vide o  Ahora veamos nuestra videocápsula sobre radiacio- nes no ionizantes. https://www.youtube.com/watch?v=ZU0jxuLibDo \nIluminación \n29 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Se podría pensar que la iluminación no  es un factor importante a tener en cuenta   en la higiene industrial. La Resolución 2400   de 1979, en su Título III, capítulo III, artículo   82, establece que: “Los lugares de trabajo   que  ofrezcan  mayor  peligro  de  accidente     deberán estar suficientemente iluminados,    especialmente  en  aquellas  operaciones  o    procesos  en  donde  se  manejan  o  funcio-  nen  máquinas  prensas,  troqueladoras,  ci-  zallas, trituradoras, inyectoras, extrusoras,   sierras,  etc.”  (Ministerio  de  Agricultura,    1986, p. 184).  Iluminación: es una radiación electromagnética de longi-  tud de onda entre 380 y 770 milimicras y una frecuencia   entre 4X10 (14) y 7 X 10 (14) HZ y que es visible a provo-  car una sensación visual. Es la proyección de la luz de   un cuerpo brillante sobre otro combinada con diferentes    colores genera los ambientes específicos laborales.  ¿Cuáles son los beneficios de una buena iluminación?   Una  buena  iluminación  aumenta  las  condiciones  de  seguridad,  reduce  accidentes,   disminuye el ausentismo laboral, reduce la fatiga, disminuye errores, incrementa la pro-  ductividad y estimula la buena actitud y satisfacción de los trabajadores.  Aspectos técnicos  Los  aspectos  técnicos  que  tienen  que   ver con la iluminación son:  el flujo lumino -  so,  el  nivel  de  iluminación  y  el  brillo  o  lu- minancia y el contraste, que es la relación   entre el brillo de un objeto y su fondo. La  iluminación  se  encuentra  natural,    gracias a la luz del sol, y artificial, gene -  rada por bombillos, lámparas, reflectores,   linternas,  etc.  La  luz  mixta  corresponde  a    la mezcla entre luz natural y artificial.  Flujo luminoso: cantidad de radiación visible produci-da por una fuente y su medida se en lumen. Nivel de iluminación:  flujo luminoso que cae sobre  una unidad de superficie y su medida se da en Lux.  Brillo o luminancia: es la relación entre la intensidad  luminosa que incide en un objeto y su reflejo.  Dentro de las causas que generan deficiente iluminación en los lugares de trabajo en -  contramos: no hay o no se aprovecha la luz natural disponible, las superficies traslúcidas    no cuentan con persianas que permitan orientar los haces de luces, la iluminación insta-  lada no corresponde a las condiciones de trabajo, incorrecta distribución de las lámpa-   ras, el número, altura e intensidad de las mismas resultan insuficientes, la iluminación no    es uniforme o no corresponde a la agudeza visual del trabajador, no se utilizan lámparas   individuales de luz localizada, requiriéndose altas intensidades, los colores de los techos,    paredes, divisiones, pisos, muebles no favorecen la reflexión de la luz, no hay control de  \n30 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  fenómeno  estroboscópico  en  lugares  donde  se  operan  máquinas,  no  se  garantiza  ilu-  minación continua de los sitios que implican riesgos para la vida de las personas, como   áreas  críticas,  rutas  de  evacuación,  existe  poco  o  ningún  mantenimiento  periódico  y    mala ubicación de computadores con respecto a su ubicación frente a ventanales.  La deficiencia lumínica causa problemas de cefalea, falta de concentración, mayor   porcentaje de errores, cansancio visual, fatiga mental, acentuación de problemas visua-  les y accidentes de trabajo por máquinas, equipos o lugares poco iluminados.  Métodos de alumbrado  Existe  el  alumbrado  general,  el  alumbrado  general  localizado,  el  alumbrado  indivi- dual, el alumbrado combinado y el alumbrado suplementario.  Figura 12. Alumbrado general vs. alumbrado individual Fuente: propia Figura 13. Alumbrado combinado vs. alumbrado localizado Fuente: propia \n31 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Figura 14. Alumbrado suplementario Fuente: propia Conozcamos  las  técnicas  de  medición   para realizar estudios de iluminación: ela-  bore  un  plano  del  lugar,  oriente  el  plano    mediante  brújula  dibujada,  marque  so-   bre el plano los puntos a medir, verifique    las  condiciones  del  lugar,  distribución  de    áreas,  ventanas  claraboyas,  luminarias    y  maquinaria.  Debe  elegirse  el  tiempo  en    que  las  condiciones  son  más  críticas.  La    iluminación no tiene TLV, sino rangos reco-  mendados con base en normativas. Además  de  lo  anterior,  para  hacer  un   buen estudio de iluminación, deben tener- se  en  cuenta  las  exigencias  de  la  tarea  y    condiciones  visuales  del  trabajador,  co-  mentarios y sugerencias, actividades ruti-  narias  y  no  rutinarias,  pisos,  paredes,  te-   chos superficies de trabajo, altura de las    luminarias  y  altura  del  plano  de  trabajo.    Las  mediciones  se  efectúan  sobre  planos    de  trabajo  y  en  las  condiciones  normales    de la tarea la celda se coloca sobre el pla-  no  de  trabajo y  sobre  el  campo visual  del     trabajador. La evaluación de la luz artifi -  cial se hace sin la presencia de luz natural.  ¡Impor tante!  Adicionalmente, veamos una ga- lería sobre el tema.  Mejoras para las condiciones de   iluminación  El  control  se  traduce  en  mejoras  como   aumentar  o  disminuir  el  número  de  lumi-  narias,  redistribuir  las  luminarias,  pintar    paredes  de  colores  claros,  ya  que  estos    tienen  mayor  coeficiente  de  reflexión  de   la  luz,  bajar  o  subir  luminarias y  tener  un    plan de mantenimiento que incluya la re-  posición de luminarias.  Exposición a ambientes térmicos  En los lugares de trabajo se encuentran  dos tipos de fuentes de exposición al calor   ambiental:  exposición  a  calor  seco,  cuya    humedad relativa (HR) es menor al 70 %;   ejemplo:  operación  en  hornos,  industrias    metalúrgicas,  cerámica,  fundición,  mani-  pulación  de  objetos  a  alta  temperatura,    mantenimiento  de  calderas,  chimeneas,    etc.  Cuando  la  HR  es  mayor  al  70  %,  se    dice  que  hay  exposición  a  calor  húmedo;    ejemplo:  salas  de  planchado,  tintorerías,    curtiembres,  industria  textil,  fábricas  de    conservas, minería subterránea e industria   de alimentos. Normalmente,  la  exposición  de  los  tra- bajadores se debe a falta de aislamientos   térmicos en hornos, calderas y, en general,   cualquier equipo generador de calor, tem-  peratura ambiental alta de acuerdo con la    ubicación geográfica, época del año y hora    del día, sistemas de ventilación inadecua-  dos  o  sistemas  de  inyección  y  extracción    mal diseñados o inadecuados. \n32 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Figura 15. Fuente: shutterstock/557763517  Efectos generados por el calor  •  Sobrecarga térmica:  cantidad de calor que ha de disiparse para que el organis-  mo siga un equilibrio térmico, representada por la suma del calor metabólico y las   ganancias o pérdidas por convección o radiación.  •  Tensión térmica:  modificación fisiológica o patología siguiente a la sobre carga    térmica.   •  Trastornos de la piel:  erupciones rojas en partes del cuerpo, quemaduras.   •  Golpe de calor:  colapso, convulsiones, delirio, alucinaciones y coma.   •  Síncope por calor:  mareos, palidez, piel sudorosa y dolor de cabeza.   •  Deshidratación : disminución de la capacidad mental, mala estimación de peli-  gros, pérdida de habilidad. También se presentan postración de calor con depleción de sal, fatiga, mareos, ano- rexia, náuseas, vómitos y calambres musculares, calambres por calor generados por su-  ministrar líquidos sin sal, enfermedades de las glándulas sudoríparas, como anhidrosis, y    edema por el calor que se manifiesta con hinchazón de las extremidades. \n33 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Evaluación ambiental  Es  uno  de  los  estudios  más  complejos  dado  que  intervienen  variables  como  la  tem- peratura ambiental, la humedad relativa, el esfuerzo físico, que se traduce en consumo   de kilocalorías en unidad de tiempo, la velocidad del aire (se mide con anemómetro), la   aclimatación e hidratación. Para el cálculo del índice de estrés térmico (WBGT) se requieren tres termómetros: el  termómetro de bulbo seco, el de bulbo húmedo y el de globo.  El valor del índice WBGT se obtiene mediante ecuaciones. Las ecuaciones y los cálcu- los propuestos se encuentran recomendados en la Resolución 2400 de 1979.   Exteriores con carga solar  •  WBGT = 0,7 Th + 0,2 Tg + 0,1 Ts  Interiores o exteriores sin carga solar   •  WBGT = 0,7 Th + 0,3 Tg WBGT: temperatura de globo y bulbo húmedo en °C.  Th: temperatura natural de termómetro de bulbo húmedo en °C.  Tg: temperatura del termómetro de globo en °C.  Ts: Temperatura del bulbo seco °C.  Una vez calculado el WBGT, el profesional de higiene ocupacional estima la produc- ción metabólica media de calor y cruza esta información con el WBGT. Además, debe   especificar si el trabajador se encuentra o no aclimatado.  Medidas de control  Las medidas de control pretenden reducir el calor aportado externo o interno; es de- cir, el generado por el ambiente de trabajo, las máquinas y los procesos. Cuando no sea   posible el control en la fuente o en el medio, es necesario garantizar el suministro de los   elementos de protección personal a los trabajadores, disminuir el esfuerzo físico y acli-  matar, hidratar y capacitar a los individuos. \n34 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Control en la fuente  •  Vidrios o tabiques opacos. •  Aumento del coeficiente de reflexión.  •  Aumento  de  la  resistencia  térmica    de cobertizos. •  Aumento de la absortividad. •  Ventilación local exhaustiva.  Control en el medio  Se deben establecer sistemas de inyec- ción de aire y extracción para favorecer la   convección  natural  del  aire,  teniendo  en    cuenta  la  calidad  del  aire  que  ingresa,  e    instalar  sistemas  de  aire  acondicionado.    Es  importante  aumentar  la  velocidad  del    aire, instalar pantallas protectoras entre la   fuente y  el  receptor.  En  lo  que  respecta  a    la ventilación, esta puede ser natural, for- zada o mixta, y puede contar con equipos   mecanizados.   Control en el trabajador  Para los controles en el trabajador es po- sible  reducir  la  producción  de  calor  meta-  bólico, permitiéndole reducir la carga física.   Se recomienda el consumo de agua con sal,   limitar  el  tiempo  de  exposición,  crear  un    microclima  en  el  puesto  de  trabajo,  sumi-  nistrar elementos de protección personal y   llevar  un  control  médico. Tenga  en  cuenta    en  el  examen  de  ingreso:  obesidad,  talla,    sistemas cardiovascular, renal, endocrino y   respiratorio  y  piel.  En  lo  que  respecta  a  la    aclimatación,  esta  se  realiza  en  6  días:  el    primer  día  trabaja  el  50  %  de  la  jornada,    con incrementos diarios del 10 %.  Al  aclimatar  a  los  trabajadores  se  ob- servan  ventajas  como  la  disminución  del    ritmo  cardíaco,  el  incremento  de  los  cau-  dales  de  sudoración,  la  reducción  de  la    concentración salina del sudor y la dismi-  nución de la temperatura corporal. Las  bajas  temperaturas  en  los  lugares    de trabajo se identifican en procesos hú -  medos  como  cuartos  fríos  de  industrias    de  alimentos  y  cavas  de  fermentación.    Se  pueden  presentar  bajas  temperaturas    de  acuerdo  con  la  ubicación  geográfica,    época del año y hora del día. Se observan   también lugares de trabajo cuyos sistemas   de ventilación ingresan aire fresco de baja   temperatura con relación al aire interior de   la  planta,  o  ubicación  inadecuada  de  los    sistemas de inyección y extracción de aire,    también se identifican problemas genera -  dos por la falta de aislamientos térmicos. Al  trabajar  tiempos  excesivos  en  cuar- tos  fríos  o  ambientes  con  bajas  tempe-  raturas  se  puede  presentar  hipotermia,  la     cual  se  manifiesta  con  vasoconstricción,    desactivación  de  las  glándulas  sudorípa-  ras,  disminución  de  la  circulación  sanguí-  nea periférica, disminución de la destreza,   congelación de partes terminales del cuer- po (manos y pies) y muerte, si la tempera-  tura interior baja de los 28 °C. \n35 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Temperaturas   Tiempo de permanencia  De 0 a 18 °C   No se establecen límites si se usa ropa adecuada. De -18 a -34 °C   Máximo 4 horas al día, alternando una hora de exposición y una   hora de recuperación. De -34 a -57 °C   Dos periodos de 30 minutos, separados cada 4 horas. Tabla 1. Temperaturas límites y tiempos de permanencia Fuente: Acgih  Control de peligros por temperaturas bajas  Para evitar problemas de hipotermia es importante considerar aspectos como el su- ministro  de  ropa  térmica.  Se  deben  proteger  el  cuerpo,  las  manos,  las  orejas,  la  cara    y  la  cabeza;  la  ropa  debe  ser  ligera,  poco  voluminosa  e  impermeable,  permitiendo  la    transpiración;  asimismo,  se  deben  evitar  tareas  con  poca  actividad  física,  suministrar    una alimentación balanceada y avalada por el médico de la empresa, instalar equipos    de suministro de aire caliente, formar a los trabajadores para identificar riesgos y sín -  tomas, evitar corrientes de aire innecesarias y realizar pausas activas que aumenten la   circulación sanguínea.  Lectura complementaria    Leamos  un  documento  para  complementar  nuestra  formación  en  higiene   ocupacional y seguridad en el trabajo. Veremos los diferentes riesgos de higiene    y su clasificación, al igual que los métodos de cuantificación e intervención.    Occupational Health, Safety and Hygiene.  University of Gondar  https://www.cartercenter.org/resources /pdfs /health/ephti/library/lectu-  re_notes/env_health_science_students/ln_occ_hlth_sfty_hygiene_final.pdf \nRiesgo psicosocial  Son considerados factores psicosociales tres aspectos fundamentales que deben ser  evaluados por los empleadores: aspectos intralaborales, aspectos extralaborales y con-  diciones individuales. Los intralaborales tienen que ver con la gestión administrativa de las organizaciones.   Deben ser cuantificados mediante una encuesta en la que se consideren funciones y   responsabilidades del cargo, carga física y mental para realizar los oficios, tipo de con -  trato, facilidad de promoción, salarios, turnos de trabajo, etc. Por su parte, los aspectos   extralaborales se relacionan con el estrato del trabajador, el nivel de escolaridad, el lugar   de residencia, las características de su hogar y su vivienda, la forma de recreación, etc. La  anterior  información  debe  ser  recopilada  a  través  de  encuesta y  utilizada  para  el   diseño de planes de intervención, en aspectos psicosociales y de bienestar del trabajador. En cuanto a las condiciones individuales es importante que, mediante el Sistema de   Gestión de Seguridad y Salud en el Trabajo, se caracterice de forma sociodemográfica    de la población trabajadora.  Video  Lo invitamos a ver la videocápsula sobre los riesgos psicosociales.  https://www.youtube.com/watch?v=-pSvlWelz1g  ¡Importante!  Puedes revisar el recurso de nube de palabras. \n37 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  Peligros biológicos  La mayoría de las personas están expuestas a microorganismos, aunque no todas son   susceptibles a contaminarse. El riesgo biológico laboral podría definirse como el produ -  cido por contaminantes biológicos que habitan en ambientes laborales específicos, pero    que, al transmitirse, podrían extenderse más allá del ambiente de trabajo. La valoración del riesgo biológico es compleja, puesto que no puede hablarse de una   concentración segura y su influencia en las personas varía dependiendo de característi -  cas individuales, como el sistema inmunológico, el estado nutricional, el género, la raza,   y la susceptibilidad a los contaminantes biológicos. Su control debe basarse en hábitos de higiene y limpieza, mediante procedimientos  estandarizados  y  formación  a  los  trabajadores  para  crear  conciencia  del  peligro  exis-  tente;  así  como  en  el  uso  de  equipos  de  protección  personal y  barreras  de  protección    colectiva, vacunación y fomento de condiciones de nutrición y salud óptimas.  Dentro de los riesgos biológicos se encuentran microorganismos, virus, bacterias, pa- rásitos, protozoos y hongos, los cuales pueden ingresar al organismo por vía respiratoria,   a través de la piel, por ingestión o por vía parenteral; es decir, a través de heridas.  Vide o  Pasemos ahora a observar nuestra videocápsula sobre bioseguridad.   https://www.youtube.com/watch?v=etpJBWGF0eo  Riesgo ergonómico o biomecánico  Los aspectos biomecánicos en el trabajo deben ser estudiados a lo largo de los pro- cesos productivos, desde la selección del trabajador, el diseño de los locales, estaciones   de trabajo, sillas, muebles, herramientas, equipos y los demás peligros relacionados con   la higiene ocupacional.  La  ergonomía  es  la  ciencia  del  confort.  Busca  adaptar  el  entorno  al  hombre,  a  sus    características físicas, psicológicas y sociales, con el fin de generar bienestar y satisfac -  ción e incrementar la calidad y la productividad. Es una ciencia multidisciplinaria, ya que   considera  al  ser  humano  de  forma  integral  con  relación  a  su  entorno  para  establecer    sistemas que interactúan hacia el confort y el bienestar. \n38 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  La  ergonomía  es  la  ciencia  del  confort.  Busca  adaptar  el  entorno  al  hombre,  a  sus    características físicas, psicológicas y sociales, con el fin de generar bienestar y satisfac -  ción e incrementar la calidad y la productividad. Es una ciencia multidisciplinaria, ya que   considera  al  ser  humano  de  forma  integral  con  relación  a  su  entorno  para  establecer    sistemas que interactúan hacia el confort y el bienestar. Los estudios de ergonomía implican una serie de análisis y estudios de los puestos de  trabajo para determinar cómo están relacionadas las condiciones ambientales con las   herramientas y los equipos, el entorno de las áreas de trabajo. Por supuesto, es necesario   estudiar los conceptos de carga física y carga mental del trabajador en su entorno.  Valoración de los factores de riesgo ergonómico  Cualquier  valoración  de  tipo  ergonómico  que  se  realice  en  una  empresa  se  funda- mentará  en  la  observación y  la  medición.  De  un  lado  se  emplean  los  parámetros  que    proporciona la antropometría. En lo referente a la observación, esta debe ser directa y   complementarse con videos, fotografías y dibujos de la estación de trabajo para identi-   ficar los riesgos. Entre los puntos sustanciales a observar están:  Figura 16. Fuente: propia \n39 Condiciones de trabajo I - Higiene y seguridad industrial - eje 2 Analicemos la situación  La valoración se puede hacer mediante la aplicación de técnicas de perfiles de traba - jo dentro de las cuales se destacan las siguientes:  Métodos objetivos  •  Règie Nationale des Usines Renault (RNUR). 1897.  •  Laboratoire d’Economie et de Sociologie du Travail (LEST). 1979.  Para la valoración de los riesgos del dolor lumbar inespecífico (DLI) se utilizan los si - guientes métodos, según la Guía para la Atención Integral del Ministerio de Protección   Social (2006): •  Método Niosh: determinar los límites de levantamiento manual de cargas. •  Método  de  la  Comunidad  Económica  Europea:  evalúa  los  riesgos  derivados  del    levantamiento y depósito de cargas en posturas de pie. •  Método OWAS 1977 (Ovako Working Posture Analysis System): destinado al análi-  sis de carga postura. La  selección  y  aplicación  del  método  corresponde  al  profesional  de  higiene  ocupa- cional o ergónomo, con base en los resultados de las encuestas a los trabajadores y la   observación directa o registros visuales que permitan un análisis de las posturas, movi-  mientos, esfuerzo, velocidad y pausas durante la jornada.  Video  Lo invitamos a ver nuestra video- cápsula sobre riesgo ergonómico. ht tps:// w w w.youtub e.com / watch?v=HkmbNWidb-Y  ¡Importante!  Para  finalizar,  desarrolle  el  caso   simulado  de este eje. \nBIBLIOGRAFÍA Creus,  A.  y  Mangosio, J.  (2011).    Seguridad  e  higiene  en  el  trabajo,  un  enfoque   integral .  Buenos Aires, Argentina: Alfaomega. Cepyme y Fundación para la prevención de riesgos laborales. (s. f.).  EmergeMAP.  Herramienta  multimedia  para  el  desarrollo,  implantación  e  integración  en  la    empresa de un plan de emergencias.  Recuperado de http://www.conectapyme.  com/gabinete/emergemap/guia/nivel2apartado1.html  Hablemos de seguridad, Let’s talk safety .  [Hablemos de seguridad, Let’s talk safety] .   (2014, marzo 15). Peligros y riesgos eléctricos .  [Archivo de video] .  Recuperado de   https://www.youtube.com/watch?v=8MTpXDK8GrQ  Hablemos de seguridad, Let’s talk safety .  [Hablemos de seguridad, Let’s talk safety] .   (2014,  marzo  9).  Seguridad  industrial,  protección  de  maquinaria,  guardas  y    barreras físicas. [Archivo de video] .  Recuperado de https://www.youtube.com/ watch?v=d0dksGa9Gjo  Henao, F. (2014).  Riesgos eléctricos y mecánicos . Bogotá, Colombia: Ecoe Ediciones. Hg. Wolfurious .  [Hg. Wolfurious]. (2012, diciembre 26).   Espacios confinados. Casos   (lo que se debe y no se debe hacer) .  [Archivo de video]. Recuperado de https://   www.youtube.com/watch?v=hXL-W3Vu_Mg  Instituto  Nacional  para  la  Seguridad  y  Salud  Ocupacional.  (2011).   Espacios   confinados .  Recuperado  de  https://www.cdc.gov/spanish/niosh/topics /  confinados.html  International Labour Organization. (2001).  Fundamental principles of occupational  health and safety . Recuperado de  http://univer.nuczu.edu.ua/tmp_metod/1058/  FUNDAMENTAL%20PRINCIPLES%20OF%20OCCUPATIONAL%20HEALTH%20  AND%20SAFETY.pdf   Mancera, J. R. (2016).  Seguridad y salud en el trabajo.  Bogotá ,  Colombia: Alfaomega. Ministerio  de  Minas  y  Energía.  (30  de  agosto  de  2013).  Resolución  N.°  90708  de   2013.  Reglamento  Técnico  de  Instalaciones  Eléctricas.  Retie.  Recuperado  de    https:// www.minminas.gov.co /documents / 10180/ 1179442/Anexo+Gener- al+del+RETIE+vigente+actualizado+a+2015-1.pdf/57874c58-e61e-4104-8b8c-  b64dbabedb13 \nBIBLIOGRAFÍA Ministerio  de  Relaciones  Laborales  de  Ecuador .   (2013).   Espacios confinados.   Re- cuperado  de  http://www.trabajo.gob.ec/wp-content /uploads /2012/10/  NT-12-Espacios-Confinados.pdf  Ministerio de Trabajo y Seguridad Social. (11 de julio de 2012). Ley 1562 de 2012. DO:  48488 .  Ministerio de Trabajo y Seguridad Social. (22 de mayo de 1979). Resolución 2400 de  1979. Recuperado de http://copaso.upbbga.edu.co/legislacion/Res.2400-1979.pdf  Ministerio de Trabajo. (23 de julio de 2012). Resolución 1409. DO: 48517.   National Fire Protection Association. (2006).  Norma para extintores portátiles contra  incendio .  Recuperado  de  http://parquearvi.org/wp-content /uploads /2016/11/  Norma-NFPA-10.pdf  Presidencia de la República de Colombia. (14 de marzo de 1984). Decreto 614 de  1984. DO: 36561 .  Presidencia  de  la  República  de  Colombia.  (26  de  mayo  de  2015).  Decreto  Único   Reglamentario del Sector Trabajo. [Decreto 1072 de 2015]. Recuperado de http://  www.alcaldiabogota.gov.co/sisjur/normas /Norma1.jsp?i=62506  Robledo,  H.  F.  (2013).   Riesgos  químicos,  biológicos  y  bioseguridad.   Bogotá,  Colombia: Ecoe Ediciones .  Van der Haar, R. (2001).  La higiene ocupacional en América Latina, una guía para  el desarrollo.  Recuperado de https://es.slideshare.net /ceciliariveracervantes /la-  higiene-ocupacional-en-amrica-latin \n\n";
+    const PDF_NAME = "1. CONDICIONES DE TRABAJO I - HIGIENE Y SEGURIDAD INDUSTRIAL.pdf";
+    const CHATBOT_THEME = "ChatBot CONDICIONES DE TRABAJO I - HIGIENE Y SEGURIDAD INDUSTRIAL";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "gemini-search";
+    const PROPOSED_QUESTIONS = ["¿Cuál es la definición de higiene industrial según la ACGIH y qué abarca?","¿Qué son los contaminantes físicos y cuáles ejemplos se mencionan en el documento?","¿Qué equipos se utilizan para medir el ruido ocupacional y cómo funcionan?","¿Cuáles son los valores límites permisibles para el ruido continuo en Colombia y cuál es el tiempo de exposición máximo?","¿Qué efectos adversos pueden tener las radiaciones ionizantes en los trabajadores y en el feto?","¿Cuáles son las medidas de protección contra las radiaciones ionizantes mencionadas en el texto?","¿Cómo se clasifican las radiaciones no ionizantes y de dónde provienen?","¿Qué beneficios se obtienen de una buena iluminación en el lugar de trabajo y qué aspectos técnicos se consideran?","¿Cuáles son los dos tipos de ambientes térmicos a los que se puede estar expuesto en el trabajo y cuáles son sus ejemplos?","¿Qué es la sobrecarga térmica y la tensión térmica, y cuáles son sus efectos en el cuerpo humano?","¿Cómo se evalúa el riesgo ergonómico en el lugar de trabajo y qué métodos se mencionan para su valoración?","¿Qué métodos se utilizan para evaluar los riesgos derivados del levantamiento manual de cargas y cuáles son sus enfoques?"];
+    const INITIAL_PALETTE = {"primaryColor":"#9f30e8","secondaryColor":"#b259ed","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#9f30e8","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Chat bot clasificación de costos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Chat bot clasificación de costos</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "  www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n35  Objetivo general  Capacitar al estudiante para comprender y analizar los conceptos básicos de costos,   sus clasificaciones más relevantes y los diferentes métodos para determinar su com-  portamiento.  Al terminar de estudiar este capítulo, el alumno deberá ser capaz de:  •  Definir qué se entiende por contabilidad de costos. •  Comentar los seis objetivos de la contabilidad de costos. •  Explicar cómo la contabilidad de costos sirve de eslabón entre la contabilidad financiera   y la administrativa. •  Definir qué se entiende por costo, en función de la teoría contable. •  Diferenciar  entre  los  conceptos  de  gasto,  activo  y  pérdida,  en  función  de  la  teoría   contable. •  Explicar  los  once  enfoques  de  clasificaciones  de  costos,  dando  ejemplos  de  cada   uno. •  Explicar las características de los costos variables y de los costos fijos. •  Explicar en qué consisten, cómo y en qué casos se aplican los diferentes métodos para   segmentar los costos. •  Calcular  los  costos  variables  y  los  costos  fijos  de  una  partida  de  ellos,  aplicando  el   método punto alto-punto bajo. •  Calcular los costos variables y los costos fijos de una partida de ellos, aplicando mínimos   cuadrados. •  Explicar los principales problemas a que actualmente se enfrenta la contabilidad de   costos. •  Explicar las tres variables que inter vienen en el comportamiento de los costos. •  Comentar en qué consiste el método de diagrama de dispersión.  A. Naturaleza y conceptos fundamentales  La contabilidad de costos es un sistema de información que clasifica, acumula, controla y asigna   los costos para determinar los costos de actividades, procesos y productos y con ello facilitar la   toma de decisiones, la planeación y el control administrativo  (vea figura 2-1). La clasificación  de ellos, como se estudiará más adelante en este capítulo, depende de los patrones de com-  portamiento, actividades y procesos con los cuales se relacionan los productos o ser vicios. La   clasificación dependerá del tipo de medición que se desea realizar. En general, los informes   de costos indican el costo de un producto, de un ser vicio, de un proceso, de una actividad, de   un proyecto especial, etc. Los informes de costos son muy útiles también para planeación y   selección de alternativas ante una situación dada. Por ello, se puede concluir que los objetivos   de la contabilidad de costos son:  1.   Generar informes para medir la utilidad, proporcionando el costo de ventas correcto.  2.   Valuar los inventarios.   3.   Proporcionar reportes para ayudar a ejercer el control administrativo.   4.   Ofrecer información para la toma de decisiones.   5.   Generar información para ayudar a la administración a fundamentar la estrategia compe- titiva.  6.   Ayudar a la administración en el proceso del mejoramiento continuo, eliminando las acti- vidades o procesos que no generan valor.  A. Naturaleza y conceptos fundamentales  Formación (2)ok.indd   35   2/1/08   6:51:19 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n36   CApítulo 2  Conceptos, clasificaciones y comportamiento de los costos  Los informes clásicos que genera la contabilidad de costos facilitan que se cumpla con  los primeros tres objetivos. Sin embargo, para poder colaborar con los tres últimos, los costos   deben reclasificarse y reordenarse en función de la circunstancia específica que se esté ana-  lizando, ya sea por actividades, procesos o productos. Algunos autores describen la contabilidad de costos como un punto que une la contabilidad  financiera con la administrativa. De acuerdo con los seis objetivos mencionados, en la medida   en que sir ve ésta a los dos primeros objetivos, apoya a la contabilidad financiera. Por ello, es   correcto percibir la contabilidad de costos como eslabón entre las dos contabilidades. Las decisiones de los administradores implican una selección entre los cursos de acción  opcionales. Los costos desempeñan un papel muy importante en el proceso de toma de deci-  siones. Cuando los valores cuantitativos pueden asignarse a las opciones, la administración   cuenta con un indicador acerca de cuál es la opción más conveniente desde el punto de vista   de la obtención del máximo de utilidades para la empresa. Esto no representa necesariamente   el único criterio de selección en la toma de decisiones, ya que existen factores cualitativos que   pueden ser determinantes en la decisión. En síntesis, se puede decir que la información cuantitativa sobre costos que debe incluir- se en cada informe varía según la situación de la empresa y de los objetivos específicos de la   administración. En general, el costo de cualquier acción o actitud depende del propósito o fin   para determinar el costo. El concepto de costo es uno de los elementos más importantes para realizar la planeación,  el control y la toma de decisiones; adicionalmente, es un concepto que puede dar lugar a dife-  rentes interpretaciones. De ahí la necesidad de manejar una definición correcta que exprese   su verdadero contenido.  Por costo se entiende la suma de erogaciones en que incurre una persona física o moral para la  adquisición de un bien o de un servicio, con la intención de que genere ingresos en el futuro . Un costo  puede tener distintas características en diferentes situaciones, según el producto que genere:1  Costo-activo    Existe cuando se incurre en un costo cuyo potencial de ingresos va más allá del  potencial de un periodo, por ejemplo la adquisición de un edificio, maquinaria, etcétera.  Costo-gasto    Es la porción de activo o el desembolso de efectivo que ha contribuido al esfuerzo  productivo  de  un  periodo,  que  comparado  con  los  ingresos  que  generó  da  por  resultado  la   FIGuRA 2-1  Esquema de la contabilidad de costos  Toma de decisiones, planeación y control $ procesos$ actividades   $ productos  Contabilidad de costos  Clasifica los costos   Acumula los costos   Controla los costos   Asigna los costos  1  Dermer, Jerr y,  op. cit ., p. 79.  Formación (2)ok.indd   36   2/1/08   6:51:20 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n37  utilidad realizada en éste. Por ejemplo, los sueldos correspondientes a ejecutivos de adminis-  tración, o bien la depreciación del edificio de la empresa correspondiente a ese año.  Costo-pérdida    Es la suma de erogaciones que se efectuó, pero que no generó los ingresos  esperados, por lo que no existe un ingreso con el cual se puede comparar el sacrificio realizado.   Por ejemplo, cuando se incendia un equipo de reparto que no estaba asegurado. Los usuarios externos e internos de la información contable utilizan dicho concepto, y lo  aplican en forma directa durante el proceso de toma de decisiones; por ejemplo, para deter-  minar el lote óptimo de compra de inventarios es importante que se conozca el costo de man-  tener y ordenar dichos inventarios, de tal forma que al relacionarlo se determine la cantidad   óptima de pedido. Para determinar si conviene aumentar el plazo de crédito, se debe conocer   el costo de oportunidad de los recursos necesarios para incrementar la inversión en cuentas   por cobrar, dato que se compara a continuación con el aumento de utilidades proveniente del   incremento de ventas por el cambio de políticas de crédito. En esta forma se puede decidir si   es conveniente cambiar esa política de crédito. A continuación se estudiarán las diferentes clasificaciones de costos.  B.  Clasificaciones de costos Los costos, como se ha mencionado, son fundamentales para el administrador no sólo para   efectos de valuar inventarios, sino para los diferentes procesos administrativos de la organiza-  ción (planeación, toma de decisiones, control). Dependiendo del tipo de proceso administrativo   de que se trate, y del tipo de toma de decisiones que se quiera realizar, los costos pueden ser   clasificados de diferentes formas. En la figura 2-2 se muestran estas clasificaciones, y poste-  riormente se explicará cada una de ellas.  1.  De acuerdo con la función en la que se incurren: a)   Costos  de  producción:   Son  los  que  se  generan  en  el  proceso  de  transformar  la  materia prima en productos terminados. Se subdividen en costos de materia prima,   de mano de obra e indirectos de fabricación:    •   Costos  de  materia  prima   El  costo  de  materiales  integrados  al  producto.  Por  ejemplo, la malta utilizada para producir cer veza, el tabaco para producir cigarros,   etcétera.    •   Costos de mano de obra   Es el costo que inter viene directamente en la transfor- mación del producto. Por ejemplo, el sueldo del mecánico, del soldador, etcétera.    •   Gastos indirectos de fabricación   Son los costos que inter vienen en la transfor- mación de los productos, con excepción de la materia prima y la mano de obra directa.   Por ejemplo, el sueldo del super visor, mantenimiento, energéticos, depreciación,   etcétera.  b)   Costos de distribución o venta:   Son los que se incurren en el área que se encar- ga de llevar el producto desde la empresa hasta el último consumidor; por ejemplo,   publicidad, comisiones, etcétera.  c)   Costos de administración:   Son los que se originan en el área administrativa (sueldos,  teléfono, oficinas generales, etc.). Esta clasificación tiene por objeto agrupar los costos   por funciones, lo cual facilita cualquier análisis que se pretenda realizar de ellas.  d)   Costos de financiamiento:   Son los que se originan por el uso de recursos ajenos,  que permiten financiar el crecimiento y desarrollo de las empresas.  2.  De acuerdo con su identificación con una actividad, departamento o producto: a)   Costos directos:   Son los que se identifican plenamente con una actividad, departamento  o producto. En este concepto se cuenta el sueldo correspondiente a la secretaria del   B. Clasificaciones de costos  Formación (2)ok.indd   37   2/1/08   6:51:21 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n38   CApítulo 2  Conceptos, clasificaciones y comportamiento de los costos  director de ventas, que es un costo directo para el departamento de ventas; la materia   prima es un costo directo para el producto, etcétera.  b)   Costo indirecto:   Es el que no se puede identificar con una actividad determinada.  Por ejemplo, la depreciación de la maquinaria o el sueldo del director de producción   respecto al producto. Algunos costos son duales; es decir, son directos e indirectos al mismo tiempo. El  sueldo del gerente de producción es directo para los costos del área de producción,   pero indirecto para el producto. Como se puede apreciar, todo depende de la actividad   que se esté analizando.  3.  De acuerdo con el tiempo en que fueron calculados: a)   Costos históricos:   Son los que se produjeron en determinado periodo: los costos de  los productos vendidos o los costos de los que se encuentran en proceso. Éstos son   de gran ayuda para predecir el comportamiento de los costos predeterminados.  FIGuRA 2-2  Cuadro general de las clasificaciones en que pueden comprenderse los costos  Clasificación    de los costos 1. De acuerdo con la función en la que se originan  2. De acuerdo con su identificación con una   actividad, departamento o producto 3. De acuerdo con el tiempo en que fueron   calculados 4. De acuerdo con el tiempo en que se cargan   o se enfrentan a los ingresos 5. De acuerdo con el control que se tenga sobre   la ocurrencia de un costo  6. De acuerdo con su comportamiento  7. De acuerdo con su importancia en la toma de   decisiones 8. De acuerdo con el tipo de sacrificio en que se   ha incurrido 9. De acuerdo con el cambio originado por un   aumento o disminución de la actividad 10. De acuerdo con su relación con una   disminución de actividades 11. De acuerdo a su impacto en la calidad Costos de producción  Costos de distribución y venta  Costos de administración  Costos de financiamiento  Costos directos  Costos indirectos  Costos históricos  Costos predeterminados  Costos del periodo  Costos del producto  Costos controlables  Costos no controlables  Costos variables  Costos fijos  Costos semivariables o semifijos  Costos relevantes  Costos irrelevantes  Costos desembolsables  Costos de oportunidad  Costos virtuales  Costos sumergidos  Costos diferenciales  Costos evitables  Costos inevitables  Fallas internas  Fallas externas  Evaluación  Prevención  Discrecionales  Comprometidos  Decrementales  Incrementales  Formación (2)ok.indd   38   2/1/08   6:51:21 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n39  b)   Costos predeterminados:   Son los que se estiman con base estadística y se utilizan  para elaborar presupuestos.  4.  De acuerdo con el tiempo en que se cargan o se enfrentan a los ingresos: a)   Costos de periodo:   Son los que se identifican con los inter valos de tiempo y no con  los productos o ser vicios; por ejemplo, el alquiler de las oficinas de la compañía, cuyo   costo se lleva en el periodo en que se utilizan las oficinas, al margen de cuándo se   venden los productos.  b)   Costos del producto:   Son los que se llevan contra los ingresos únicamente cuando  han contribuido a generarlos en forma directa; es decir, son los costos de los productos   que se han vendido, sin importar el tipo de venta, de tal suerte que los costos que no con-  tribuyeron a generar ingresos en un periodo determinado quedarán inventariados.  5.  De acuerdo con el control que se tenga sobre la ocurrencia de un costo: a)   Costos controlables:   Son aquellos sobre los cuales una persona, de determinado  nivel, tiene autoridad para realizarlos o no. Por ejemplo, los sueldos de los directores   de ventas en las diferentes zonas son controlables por el director general de ventas;   el sueldo de la secretaria, por su jefe inmediato, etcétera. Es importante hacer notar que, en última instancia, todos los costos son contro- lables en uno o en otro nivel de la organización; resulta evidente que a medida que se   asciende a niveles altos de la organización, los costos son más controlables. Es decir,   la mayoría de los costos no son controlables en niveles inferiores. Los costos controlables no son necesariamente iguales a los costos directos. Por  ejemplo, el sueldo del director de producción es directo respecto a su área pero no   controlable por él. Estos costos son el fundamento para diseñar contabilidad por áreas   de responsabilidad o cualquier otro sistema de control administrativo.  b)   Costos no controlables:   En algunas ocasiones no se tiene autoridad sobre los costos  en que se incurre; tal es el caso de la depreciación del equipo para el super visor, ya   que dicho gasto fue una decisión tomada por la alta gerencia.  6.  De acuerdo con su comportamiento: a)   Costos variables:   Son los que cambian o fluctúan en relación directa con una acti- vidad o volumen dado. Dicha actividad puede ser referida a producción o ventas: la   materia prima cambia de acuerdo con la función de producción, y las comisiones de   acuerdo con las ventas.  b)   Costos  fijos:    Son  los  que  permanecen  constantes  durante  un  rango  relevante  de  tiempo o actividad, sin importar si cambia el volumen, como sería el caso de los suel-  dos, la depreciación en línea recta y el alquiler de un edificio.  Dentro de los costos fijos, existen dos categorías. Por un lado, se encuentran los   costos fijos discrecionales , que son aquellos que son susceptibles de ser modifica-  dos,  como  por  ejemplo  los  sueldos  y  salarios;  por  otro  lado,  están  los    costos  fijos  comprometidos , que son los que no aceptan modificaciones, por lo cual también son   llamados costos sumergidos. En esta última categoría entraría la depreciación de la   maquinaria y contratos a largo plazo de arrendamiento.   c)   Costos semivariables:   También conocidos como “semifijos” o mixtos, estos costos  tienen como característica que están integrados por una parte fija y una variable. El   ejemplo típico son los ser vicios públicos como electricidad y teléfono, que cobran una   cuota fija por ser vicio más un costo variable por uso del ser vicio (kilowatts, minutos   de llamadas).  7.  De acuerdo con su importancia para la toma de decisiones: a)   Costos  relevantes:   Son  aquellos  que  se  modifican  o  cambian  de  acuerdo  con  la  opción que se adopte; también se les conoce como costos diferenciales. Por ejemplo,   B. Clasificaciones de costos  Formación (2)ok.indd   39   2/1/08   6:51:21 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n40   CApítulo 2  Conceptos, clasificaciones y comportamiento de los costos  cuando se produce la demanda de un pedido especial y existe capacidad ociosa; en   este caso los únicos costos que cambian, si se acepta el pedido, son los de materia   prima, energéticos, fletes, etc. La depreciación del edificio permanece constante, por   lo que los primeros son relevantes, y el segundo irrelevante para tomar la decisión.  b)   Costos irrelevantes:   Son aquellos que permanecen inmutables, sin importar el curso  de acción elegido. Esta clasificación permite segmentar las partidas relevantes e irrelevantes en el  proceso de toma de decisiones.   FIGuRA 2-3  la índole de los costos fijos y los variables puede mostrarse mediante vectores  Costo variable  Costo total $ Volumen  $ Costo f ijo Volumen  $  Costo variable Volumen  Formación (2)ok.indd   40   2/1/08   6:51:23 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n41  Una  empresa  tiene  actualmente  50%  de  la  capacidad  de  su   almacén ociosa y un fabricante le solicita alquilar dicha capa-  cidad por $120 000 anuales. Al mismo tiempo, se le presenta la   oportunidad de participar en un nuevo mercado, para lo cual  necesitaría ocupar el área ociosa del almacén. Por esa razón, al   efectuar el análisis para determinar si conviene o no expandirse,   se deben considerar como parte de los costos de expansión los   $120 000 que dejará de ganar por no alquilar el almacén.  Ventas de la expansión   $1 300 000 Costos adicionales de la expansión:  Materia prima directa   $350 000 Mano de obra directa   150 000 Gastos indirectos de fab. variables   300 000 Gastos de administración y venta   180 000 Costo de oportunidad   120 000   1 100 000 Utilidad incremental o adicional   $200 000  8.  De acuerdo con el tipo de sacrificio en que se ha incurrido: a)   Costos  desembolsables:   Son  aquellos  que  implicaron  una  salida  de  efectivo,  lo  cual permite que puedan registrarse en la información generada por la contabilidad.   Dichos costos se convertirán más tarde en costos históricos; los costos desembolsables   pueden llegar o no a ser relevantes al tomar decisiones administrativas. Un ejemplo   de un costo desembolsable es la nómina de la mano de obra actual.  b)   Costo de oportunidad:   Es aquel que se origina al tomar una determinación que  provoca la renuncia a otro tipo de alternativa que pudiera ser considerada al llevar a   cabo la decisión. Un ejemplo de costo de oportunidad es el siguiente:  c)   Costos virtuales:   Costos que impactan a la utilidad durante un periodo contable, pero  que no implican una salida de efectivo. Ejemplo: Depreciación, pérdidas cambiarias.   Como  se  muestra  en  el  ejemplo,  el  costo  de  oportunidad  representa  utilidades  que  se  derivan de opciones que fueron rechazadas al tomar una decisión, por lo que nunca aparecerán   registradas en los libros de contabilidad; sin embargo, este hecho no exime al administrador   de tomar en consideración dichos costos. La tendencia normal de los usuarios de los datos   contables para tomar decisiones es emplear sólo los costos de lo que la empresa hace, olvidando   lo que no hace, lo cual en muchos casos puede ser lo más importante.  9.  De acuerdo con el cambio originado por un aumento o disminución de la actividad: a)     Costos diferenciales:   Son los aumentos o disminuciones del costo total, un cambio  en los niveles de inventarios, etc. Estos costos diferenciales pueden clasificarse en  cos- tos decrementales  y  costos incrementales .   Los costos decrementales se originan  cuando un costo diferencial disminuye por reducciones del volumen de operación, como   sería el caso de los ahorros que tendría la empresa por la eliminación de una línea de   producto. Por otra parte, los costos incrementales son aquellos en los que se incurre   cuando las variaciones de los costos son ocasionadas por un aumento de las actividades   u operaciones de la empresa, como sucedería cuando se introduce un nuevo proceso   en la línea de producción que requiere la contratación de nuevos trabajadores y costos   adicionales de materia prima o energéticos.  B. Clasificaciones de costos  Ejemplo  Formación (2)ok.indd   41   2/1/08   6:51:23 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n42   CApítulo 2  Conceptos, clasificaciones y comportamiento de los costos  b)   Costos sumergidos:   Son aquellos que, independientemente del curso de acción que  se elija, no se verán alterados; es decir, van a permanecer inmutables ante cualquier   cambio. Este concepto tiene relación estrecha con lo que ya se ha explicado acerca de   los costos históricos o pasados, los cuales no se utilizan en la toma de decisiones. Un   ejemplo de ellos es la depreciación de la maquinaria adquirida. Si se trata de evaluar   la  alternativa  de  vender  cierto  volumen  de  artículos  con  capacidad  ociosa  a  precio   inferior al normal, es irrelevante tomar en cuenta la depreciación.  10.  De acuerdo con la relación en la disminución de actividades: a)   Costos  evitables:   Son  aquellos  plenamente  identificables  con  un  producto  o  un  departamento, de modo que, si se elimina el producto o el departamento, dicho costo   se suprime; por ejemplo, el material directo de una línea que será eliminada del mer-  cado.  b)   Costos inevitables:   Son aquellos que no se suprimen, aunque el departamento o el  producto sean eliminados de la empresa; por ejemplo, si se elimina el departamento   de ensamble, el sueldo del director de producción no se modificará.  11.  De acuerdo con su impacto en la calidad: a)   Costos por fallas internas:     Son los costos que podrían ser evitados si no existieran  defectos en el producto antes de ser entregado al cliente.  b)   Costos por fallas externas:     Son los costos que podrían ser evitados si no tuvieran  defectos los productos o ser vicios. Estos costos surgen cuando los defectos se de-  tectan después de que el producto es entregado al cliente.  c)   Costos de evaluación:     Son aquellos que se incurren para determinar si los productos  o   ser vicios cumplen con los requerimientos y especificaciones.  d)   Costos de prevención:     Son los costos que se incurren antes de empezar el proceso  con el fin de minimizar los costos de productos defectuosos. Las clasificaciones enunciadas son las principales; sin embargo, puede haber otras que depen-  den del enfoque del cual se parta para una nueva clasificación. Todas las clasificaciones son importantes, pero sin duda alguna la más relevante es la que  clasifica los costos en función de su comportamiento, ya que ni las funciones de planeación    y control administrativo ni la toma de decisiones pueden realizarse con éxito si se desconoce   el comportamiento de los costos. Además, ninguna de las herramientas que integran la con-  tabilidad administrativa puede aplicarse en forma correcta sin tomar en cuenta dicho compor-   tamiento; conocerlo es premisa básica para planear, tomar decisiones y ejercer un eficaz control   administrativo en la empresa.  C. El comportamiento de los costos  Como se mencionó en la sección anterior, los costos pueden clasificarse en función de su com-  portamiento en tres categorías: fijos, variables y semivariables (también llamados semifijos o   mixtos). El que un costo se clasifique en alguna de las categorías anteriores está en función   de qué tanto reacciona ante un cambio en una determinada actividad o actividades. Un costo   que permanece constante independientemente de que aumente o disminuya la actividad, es un   costo fijo; por el contrario, si el costo tiene modificación ante un cambio en una determinada   actividad, se considera variable; finalmente, si un costo se mantiene en una determinada can-  tidad aun sin que se lleve a cabo alguna actividad, pero se incrementa al incrementarse ésta,   entonces se trata de un costo semivariable.  Las diferencias entre los costos fijos y variables se presentan en la siguiente figura com- parativa:  Formación (2)ok.indd   42   2/1/08   6:51:24 PM   www.FreeLibros.me www.elsolucionario.net www.elsolucionario.net \n";
+    const PDF_NAME = "Conceptos de clasificación Ramirez Padilla.pdf";
+    const CHATBOT_THEME = "Chat bot clasificación de costos";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué es la contabilidad de costos y para qué clasifica, acumula, controla y asigna costos?","¿Cuáles son los seis objetivos de la contabilidad de costos y cómo se relacionan con la planeación, control y toma de decisiones?","¿Cómo funciona la contabilidad de costos como eslabón entre la contabilidad financiera y la administrativa?","¿Qué diferencia hay entre costo, gasto, activo y pérdida según la teoría contable?","¿Qué es un costo-gasto y qué es un costo-pérdida, y puedes dar un ejemplo de cada uno?","¿Qué significa clasificar costos “de acuerdo con la función” (producción, distribución/venta, administración y financiamiento) y cómo se subdivide producción?","¿Qué diferencia existe entre costos directos e indirectos, y en qué se relacionan con actividades, departamentos o productos?","¿Qué son costos históricos y costos predeterminados, y para qué se usan los predeterminados en los presupuestos?","¿Cuál es la diferencia entre costos de periodo y costos del producto, y cómo se reflejan en inventarios?","¿Qué son costos controlables y no controlables, y por qué un costo puede ser directo pero no controlable en un nivel?","¿Cómo se definen costos variables, fijos y semivariables, y qué ejemplo usarías para cada tipo?","¿Qué costos se consideran relevantes/irrelevantes y evitables/inevitables en la toma de decisiones, y por qué los costos sumergidos no deben usarse para decidir?"];
+    const INITIAL_PALETTE = {"primaryColor":"#307de8","secondaryColor":"#5997ed","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#307de8","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

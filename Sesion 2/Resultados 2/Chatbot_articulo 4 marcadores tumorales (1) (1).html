@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Cáncer de origen desconocido: diagnóstico, tratamiento y avances tecnológicos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Cáncer de origen desconocido: diagnóstico, tratamiento y avances tecnológicos</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "Medicina   Clínica   165   (2025)   107118  w   w   w . e l s e v i e r . e s / m e d i c i n a c l i n i c a   Revisión  Cáncer   de   origen   desconocido:   diagnóstico,   tratamiento   y   avances  tecnológicos Ferran   Losa   Gaspà   a , b , ∗ ,   Raquel   Legido   Díaz   b   y   Sheila   Sánchez   Pérez   a  a   Servicio   de   Oncología   Médica,   Hospital   de   Sant   Joan   Despí   Moisès   Broggi,   Sant   Joan   Despí,   Barcelona,   Espa  ̃ na b   Servicio   de   Oncología   Médica,   Institut   Català   d’Oncologia,   L’Hospitalet   de   Llobregat,   Barcelona,   Espa  ̃ na  información   del   artículo  Historia   del   artículo:  Recibido   el   6   de   febrero   de   2025  Aceptado   el   8   de   mayo   de   2025  On-line   el   18   de   julio   de   2025  Palabras   clave:  Cáncer   de   origen   desconocido  Cáncer   primario   oculto  Diagnóstico   molecular  Oncología   de   precisión  Cuidados   paliativos  r   e   s   u   m   e   n  El   cáncer   de   origen   desconocido   (COD)   es   un   tipo   de   neoplasia   metastásica   cuyo   tumor   primario   no   se  identifica   tras   una   exhaustiva   evaluación   diagnóstica.   Representa   un   desafío   importante   en   la   oncología  moderna   debido   a   la   complejidad   en   su   diagnóstico   y   tratamiento.   Aunque   el   COD   constituye   entre   el   2   y  el   5%   de   todos   los   casos   de   cáncer,   los   avances   recientes   en   técnicas   diagnósticas,   como   la   inmunohisto-  química   y   la   secuenciación   genómica,   han   mejorado   la   capacidad   de   clasificar   y   tratar   el   COD   mediante  terapias   dirigidas.   No   obstante,   persisten   limitaciones,   incluidas   la   heterogeneidad   biológica   del   COD   y  la   necesidad   de   tratamientos   empíricos   todavía   en   muchos   casos.   La   presente   revisión   discute   los   avan-  ces   en   el   diagnóstico   y   tratamiento   del   COD,   enfatizando   la   importancia   de   un   enfoque   multidisciplinar  que   integre   la   oncología   de   precisión   y   los   cuidados   paliativos   para   mejorar   la   calidad   de   vida   de   estos  pacientes.  ©   2025   Los   Autores.   Publicado   por   Elsevier   Espa    ̃ na,   S.L.U.   Este   es   un   art  ́ ıculo   Open   Access   bajo   la   CC  BY-NC-ND   licencia   ( http://creativecommons.org/licencias/by-nc-nd/4.0/ ).  Cancer   of   unknown   primary:   Diagnosis,   treatment   and   technological   advances  Keywords:  Cancer   of   unknown   primary  Occult   primary   cancer  Molecular   diagnosis  Precision   oncology  Palliative   care  a   b   s   t   r   a   c   t  Cancer   of   unknown   primary   (CUP)   is   a   clinical   type   of   metastatic   malignancy   where   the   primary   tumor  remains   unidentified   despite   thorough   diagnostic   evaluation.   It   presents   a   significant   challenge   in   modern  oncology   due   to   its   complex   management   and   diagnostic   difficulties.   Although   CUP   accounts   for   appro-  ximately   2   to   5%   of   cancer   cases   worldwide,   recent   advancements   in   diagnostic   techniques,   such   as  immunohistochemistry   and   genomic   sequencing,   have   improved   the   ability   to   classify   and   treat   CUP  using   targeted   therapies.   However,   limitations   persist,   including   the   biological   heterogeneity   of   CUP  and   the   frequent   need   for   empirical   treatments.   This   review   discusses   advancements   in   CUP   diagnosis  and   treatment,   emphasizing   the   importance   of   a   multidisciplinary   approach   that   integrates   precision  oncology   and   palliative   care   to   enhance   patient   quality   of   life.  ©   2025   The   Authors.   Published   by   Elsevier   Espa    ̃ na,   S.L.U.   This   is   an   open   access   article   under   the   CC  BY-NC-ND   license   ( http://creativecommons.org/licenses/by-nc-nd/4.0/ ).  Introducción  Definición   y   contextualización   del   cáncer   de   origen   desconocido  El   cáncer   de   origen   desconocido   (COD),   también   denominado  cáncer   de   primario   desconocido   (cancer   unknown   primary),   y   más  recientemente   cáncer   de   primario   oculto   (occult   primary   cancer),  ∗   Autor   para   correspondencia.  Correo   electrónico:   flosa@csi.cat   (F.   Losa   Gaspà).  es   una   categoría   clínica   que   agrupa   a   aquellos   cánceres   metastá-  sicos   cuyo   origen   primario   no   puede   ser   identificado   a   pesar   de  realizar   una   evaluación   diagnóstica   exhaustiva.   Este   diagnóstico   es  uno   de   los   mayores   desafíos   en   la   oncología   moderna,   dado   que   las  metástasis   que   se   identifican   en   el   paciente   pueden   tener   múltiples  orígenes   posibles,   pero   sin   una   localización   primaria   específica   que  las   vincule   a   un   órgano   o   tipo   de   tumor   conocido.  El   diagnóstico   de   COD   se   realiza   cuando,   después   de   una   serie   de  pruebas   diagnósticas   estándar   que   incluyen   historia   clínica,   explo-  ración   física,   pruebas   de   imagen,   análisis   de   sangre   y   biopsia,   no  se   consigue   identificar   el   tumor   primario.   Aunque   este   grupo   de  https://doi.org/10.1016/j.medcli.2025.107118  0025-7753/©   2025   Los   Autores.   Publicado   por   Elsevier   Espa    ̃ na,   S.L.U.   Este   es   un   art  ́ ıculo   Open   Access   bajo   la   CC   BY-NC-ND   licencia   ( http://creativecommons.org/licencias/  by-nc-nd/4.0/ ). \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  Tabla   1  Algoritmo   para   la   confirmación   de   la   existencia   de   cáncer   de   origen   desconocido  Primer   nivel  Datos   clínicos   y   anamnesis  Historia   médica   detallada:   hábitos   tóxicos,   antecedentes   patológicos   médicos   y   quirúrgicos,   neoplasias   previas,   historia   laboral   e   historia   familiar  Exploración   física   completa   por   aparatos,   incluyendo   todas   las   áreas   ganglionares   periféricas,   exploración   mamaria,   revisión   de   la   piel   y   exploración  pélvico-genital   y   rectal  Pruebas   básicas   para   todos   los   pacientes  Hemograma   completo  Bioquímica   completa:   función   hepática   y   renal,   electrólitos   incluyendo   calcio   y   LDH  TC   de   tórax,   abdomen   y   pelvis  Mamografía   (para   todas   las   mujeres   a   valorar   caso   a   caso) a  Biopsia   (no   PAAF).   Cáncer   metastásico   histológicamente   confirmado  Segundo   nivel  Estudios   adicionales   para   un   grupo   de   pacientes   seleccionados   (existencia   de   signos   o   síntomas   diana)   según   los   hallazgos   previos  RM   de   mama   (si   mamografía   no   concluyente) b  Ecografía   testicular/ecografía   de   tiroides  Concentración   sérica   de   PSA   (para   todos   los   hombres)  Concentración   sérica   de   CA-125   (para   todas   las   mujeres   con   afectación   peritoneal)  Endoscopia   (colonoscopia   y/o   gastroscopia)   cuando   existen   síntomas   digestivos   o   una   TC   indicativa  PET-TC   en   presentaciones   en   forma   de   metástasis   única,   o   adenopatías   supraclaviculares   o   laterocervicales  Concentración   sérica   de   \u0002 -FP   y   \u0003 -hCG   en   tumores   indiferenciados   en   pacientes   menores   de   50   a    ̃ nos,   o   afectación   metastática   predominantemente  ganglionar   de   la   línea   media  Laringoscopia   en   casos   de   afectación   predominantemente   ganglionar   cervical  Broncoscopia   en   casos   de   síntomas   pulmonares   y/o   hallazgos   radiológicos   como   adenopatías   hiliares   o   mediastínicas  Ecografía   ginecológica   ante   metástasis   pélvicas   o   peritoneales   CK7+  Datos   anatomopatológicos  Revisión   histopatológica   con   un   estudio   IHQ   específico  CA-125:   carbohydrate   antigen   125   ( « antígeno   carbohidrato   125 » );   CK7+:   citoqueratina   7   positiva;   IHQ:   inmunohistoquímica;   LDH:   lactato   deshidrogenasa;   PAAF:   punción-  aspiración   con   aguja   fina;   PET:   positron   emission   tomography   ( « tomografía   por   emisión   de   positrones » );   PSA:   prostate   specific   antigen   ( « antígeno   prostático   específico » );   RM:  resonancia   magnética;   TC:   tomografía   computarizada;   \u0002 -FP:   alfafetoproteína;   \u0003 -hCG:   beta   human   chorionic   gonadotropin   ( « betagonadotropina   coriónica   humana » ). a   Las   guías   recomiendan   su   realización   a   todas   las   mujeres   con   COD.   Sin   embargo,   algunos   centros   optan   por   realizarlas   después   de   disponer   de   los   resultados   histológicos  ya   que,   en   caso   de   sarcoma,   linfoma,   melanoma,   etc.,   confirmado   histológicamente,   no   sería   necesaria. b   La   mamografía   se   completará   con   RM   mamaria   si   existiera   alta   sospecha   de   tumor   mamario,   por   presencia   de   metástasis   ganglionares   axilares   de   adenocarcinoma   con  mamografía   negativa.  pacientes   es   relativamente   peque    ̃ no,   alrededor   del   2   al   5%   de   todos  los   diagnósticos,   lo   que   más   llama   la   atención   es   tanto   su   rareza  como   su   complejidad   clínica 1–5 .  Epidemiología  Incidencia  El   COD   representa   entre   el   2   y   el   5%   del   total   de   los   diagnósti-  cos   de   cáncer   en   el   mundo.   En   Espa    ̃ na,   la   prevalencia   ronda   el   3%  de   los   casos   oncológicos,   lo   cual   posiciona   a   esta   enfermedad   como  un   importante   desafío   debido   a   la   complejidad   que   implica   diag-  nosticar   una   neoplasia   en   ausencia   de   una   localización   primaria  identificable 2–7 .  Estudios   recientes   han   revelado   que   su   incidencia   ha   mostrado  una   ligera   tendencia   a   la   disminución   en   países   con   sistemas   de  salud   avanzados.   Este   descenso   ha   sido   posible   gracias   a   la   mejora  en   las   tecnologías   de   diagnóstico,   como   la   tomografía   computa-  rizada   (TC),   la   resonancia   magnética   (RM),   la   positron   emission  tomography   (PET,   « tomografía   por   emisión   de   positrones » )   y,   más  recientemente,   la   next   generation   sequencing   (NGS,   « secuenciación  de   nueva   generación » ),   que   han   permitido   identificar   más   tumo-  res   primarios,   que   antes   se   habrían   clasificado   como   de   origen  desconocido 6,7 .  Modelos   biológicos   del   cáncer   de   origen   desconocido  Para   comprender   el   desarrollo   del   COD,   se   han   propuesto   diver-  sos   modelos   biológicos   que   buscan   explicar   su   origen   y   progresión 8 :  •   Modelo   de   progresión   paralela:   este   enfoque   plantea   que   el   tumor  primario   crece   y   se   disemina   de   forma   temprana,   antes   de   ser   clí-  nicamente   detectable   en   su   lugar   de   origen,   generando   metástasis  que   ya   están   presentes   en   el   momento   del   diagnóstico.  •   Modelo   de   enfermedad   metastásica   primaria   desconocida:   este  modelo   plantea   que   el   tumor   primario   nunca   ha   existido,   posible-  mente   porque   las   metástasis   se   originan   directamente   a   partir   de  células   madre   pluripotenciales   y   su   transformación   cancerígena.  Desde   una   perspectiva   molecular,   los   COD   comparten   con   fre-  cuencia   alteraciones   genéticas   como   la   angiogénesis   persistente,  la   resistencia   a   la   apoptosis   y   las   disrupciones   en   las   vías   de  se    ̃ nalización   celular   o   de   la   transición   epitelio-mesénquima 8 .   Estos  factores   podrían   explicar   también   que   los   COD   tengan   un   peor  pronóstico   y   una   historia   natural   impredecible,   incluso   aunque   se  lograra   encontrar   el   tumor   primario.  Asimismo,   se   estima   que   entre   el   30   y   el   40%   de   los   pacientes  con   COD   presentan   mutaciones   genéticas   que   pueden   ser   tratadas  mediante   terapias   dirigidas,   destacando   la   relevancia   de   la   biología  molecular   tanto   en   el   diagnóstico   como   en   el   tratamiento   de   esta  enfermedad 9–13 .  Proceso   diagnóstico   en   el   cáncer   de   origen   desconocido   ( tabla   1 )  Evaluación   inicial,   radiología   y   pruebas   de   laboratorio  El   diagnóstico   del   COD   comienza   con   una   evaluación   del   histo-  rial   médico   y   una   exploración   física   enfocada   en   cabeza   y   cuello,  así   como   en   exámenes   rectales,   pélvicos,   ginecológicos   y   mama-  rios,   buscando   signos   del   tumor   primario   y   características   de   las  metástasis 2–4 .  Las   pruebas   de   laboratorio   incluyen   hemograma,   función   hepá-  tica   y   renal,   LDH   y   electrólitos.   Los   marcadores   tumorales   tienen  un   valor   limitado,   salvo   excepciones   como   el   PSA   en   metástasis  óseas   sospechosas   de   cáncer   de   próstata,   calcitonina   para   carci-  noma   medular   de   tiroides,   catecolaminas   y   cromogranina   A   en  neuroendocrinos,   y   alfafetoproteína   ( \u0002 -FP)   y   beta   human   chorionic  gonadotropin   ( \u0003 -hCG,   « betagonadotropina   coriónica   humana » )   en 2 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  afectación   ganglionar   de   línea   media   (tumor   germinal)   o   hepática  (hepatocarcinoma) 2–4 .  El   diagnóstico   por   imagen   es   clave   en   la   localización   de   metás-  tasis   y   posibles   tumores   primarios.   La   TC   toracoabdominal   permite  evaluar   la   extensión   de   la   enfermedad   y   visualizar   metástasis   en  hígado,   pulmones   y   ganglios.   Su   capacidad   para   evaluar   la   exten-  sión   de   la   enfermedad   y   localizar   metástasis   potenciales   es   crucial  para   planificar   el   tratamiento.   La   RM   es   útil   para   detectar   metásta-  sis   en   el   sistema   nervioso   central,   especialmente   de   fosa   posterior,  evaluar   tumores   mamarios   ocultos   en   la   mamografía   y   caracteri-  zar   lesiones   hepáticas,   biliopancreáticas   o   neoplasias   de   cérvix   o  endometrio.  La   PET-TC   ha   revolucionado   el   diagnóstico   del   COD   en   los   últi-  mos   a    ̃ nos.   Utiliza   un   marcador   radiactivo   (fluorodesoxiglucosa)   que  se   acumula   en   las   células   tumorales   debido   a   su   alta   actividad   meta-  bólica.   Esta   acumulación   permite   la   visualización   de   tumores   en  estadios   tempranos,   incluso   antes   de   que   sean   visibles   en   otros  estudios   de   imagen 2–4 .  En   el   contexto   del   COD,   la   PET-TC   puede   ser   útil   para   locali-  zar   el   tumor   primario   en   aproximadamente   un   tercio   de   los   casos.  Sin   embargo,   aunque   puede   detectar   metástasis   ocultas   y   ofrecer  pistas   sobre   el   origen   del   tumor,   su   capacidad   para   identificar   un  tumor   primario   no   es   significativamente   superior   a   la   TC   y   su   uso  se   restringe   a   tumores   del   área   otorrinolaringológica,   localizacio-  nes   metastásicas   únicas,   o   cuando   la   realización   de   una   PET-TC,   a  juicio   de   su   clínico,   pueda   cambiar   la   estrategia   terapéutica   en   un  paciente 14,15 .  Anatomía   patológica  El   estudio   anatomopatológico   es   un   componente   esencial   en   el  diagnóstico   del   COD,   ya   que   permite   clasificar   los   tumores   según   su  estirpe   (epitelial,   mesenquimal,   hematológico,   germinal   o   neuro-  endocrino).   El   examen   morfológico,   junto   con   técnicas   adicionales  como   la   inmunohistoquímica   (IHQ)   y   los   análisis   moleculares,   pro-  porciona   indicios   valiosos   sobre   la   posible   localización   del   tumor  primario   y   contribuye   de   manera   significativa   a   orientar   el   diagnós-  tico   y   a   identificar   tumores   potencialmente   tratables   con   terapias  específicas   (como,   por   ejemplo,   neoplasias   hematológicas   o   tumo-  res   germinales).  Con   el   fin   de   aprovechar   al   máximo   el   material   disponible,   que  suele   ser   escaso   en   los   casos   de   COD,   se   recomienda   que   el   estudio  IHQ   se   lleve   a   cabo   de   forma   sistemática   y   para   ello   se   han   propuesto  diversos   algoritmos 16,17   ( fig.   1 ).  Entre   los   marcadores   inmunohistoquímicos,   destacan   por   su   uti-  lidad   las   citoqueratinas   CK7   y   CK20,   que   desempe    ̃ nan   un   papel  clave   en   la   clasificación   de   los   carcinomas.   Las   diversas   combina-  ciones   de   positividad   de   estos   marcadores   orientan   hacia   diferentes  orígenes   tumorales,   los   cuales   pueden   confirmarse   posteriormente  mediante   marcadores   más   específicos   de   la   organicidad,   como   TTF1  para   el   adenocarcinoma   de   pulmón   o   PAX8   para   el   tracto   ginecoló-  gico,   el   ri    ̃ nón   y   la   tiroides   ( tabla   2 ).  Cabe   se    ̃ nalar   que,   aunque   el   estudio   IHQ   es   una   herramienta  poderosa   para   el   diagnóstico   del   cáncer,   presenta   ciertas   limitacio-  nes,   especialmente   en   muestras   escasas   de   tumores   diseminados   y  poco   diferenciados,   donde   el   perfil   IHQ   puede   diferir   significativa-  mente   del   tejido   del   tumor   primario   original.  Diagnóstico   genómico   y   molecular  Ha   revolucionado   la   forma   de   abordar   el   COD,   permitiendo   avan-  ces   significativos   en   la   identificación   del   tumor   primario   y   en   la  selección   de   tratamientos   personalizados.   Las   plataformas   de   diag-  nóstico   molecular   y   las   técnicas   de   secuenciación   masiva   (NGS)   han  hecho   posible   un   análisis   detallado   del   perfil   genético   y   epigenético  de   los   tumores,   lo   que   contribuye   a   un   diagnóstico   más   preciso   y   a  la   elección   de   terapias   dirigidas.   Herramientas   que   permiten   cono-  cer   la   expresión   génica   como   CancerTYPE   ID   y   EPICUP ,   junto   con  Tabla   2  Principales   marcadores   en   el   análisis   inmunohistoquímico   extendido  Tipo   de   cáncer   de   sospecha   Marcador   inmunohistoquímico  Origen   urotelial   GATA3,   p63,   CK7,   CK20,   uroplaquina,  trombomodulina  Ovario   mucinoso   WT1  Ovario   seroso   PAX8,   CK7   WT1,   BerEp4,   CA-125,   RE,  MUC5AC,   mesotelina  Adenocarcinoma   pulmonar   CK7,   TTF1,   napsina   A,   surfactante   A   y   B  Pulmón   (no   adenocarcinoma)   CK7,   TTF1,   p63,   CK5/6,   napsina   A  Carcinoma   microcítico   de   pulmón   CD56,   sinaptofisina,   cromogranina,  TTF1,   Ki-67  Mama   CK7,   GATA3,   RE,   RP,   Her2neu,  mamaglobina,   GcdFP-15,   p53  Endometrio   Vimentina,   RE,   PAX8  Mesotelioma   Calretinina,   WT1,   mesotelina,   CK5/6,  D2-40,   trombomodulina,  antimesotelina  Tumores   germinales   \u0002 -FP,   \u0003 -hCG,   CD30,   OCT3/4,   SALL4  Tiroides   TTF1,   tiroglobulina,   PAX8,   PAX9  Próstata   PSA,   PSMA,   PSAP,   NKX3,   racemasa  Ri    ̃ nón   (no   urotelial)   PAX8,   CD10,   RCC,   vimentina,   EMA  Colorrectal   CEA,   CDX2,   SATB2  Carcinoma   hepatocelular   Glutamina   sintetasa,   HSP70,   glipican   3,  pCEA,   antihepatocitario  Páncreas/vía   biliar   CDX2,   CK7,   CA   19.9  Neuroendocrinos   CD56,   sinaptofisina,   cromogranina,  INSM1,   PGP9.5  Adrenal   Alfa-inhibina,   Melan-A  BerEp4:   antígeno   epitelial,   útil   en   la   diferenciación   entre   carcinoma   y   mesotelioma;  CA-125:   carbohydrate   antigen   125   ( « antígeno   carbohidrato   125 » );   CA   19.9:   marca-  dor   de   adenocarcinoma   pancreático;   CDX2:   marcador   de   cáncer   colorrectal;   CD10:  expresado   en   cánceres   renales   y   linfomas;   CD30:   expresado   en   linfomas   y   tumo-  res   germinales;   CEA:   carcinoembryonic   antigen   ( « antígeno   carcinoembrionario » );  CK7:   citoqueratina   7;   CK20:   citoqueratina   20;   D2-40:   marcador   de   cánceres   lin-  fáticos   y   mesoteliomas;   EMA:   epithelial   membrane   antigen   ( « antígeno   de   membrana  epitelial » ) ;   GATA3:   factor   de   transcripción   asociado   a   tumores   de   mama   y   urote-  liales;   GcdFP-15:   gross   cystic   disease   fluid   protein   15   ( « proteína   15   del   fluido   de  la   enfermedad   quística   macroscópica   de   la   mama » );   Her2neu:   receptor   de   factor  de   crecimiento   epidérmico   humano   2;   HSP70:   heat   shock   protein   70   ( « proteína  de   shock   térmico   de   70   KDa » ) ;   INSM1:   insulinoma-associated   1   ( « proteína   1   aso-  ciada   al   insulinoma » ) ;   Ki-67:   índice   de   proliferación   celular;   MUC5AC:   mucina  asociada   a   adenocarcinomas   pancreáticos   y   gástricos;   NKX3:   factor   de   transcrip-  ción   específico   de   próstata;   OCT3/4:   expresado   en   tumores   germinales;   PAX8:  factor   de   transcripción   en   cáncer   de   ovario,   endometrio   y   ri    ̃ nón;   PAX9:   factor  de   transcripción   en   desarrollo   tiroideo   y   dentario;   pCEA:   polyclonal   carcinoem-  bryonic   antigen   ( « antígeno   carcinoembrionario   policlonal » );   PGP9.5:   protein   gene  product   9.5   ( « proteína   génica   9.5 » );   PSA:   prostate   specific   antigen   ( « antígeno   prostá-  tico   específico » );   PSAP:   prostatic-specific   acid   phosphatase   ( « fosfatasa   ácida   prostática  específica » );   PSMA:   prostate-specific   membrane   antigen   ( « antígeno   prostático   espe-  cífico   de   membrana » ) ;   p53:   proteína   supresora   tumoral;   p63:   proteína   del   grupo  p53;   RCC:   renal   cell   carcinoma   marker   ( « marcador   para   el   carcinoma   de   células  renales » ) ;   RE:   receptor   de   estrógenos;   RP:   receptor   de   progesterona;   SALL4:   factor  de   transcripción   en   tumores   germinales;   SATB2:   expresado   en   cáncer   colorrectal;  TTF1:   thyroid   transcription   facto r   1   ( « factor   de   transcripción   tiroideo   1 » );   WT1:   Wilms  tumor   1   ( « tumor   de   Wilms   1 » );   \u0002 -FP:   alfafetoproteína;   \u0003 -hCG:   beta   human   chorionic  gonadotropin   ( « betagonadotropina   coriónica   humana » ).  técnicas   de   secuenciación   masiva   tipo   NGS,   son   técnicas   novedosas  de   la   oncología   molecular   que   ofrecen   información   clave   sobre   el  comportamiento   de   los   tumores   y   sus   posibles   orígenes 4,8,18,19 .  Plataformas   de   expresión   génica.   Las   plataformas   de   expresión  génica,   como   CancerTYPE   ID ,   permiten   predecir   el   tipo   de   tumor  primario   analizando   la   expresión   de   genes   específicos.   Este   método  es   capaz   de   identificar   hasta   39   tipos   diferentes   de   cáncer   con   una  precisión   que   oscila   entre   el   75   y   el   92%,   reduciendo   la   necesidad  de   procedimientos   invasivos   y   mejorando   la   toma   de   decisiones  clínicas 8,20 .   Por   su   parte,   EPICUP ,   basada   en   el   análisis   de   patro-  nes   de   metilación   del   ADN,   destaca   por   su   capacidad   de   predecir  el   origen   tumoral   incluso   en   casos   donde   las   técnicas   tradiciona-  les   no   arrojan   resultados   concluyentes.   Con   una   precisión   superior  al   95%   en   determinados   contextos,   esta   herramienta   epigenómica  analiza   las   modificaciones   químicas   del   ADN   tumoral   y   las   com- 3 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  Figura   1.   Algoritmo   para   el   diagnóstico   del   cáncer   de   origen   desconocido   mediante   inmunohistoquímica.   CAM5.2:   anticuerpo   contra   citoqueratinas   de   bajo   peso   molecular;  CDX2:   marcador   de   cáncer   colorrectal;   CD10:   metaloproteasa   expresada   en   linfomas   de   células   B;   CK   AE1/AE3:   citoqueratina   AE1/AE3;   CK7:   citoqueratina   7;   CK20:   cito-  queratina   20;   EMA:   epithelial   membrane   antigen   ( « antígeno   de   membrana   epitelial » ) ;   GATA3:   factor   de   transcripción   asociado   a   tumores   de   mama   y   uroteliales;   HepPar-1:  hepatocyte   paraffin   1   ( « hepatocito   de   parafina   1 » ) ;   LCA:   leukocyte   common   antigen   ( « antígeno   leucocitario   común » ) ;   NCAM:   neural   cell   adhesion   molecule   ( « molécula   de   adhesión  celular   neuronal » ) ;   PSA:   prostate   specific   antigen   ( « antígeno   prostático   específico » );   p63:   factor   de   transcripción   relacionado   con   p53;   RE:   receptor   de   estrógenos;   RP:   receptor  de   progesterona;   S100:   proteína   de   la   familia   S100   con   función   en   se    ̃ nalización   celular;   TTF1:   thyroid   transcription   facto r   1   ( « factor   de   transcripción   tiroideo   1 » ).  Modificado   de   Losa   et   al. 4   .  4 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  Tabla   3  Tratamiento   dirigido   según   el   perfil   genómico  Alteración  genómica  accionable  Tratamiento   dirigido  ALK   Crizotinib,   ceritinib,   alectinib,   brigatinib,   lorlatinib  RET   Selpercatinib,   pralsetinib  ROS1   Crizotinib,   ceritinib,   lorlatinib,   repotrectinib  NTRK   Entrectinib,   larotrectinib  PI3K   Temsirolimus,   everolimus,   alpelisib  BRCA1/2   Olaparib,   niraparib,   rucaparib,   talazoparib  EGFR   Gefitinib,   erlotinib,   afatinib,   dacomitinib,   osimertinib  FGFR2/3   Pazopanib,   ponatinib,   erdafitinib  MET   Crizotinib,   tepotinib,   capmatinib  BRAF   V600   Vemurafenib,   encorafenib,   dabrafenib,   regorafenib  KRAS   G12C   Sotorasib,   adagrasib  ERBB2   Trastuzumab,   lapatinib,   pertuzumab,   afatinib,   neratinib,  trastuzumab-deruxtecán,   trastuzumab   emtansina,   tucatinib  SMO   Vismodegib  AKT1   Ipatasertib,   capivasertib  IDH1   Ivosidenib,   vorasidenib  IDH2   Vorasidenib  TMB-High   Inhibidores   de   puntos   de   control   inmunitario  MSI-High   Inhibidores   de   puntos   de   control   inmunitario  MSI-High:   microsatellite   instability-high   ( « inestabilidad   de   microsatélites   alta » );  TMB-High:   tumor   mutational   burden-high   ( « tumores   con   alta   carga   mutacional » ).  para   con   bases   de   datos   de   perfiles   conocidos,   proporcionando   una  segunda   línea   de   diagnóstico   crucial   en   situaciones   complejas 21  ( Tabla   suplementaria   1 ).  Técnicas   de   secuenciación   masiva.   En   cuanto   a   las   técnicas   de   NGS,  su   impacto   en   el   diagnóstico   del   COD   es   notable.   Esta   tecnología  analiza   el   genoma   de   los   tumores,   identificando   mutaciones   especí-  ficas   y   alteraciones   genéticas   responsables   de   su   agresividad.   Entre  las   aplicaciones   más   destacadas   de   la   NGS   se   encuentra   la   identifi-  cación   de   mutaciones   en   genes   clave   como   BRCA1/BRCA2,   tratables  con   inhibidores   de   PARP,   y   fusiones   génicas   como   NTRK,   que   permi-  ten   terapias   dirigidas   con   inhibidores   específicos   como   entrectinib  o   larotrectinib.   Además,   esta   tecnología   facilita   la   detección   de   alte-  raciones   en   genes   relacionados   con   la   angiogénesis   y   la   reparación  del   ADN,   elementos   cruciales   para   comprender   la   biología   del   cán-  cer   y   desarrollar   estrategias   terapéuticas   más   eficaces.  El   potencial   de   la   NGS   y   de   otras   plataformas   moleculares   en  el   COD   incluye,   entre   otras   aplicaciones,   la   detección   de   alteracio-  nes   genómicas   clave   que   permitan   un   planteamiento   terapéutico  dirigido   ( tabla   3 ).  •   Guía   para   terapias   dirigidas:   la   generación   de   perfiles   molecula-  res   permite   elegir   opciones   más   precisas,   como   inmunoterapias  o   inhibidores   específicos.  •   Detección   de   mutaciones   o   alteraciones   genómicas   clave:   muta-  ciones   en   genes   como   EGFR,   BRAFV600E,   KRASG12C,   FGFR2,   IDH1/2  o   amplificaciones   de   HER2   ofrecen   opciones   de   tratamiento  oncoespecífico   dirigido.   Otras   mutaciones   como   STK11   o   KEAP1  confieren   resistencia   primaria   a   inmunoterapia.  •   Fusiones   génicas   tratables:   reordenamientos   como   NTRK,   ALK,   RET  o   ROS1   pueden   ser   abordados   con   terapias   dirigidas,   revolucio-  nando   el   manejo   del   COD.  •   Detección   de   genes   asociados   a   cáncer   hereditario:   detectar   alte-  raciones   moleculares   en   genes   conocidos   de   predisposición   al  cáncer   como   BRCA1/2   o   PALB2.  Sin   embargo,   estas   herramientas   no   están   exentas   de   controver-  sias.   El   coste   elevado   de   las   plataformas   moleculares   y   la   tecnología  asociada   sigue   siendo   una   barrera   importante,   limitando   su   dispo-  nibilidad   en   muchas   instituciones   sanitarias.   La   interpretación   de  los   resultados   moleculares   es   otro   desafío,   ya   que   la   complejidad   de  los   datos   a   menudo   requiere   personal   altamente   especializado   y,   en  algunos   casos,   los   resultados   no   son   concluyentes.   Esto   puede   obli-  gar   a   realizar   pruebas   adicionales   o   adoptar   enfoques   combinados  para   alcanzar   un   diagnóstico   certero.   Además,   aunque   los   estudios  retrospectivos   han   demostrado   el   valor   de   estas   tecnologías,   aún  se   necesitan   ensayos   prospectivos   que   evalúen   su   impacto   en   la  mejora   de   la   supervivencia   y   la   calidad   de   vida   de   los   pacientes.  A   pesar   de   estas   limitaciones,   el   diagnóstico   molecular   y   genó-  mico   representa   un   avance   crucial   en   la   oncología   moderna,  ofreciendo   herramientas   poderosas   para   comprender   y   tratar   el  COD.   La   continua   investigación   y   la   integración   de   estas   plataformas  en   la   práctica   clínica   son   esenciales   para   maximizar   su   potencial  y   hacer   accesibles   estas   innovaciones   a   una   mayor   cantidad   de  pacientes.  Tratamiento  El   tratamiento   del   COD   se   basa   principalmente   en   la   quimio-  terapia   (QT)   empírica   y   en   las   terapias   dirigidas   basadas   en   los  perfiles   moleculares.   Sin   embargo,   el   tratamiento   debe   ser   perso-  nalizado,   adaptándose   a   las   características   específicas   del   tumor   y  del   paciente.  El   tratamiento   del   COD   distingue   a   los   pacientes   en   2   grandes  grupos:   aquellos   con   características   clínicas   que   permiten   un   tra-  tamiento   específico   similar   al   de   tumores   conocidos,   llamados   COD  favorables,   y   aquellos   sin   características   específicas,   que   requieren  un   abordaje   empírico   mediante   QT,   denominados   COD   desfavora-  bles   ( tabla   4 ).  Esta   distinción   es   fundamental,   ya   que   los   pacientes   del   primer  grupo   suelen   tener   un   pronóstico   considerablemente   mejor   que   los  del   segundo.  Cánceres   de   origen   desconocido   favorables   y   estrategias  terapéuticas   específicas  Algunos   cuadros   clínicos   asociados   al   COD   han   demostrado   res-  ponder   bien   a   tratamientos   que   siguen   pautas   específicas   para  tumores   conocidos:  Mujer   con   adenopatías   axilares   sin   otras   lesiones   detectables  Este   cuadro   se   asocia   con   frecuencia   al   cáncer   de   mama   oculto.  Su   evolución   y   tratamiento   son   similares   al   de   un   cáncer   de   mama  en   estadio   ii   o   iii ,   según   la   extensión   ganglionar.   La   supervivencia   a  5   y   10   a    ̃ nos   para   este   grupo   es   del   75   y   el   60%,   respectivamente.  Mujer   con   carcinomatosis   peritoneal  Este   cuadro   clínico,   similar   al   cáncer   de   ovario   avanzado,   puede  también   relacionarse   con   tumores   de   origen   mamario   o   gastro-  intestinal.   Generalmente,   la   histología   muestra   adenocarcinomas  serosos   papilares   o   pobremente   diferenciados.   El   tratamiento   sigue  los   protocolos   de   cáncer   de   ovario   en   estadio   iii - iv,   en   particular   si  se   asocia   a   un   CA-125   elevado.  Varón   con   adenopatías   en   línea   media  Este   síndrome   clínico   apunta   a   un   tumor   germinal   extragonadal.  Los   marcadores   inmunohistoquímicos,   como   PLAP,   \u0002 -FP,   \u0003 -hCG   y  CD117,   son   esenciales   para   diferenciar   entre   seminomas   y   no   semi-  nomas.  Adenopatías   cervicales   con   histología   escamosa  Representan   cerca   del   5%   de   los   tumores   de   cabeza   y   cuello.   Su  abordaje   incluye   cirugía   para   la   extirpación   de   los   ganglios   linfá-  ticos   afectados,   radioterapia   postoperatoria   o   quimiorradioterapia  combinada. 5 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  Tabla   4  Abordaje   óptimo   de   los   pacientes   en   el   grupo   de   cáncer   de   origen   desconocido   favorable  Subtipo   carcinoma   de   origen   desconocido   Tratamiento   propuesto   Tumor   equivalente  Carcinoma   pobremente   diferenciado   QT   combinada   basada   en   platino   Tumor   extragonadal   germinal  Carcinoma   neuroendocrino   pobremente  diferenciado  QT   combinada   con   platino   y   etopósido   Cáncer   de   pulmón   de   células   peque    ̃ nas  Adenocarcinomatosis   peritoneal   de   histología  serosa-papilar   en   mujeres  Resección   quirúrgica   seguida   de   QT   basada   en  carboplatino   y   taxanos  Cáncer   de   ovario  Metástasis   en   adenopatías   axilares   en   mujeres   Escisión   quirúrgica   de   los   ganglios,  mastectomía   o   RT   de   mama   y  quimiohormonoterapia   adyuvante  Cáncer   de   mama  Carcinoma   escamoso   con   afectación   de   los   ganglios  cervicales   no   supraclaviculares  Cirugía   de   cuello   y/o   radiación   bilateral   del  cuello   y   del   eje   cabeza-cuello.   Para   estadios  avanzados,   QT   de   inducción   con   combinación  basada   en   platino   o   QRT  Cáncer   de   cabeza   y   cuello  Metástasis   óseas   con   histología   de  adenocarcinoma   en   varón   con   elevación   de   PSA  Terapia   hormonal   con   agonistas   de   LHRH   y/o  antiandrógenos  Cáncer   de   próstata  LHRH:   luteinizing   hormone-releasing   hormone   ( « hormona   liberadora   de   gonadotropina » ):   PSA:   prostate   specific   antigen   ( « antígeno   prostático   específico » );   QRT:   quimiorradio-  terapia;   QT:   quimioterapia;   RT:   radioterapia.  Varón   con   metástasis   óseas   y   elevación   de   PSA  En   pacientes   con   metástasis   óseas   y   adenocarcinoma,   la   ele-  vación   de   PSA   orienta   el   diagnóstico   de   cáncer   de   próstata  metastásico.   Estos   pacientes   deben   recibir   el   tratamiento   corres-  pondiente   a   un   cáncer   de   próstata   estadio   iv .  Pacientes   con   metástasis   única  Este   grupo   tiene   mejor   pronóstico,   ya   que   muchas   veces   estas  lesiones   corresponden   a   tumores   primarios   inusuales   con   una   apa-  riencia   metastásica.   Tras   descartar   otras   lesiones   con   estudios   como  la   PET/TC,   el   abordaje   se   basa   en   cirugía   y/o   radioterapia   con  intención   curativa.   Algunos   pacientes   logran   supervivencias   pro-  longadas.  Cánceres   de   origen   desconocido   desfavorables   y   tratamiento  empírico   o   dirigido  El   tratamiento   del   COD   está   evolucionando   rápidamente   hacia  un   enfoque   más   personalizado   y   basado   en   las   características   mole-  culares   del   tumor.   Sin   embargo,   la   combinación   de   tratamientos  empíricos   tradicionales   sigue   siendo   la   estrategia   clave   para   abor-  dar   esta   compleja   enfermedad 4,8,22 .  Tratamiento   empírico   con   quimioterapia  La   QT   empírica   sigue   siendo   el   enfoque   predominante   en   los  casos   de   COD   cuando   no   se   logra   identificar   el   tumor   primario.  Los   tratamientos   estándar   combinan   agentes   derivados   del   platino,  como   cisplatino   o   carboplatino,   con   otros   fármacos   como   taxanos,  gemcitabina   o   irinotecán.   Aunque   estos   regímenes   ofrecen   bene-  ficios   a   ciertos   pacientes,   las   tasas   de   respuesta   no   son   altas   y   los  resultados   suelen   ser   limitados   en   cuanto   a   la   supervivencia   a   largo  plazo 23–29   ( tabla   5 ).  Los   resultados   del   uso   de   QT   empírica   en   COD   son   modestos,  con   una   mediana   de   supervivencia   que   varía   entre   6   y   9   meses.  Estos   resultados   dependen   de   múltiples   factores,   como   el   estado  funcional   del   paciente,   la   histología,   la   ubicación   y   la   extensión   de  las   metástasis.   En   general,   los   pacientes   con   metástasis   hepáticas   o  múltiples   localizaciones   tienen   peores   tasas   de   respuesta   a   la   QT,  inferiores   al   20%,   y   una   supervivencia   mediana   que   rara   vez   supera  los   9   meses   ( Tabla   suplementaria   2 ).  Tratamientos   dirigidos   basados   en   perfiles   moleculares  La   incorporación   de   la   medicina   personalizada   en   el   tratamiento  del   COD   permite   a   los   oncólogos   dise    ̃ nar   terapias   específicas   que  aprovechan   las   características   genéticas   únicas   de   cada   tumor,  mejorando   la   precisión   y   eficacia   del   enfoque   terapéutico.  El   desarrollo   de   terapias   dirigidas   ha   marcado   un   cambio   sus-  tancial   en   el   tratamiento   del   COD.   La   capacidad   de   identificar  alteraciones   genéticas   específicas   mediante   tecnologías   molecu-  lares   permite   dise    ̃ nar   tratamientos   claramente   más   precisos.   Este  enfoque   ha   mostrado   mejoras   en   la   supervivencia,   especialmente  en   pacientes   que   presentan   mutaciones   tratables,   como   los   reorde-  namientos   en   NTRK   o   tumores   con   alta   carga   mutacional 30–34   ( tabla  3 ).  Los   inhibidores   del   dominio   tirosina   cinasa   de   TRK,   que   impi-  den   su   autofosforilación   y   la   activación   de   las   vías   de   se    ̃ nalización  intracitoplasmática,   como   entrectinib   y   larotrectinib,   representan  avances   destacados   en   terapias   dirigidas.   Estos   reordenamientos  o   fusiones   genéticas,   presentes   en   una   gran   variedad   de   tumores,  pueden   detectarse   mediante   técnicas   como   la   NGS.   Los   estudios  clínicos   han   demostrado   que   estos   inhibidores   ofrecen   altas   tasas  de   respuesta   y   mejoras   significativas   en   la   supervivencia   libre   de  progresión,   siendo   bien   tolerados   por   los   pacientes 35–37 .  Las   mutaciones   en   genes   de   reparación   del   ADN,   como   BRCA1  y   BRCA2,   también   son   objetivos   efectivos   para   terapias   dirigidas.  Los   inhibidores   de   PARP,   utilizados   en   estos   casos,   interfieren   en  la   reparación   del   ADN   de   las   células   tumorales,   conduciendo   a   su  destrucción.   Estos   tratamientos   pueden   combinarse   con   inmuno-  terapia   o   QT   para   potenciar   su   efectividad.  Por   último,   la   inmunoterapia   ha   emergido   como   una   opción  prometedora   para   ciertos   subgrupos   de   pacientes   con   COD,   espe-  cialmente   aquellos   con   alta   carga   mutacional   o   inestabilidad   de  microsatélites.   El   pembrolizumab   o   el   atezolizumab,   inhibidores  de   PD-1   y   PD-L1,   respectivamente,   han   demostrado   ser   eficaces  en   estos   casos,   mostrando   una   mayor   tasa   de   respuesta   y   una  mejora   significativa   en   la   supervivencia   en   comparación   con   los  tratamientos   convencionales.   Ensayos   clínicos   han   confirmado   su  eficacia   independientemente   de   su   origen   primario,   lo   que   subraya  la   importancia   de   realizar   análisis   moleculares   exhaustivos 9,38 .  Terapias   de   combinación   y   tratamientos   experimentales  Estas   formas   de   tratamiento   están   redefiniendo   el   abordaje  del   COD.   El   futuro   del   tratamiento   del   COD   apunta   hacia   terapias  combinadas,   que   integran   terapias   dirigidas   con   tratamientos   con-  vencionales   como   la   QT   o   la   radioterapia.   Este   enfoque   multifacético  busca   incrementar   la   eficacia   terapéutica   al   atacar   el   tumor   desde  diferentes   ángulos,   reduciendo   la   posibilidad   de   resistencia   al   tra-  tamiento   y   mejorando   los   resultados   para   los   pacientes.  Los   ensayos   clínicos   están   evaluando   combinaciones   de   trata-  mientos   para   el   COD,   con   resultados   prometedores.   Por   ejemplo,  la   integración   de   inhibidores   de   NTRK   con   inmunoterapia   o   QT   ha  mostrado   potencial   para   mejorar   la   supervivencia   libre   de   progre- 6 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  Tabla   5  Regímenes   de   quimioterapia   en   pacientes   con   cáncer   de   origen   desconocido   desfavorable  Referencia   Esquema   de   quimioterapia   RO   SG  Culine   et   al. 23   ,   2003   Cisplatino   +   gemcitabina   frente   a   cisplatino   +   irinotecán   55   frente   a   38   8   frente   a   6  Greco   et   al. 24   ,   2000   Cisplatino   +   docetaxel   frente   a   carboplatino   +   docetaxel   26   frente   a   22   8   frente   a   8  Huebner   et   al. 25   ,   2009   Carboplatino   +   paclitaxel   frente   a   gemcitabina   +   vinorelbina   23,8   frente   a   20   11   frente   a   7  Dowel   et   al. 26   ,   2001   Carboplatino   +   etopósido   frente   a   paclitaxel   +   5-fluorouracilo   +   leucovorina   19   frente   a   19   8,3   frente   a   6,4  Briasoulis   et   al. 27   ,   2008   Irinotecán   +   oxaliplatino   13   2,7  Schuette   et   al. 28   ,   2009Hainsworth   et   al. 29   ,   2010   Capecitabina   +   oxaliplatino   11,7-19   3,9-9,7  RO:   respuesta   objetiva;   SG:   supervivencia   global.  sión   en   estudios   iniciales.   Un   estudio   destacado,   el   ensayo   CUPISCO,  con   más   de   600   pacientes   incluidos,   demostró   que   los   pacientes   que  recibieron   tratamientos   guiados   por   perfiles   moleculares,   incluidas  terapias   dirigidas,   tuvieron   mejores   resultados   en   comparación   con  aquellos   tratados   únicamente   con   QT   empírica.   Estos   hallazgos   sub-  rayan   la   importancia   de   seguir   desarrollando   y   evaluando   enfoques  personalizados 9 .  La   investigación   en   COD   está   progresando   rápidamente,   con  nuevas   terapias   en   desarrollo.   Estas   incluyen   vacunas   contra   el   cán-  cer   y   moduladores   de   la   respuesta   inmune,   que   podrían   transformar  el   panorama   terapéutico   en   los   próximos   a    ̃ nos.   El   futuro   también  contempla   terapias   más   personalizadas   basadas   en   la   genética   y   el  perfil   inmunológico   del   tumor.   Estos   enfoques   buscan   maximizar  la   eficacia   y   reducir   los   efectos   secundarios   mediante   tratamientos  dise    ̃ nados   específicamente   para   las   características   únicas   de   cada  tumor.  Tratamientos   localizados   y   radioterapia  En   casos   de   COD   donde   las   metástasis   son   limitadas   o   pre-  sentan   lesiones   solitarias,   los   tratamientos   localizados,   como   la  cirugía   y   la   radioterapia,   pueden   ser   opciones   válidas.   Aunque   estas  estrategias   son   menos   comunes   debido   a   la   naturaleza   disemi-  nada   del   COD,   pueden   ofrecer   beneficios   significativos   en   pacientes  seleccionados 3,4 .  Cirugía   en   el   cáncer   de   origen   desconocido  En   casos   de   COD   donde   las   metástasis   son   limitadas   o   pre-  sentan   lesiones   solitarias,   los   tratamientos   localizados,   como   la  cirugía   y   la   radioterapia,   pueden   ser   opciones   válidas.   Aunque   estas  estrategias   son   menos   comunes   debido   a   la   naturaleza   disemi-  nada   del   COD,   pueden   ofrecer   beneficios   significativos   en   pacientes  seleccionados 3,4 .  La   cirugía   puede   ser   una   opción   efectiva   cuando   las   metástasis  son   localizadas   y   accesibles.   El   éxito   quirúrgico   es   mayor   cuando   se  trata   de   lesiones   únicas   u   oligometastásicas.   Sin   embargo,   debido   a  la   naturaleza   frecuentemente   avanzada   y   diseminada   de   la   enfer-  medad,   la   cirugía   no   es   aplicable   en   la   mayoría   de   los   casos.  La   radioterapia,   por   su   parte,   tiene   un   rol   importante   en   el   trata-  miento   de   metástasis   localizadas   o   solitarias,   como   las   que   afectan  al   cerebro,   los   huesos   o   los   pulmones.   En   particular,   la   radiotera-  pia   estereotáctica   permite   administrar   dosis   altas   de   radiación   de  manera   precisa,   minimizando   el   da    ̃ no   a   los   tejidos   circundantes.  Además   de   su   uso   curativo,   la   radioterapia   puede   mejorar   la  calidad   de   vida   al   aliviar   síntomas   como   el   dolor   óseo   o   las   obs-  trucciones   en   órganos   afectados.  Evaluación   de   la   respuesta   al   tratamiento   y   seguimiento  El   manejo   del   COD   requiere   evaluación   constante   mediante  pruebas   de   imagen   como   la   TC,   la   RM   y   la   PET-TC,   junto   con   mar-  cadores   tumorales.   La   variabilidad   en   la   respuesta   obliga   a   ajustar  estrategias   terapéuticas   de   manera   continua,   optimizando   el   trata-  miento   según   la   evolución   del   paciente.  Calidad   de   vida   en   pacientes   con   cáncer   de   origen  desconocido  El   impacto   del   COD   en   la   calidad   de   vida   abarca   aspectos   físicos,  emocionales   y   sociales,   exigiendo   un   enfoque   integral   que   combine  el   manejo   de   síntomas,   el   apoyo   nutricional,   el   cuidado   psicológico  y   el   respaldo   familiar.   El   tratamiento   multidisciplinar   con   la   inte-  gración   precoz   de   cuidados   paliativos,   así   como   el   fortalecimiento  de   las   redes   de   apoyo,   permite   mejorar   el   control   de   síntomas,   pro-  porcionar   soporte   familiar   y   mejorar   la   atención   de   manera   integral.  Terapias   paliativas   y   el   abordaje   integral.   Impacto   en   la   calidad   de  vida   en   pacientes   con   cáncer   de   origen   desconocido  El   diagnóstico   de   COD   impacta   profundamente   la   calidad   de   vida  del   paciente   debido   a   su   pronóstico   incierto   y   la   carga   de   los   trata-  mientos.   La   inespecificidad   del   COD   exige   un   enfoque   terapéutico  amplio,   que   conlleva   efectos   secundarios   y   desafíos   emocionales   y  físicos.  El   COD   presenta   síntomas   diversos   según   las   metástasis   presen-  tes.   El   dolor,   especialmente   en   huesos,   pulmones   o   abdomen,   es  debilitante   y   requiere   manejo   con   analgésicos,   incluidos   opioides.  La   disnea,   frecuente   en   metástasis   pulmonares,   agrava   el   malestar  y   demanda   soporte   de   oxígeno   y   tratamientos   para   reducir   la   infla-  mación.   La   fatiga   crónica   y   la   pérdida   de   peso,   exacerbadas   por   la  QT   y   la   progresión   de   la   enfermedad,   afectan   la   funcionalidad   del  paciente,   haciendo   esencial   un   soporte   nutricional   adecuado.  El   cuidado   paliativo   es   clave   para   aliviar   síntomas   físicos   y   emo-  cionales,   enfocándose   en   mejorar   la   calidad   de   vida.   Un   equipo  multidisciplinar   es   crucial   para   el   manejo   integral   del   paciente.  Importancia   del   apoyo   psicológico,   familiar   y   social  El   COD   suele   ser   agresivo   y   de   mal   pronóstico,   lo   que   genera  una   rápida   progresión   de   la   enfermedad   y   una   carga   emocional  significativa.   El   soporte   psicológico   ayuda   al   paciente   y   a   su   fami-  lia   a   afrontar   el   estrés,   la   ansiedad,   la   depresión   y   el   insomnio.  La   detección   precoz   de   problemas   emocionales   y   la   intervención  psicooncológica   son   esenciales   para   mejorar   la   adaptación 39 .  El   papel   de   la   familia   es   fundamental   en   el   tratamiento   de   sín-  tomas   y   el   apoyo   emocional.   Estudios   como   el   de   Ishida   et   al. 40  evidencian   que   el   bienestar   del   paciente   está   estrechamente   rela-  cionado   con   el   estado   emocional   de   sus   familiares,   mostrando   una  mayor   depresión   en   los   cuidadores   cuando   la   calidad   de   vida   del  paciente   es   peor.   Es   vital   cuidar   la   salud   mental   de   los   cuidadores  para   evitar   el   desgaste   emocional.  Las   redes   sociales   y   grupos   de   apoyo   proporcionan   un   espacio  para   compartir   experiencias,   reduciendo   la   carga   emocional   del  paciente   y   su   entorno.   Estos   recursos   fortalecen   el   bienestar   psi-  cológico,   promoviendo   estrategias   de   afrontamiento   adaptativas   y  una   mejor   calidad   de   vida   para   todos   los   involucrados. 7 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  El   papel   de   la   enfermería   clínica  La   enfermería   de   práctica   avanzada   especializada   en   oncología  tiene   un   rol   clave   en   la   atención   de   pacientes   con   COD 40 .  El   cuidado   de   los   pacientes   diagnosticados   con   COD   requiere  una   anamnesis   detallada   para   identificar,   por   un   lado,   problemas  de   salud,   y   por   otro,   los   deseos   y   preferencias   del   paciente   en   cada  etapa   del   proceso   de   la   enfermedad   para   poder   establecer   planes  de   cuidados   dinámicos   y   personalizados.  Estos   pacientes,   generalmente   frágiles   y   con   múltiples   síntomas,  se   enfrentan   a   un   largo   proceso   diagnóstico   y   presentan   una   mayor  incertidumbre   sobre   su   enfermedad 41 .   Además,   el   impacto   emocio-  nal   causado   por   pertenecer   a   un   grupo   de   pacientes   diagnosticados  de   un   tipo   de   cáncer   de   baja   incidencia   es   mayor,   dado   que   el   grado  de   desconocimiento   e   incomprensión   de   la   enfermedad   aumenta  las   tasas   de   ansiedad,   el   estrés   psicológico   y   los   sentimientos   de  aislamiento   y   soledad 42,43 .  Este   impacto   no   ocurre   sólo   en   la   esfera   emocional,   sino   que  afecta   a   todas   las   dimensiones   que   vive   el   paciente   y   la   familia:  nivel   económico,   social,   psicológica   y   física.   Por   ello,   tras   el   diag-  nóstico,   estos   pacientes   y   sus   familias   presentan   unas   necesidades  y   unos   cuidados   específicos   y   el   papel   de   la   enfermera   de   prác-  tica   avanzada   especializada   en   cáncer   es   crucial   para   asegurar   la  continuidad   asistencial   gestionando   de   forma   individualizada   los  casos,   coordinando   pruebas,   visitas   y   tratamientos,   pero   también  elaborando   planes   de   cuidados   individualizados   con   una   mirada  holística,   que   vayan   dirigidos   a   fomentar   la   autonomía   del   paciente  y   en   los   que   se   dé   especial   relevancia   a   las   necesidades   educativas  y   el   apoyo   psicosocial   tanto   al   paciente   como   a   la   familia.  Dada   la   incorporación   de   los   tratamientos   personalizados,   es  fundamental   que   los   profesionales   de   enfermería   reciban   forma-  ción   específica   y   participen   en   la   discusión   de   los   casos,   la   toma  de   decisiones   y   los   proyectos   de   investigación   tanto   multidiscipli-  narios   como   de   su   propia   competencia,   para   mejorar   la   atención   y  calidad   de   vida   de   estos   pacientes.  Conclusiones  El   COD   sigue   siendo   uno   de   los   mayores   retos   en   oncología.   Aun-  que   ha   habido   avances   importantes   en   el   diagnóstico   y   tratamiento  de   esta   enfermedad,   el   pronóstico   sigue   siendo   generalmente   des-  favorable.   Pese   a   ello,   los   recientes   avances   en   la   biología   molecular,  las   plataformas   de   diagnóstico   genético   y   las   terapias   dirigidas  están   abriendo   nuevas   perspectivas   para   estos   pacientes.  La   identificación   de   alteraciones   genéticas   clave,   como   las   fusio-  nes   NTRK   y   las   mutaciones   en   genes   de   reparación   del   ADN,   están  transformando   el   tratamiento   del   COD,   proporcionando   opcio-  nes   más   específicas   y   personalizadas   que   mejoran   la   respuesta   al  tratamiento   y   la   calidad   de   vida   de   los   pacientes.   La   medicina   per-  sonalizada   y   las   terapias   dirigidas   serán,   sin   duda,   el   futuro   del  tratamiento   del   COD,   permitiendo   que   los   médicos   adapten   las  terapias   a   las   características   únicas   de   cada   paciente   y   cada   tumor.  Si   bien   el   tratamiento   empírico   con   QT   sigue   siendo   el   pilar  en   el   manejo   del   COD,   las   terapias   de   inmunoterapia   y   los   trata-  mientos   basados   en   perfiles   moleculares   ofrecen   nuevas   opciones  para   pacientes   seleccionados.   Los   ensayos   clínicos   y   la   investigación  serán   cruciales   para   seguir   mejorando   los   resultados   de   los   pacien-  tes   con   COD,   y   para   garantizar   que   estos   avances   se   traduzcan   en  un   tratamiento   más   efectivo   y   en   una   mayor   supervivencia.  La   integración   de   todas   estas   tecnologías   y   enfoques   representa  un   paso   hacia   el   futuro   de   la   oncología   de   precisión,   donde   el   trata-  miento   de   cada   paciente   será   más   específico,   menos   invasivo   y,   en  última   instancia,   más   eficaz   y   multidisciplinar.  Es   vital   la   colaboración   de   un   equipo   multidisciplinar   para  garantizar   una   atención   personalizada   e   integral,   ya   que   permite  abordar   el   caso   desde   las   diferentes   perspectivas   y   seleccionar   las  estrategias   idóneas   en   el   tratamiento   y   cuidado   del   paciente   y   su  familia,   adaptándonos   a   sus   necesidades   específicas   tanto   físicas  como   emocionales   y   sociales,   para   optimizar   los   resultados   en   el  tratamiento   del   COD.  Consentimientos   informados   y   consideraciones   éticas  No   se   mencionan   pacientes   y,   por   consiguiente,   no   se   precisan  consentimientos   informados.  Financiación  No   ha   existido   ninguna   financiación.  Conflicto   de   intereses  Ni   el   autor   principal   y   de   correspondencia,   ni   tampoco   ningún  otro   coautor   del   artículo   tenemos   ningún   conflicto   de   interés.  Agradecimientos  Marta   Martin   Richard1,   Javier   Míguez   González2,   Mariluz   Ville-  gas   Urbano3,   Juan   Carlos   Pardo   Ruiz4,   Gemma   Soler   González4,  Alejandro   Hernández   Martínez5,   Eduard   Teixidor   Vila5,   Andrés  Tapias   Mesa6,   Angels   Ca    ̃ nas   Tello7,   María   Pané   Foix8.1Servicio   de   Oncología   Médica.   H.   Sant   Joan   Despí   Moisès  Broggi/ICO-Hospitalet,   2Servicio   de   Radiodiagnóstico,   H.   Sant   Joan  Despí   Moisès   Broggi,   3Servicio   de   Medicina   Interna.   H.   Sant   Joan  Despí   Moisès   Broggi, 4Servicio   de   Oncología   Médica,   ICO-Badalona,5Servicio   de   Oncología   Médica,   ICO-Girona,   6Servicio   de   Medicina  Nuclear.   H.   U.   Bellvitge,   7Servicio   de   Anatomía   Patológica.   H.   Sant  Joan   Despí   Moisès   Broggi,   8Servicio   de   Anatomía   Patológica.   H.   U.  Bellvitge.  Todos   los   autores   colaboradores   forman   parte   del   Comité   mul-  ticéntrico   de   COD   del   Institut   Català   d’Oncologia   (ICO),   el   Hospital  Universitari   de   Bellvitge   (HUB)   y   el   Complex   Hospitalari   Moisès  Broggi   (CHMBroggi).  Anexo.   Material   adicional  Se   puede   consultar   material   adicional   a   este   artículo   en   su   ver-  sión   electrónica   disponible   en   doi:10.1016/j.medcli.2025.107118 .  Bibliografía  1.   Rassy   E,   Pavlidis   N.   The   currently   declining   incidence   of   can-  cer   of   unknown   primary.   Cancer   Epidemiol.   2019;61:139–41,  http://dx.doi.org/10.1016/j.canep.2019.06.006 .  2.   Fizazi   K,   Greco   FA,   Pavlidis   N,   Daugaard   G,   Oien   K,   Pentheroudakis   G,   et   al.,   ESMO  Guidelines   Committee.   Cancers   of   unknown   primary   site:   ESMO   clinical   practice  guidelines   for   diagnosis,   treatment   and   follow-up.   Ann   Oncol.   2015;26   Suppl  5:v133–8,   http://dx.doi.org/10.1093/annonc/mdv305 .  3.   National   Comprehensive   Cancer   Network.   Version   2.2025,   Septem-  ber   11,   2024.   Disponible   en:   https://www.nccn.org/professionals/  physician   gls/pdf/occult.pdf  4.   Losa   F,   Fernández   I,   Etxaniz   O,   Giménez   A,   Gomila   P,   Iglesias   L,   et   al.   SEOM-  GECOD   clinical   guideline   for   unknown   primary   cancer   (2021).   Clin   Transl   Oncol.  2022;24:681–92,   http://dx.doi.org/10.1007/s12094-022-02806-x .  5.   Krämer   A,   Bochtler   T,   Pauli   C,   Baciarello   G,   Delorme   S,   Hemminki  K,   et   al.   Cancer   of   unknown   primary:   ESMO   clinical   practice   guide-  line   for   diagnosis,   treatment   and   follow-up.   Ann   Oncol.   2023;34:228–46,  http://dx.doi.org/10.1016/j.annonc.2022.11.013 .  6.   Conway   AM,   Mitchell   C,   Kilgour   E,   Brady   G,   Dive   C,   Cook   N.   Molecular  characterisation   and   liquid   biomarkers   in   carcinoma   of   unknown   pri-  mary   (CUP):   taking   the   ‘U’   out   of   ‘CUP’.   Br   J   Cancer.   2019;120:141–53,  http://dx.doi.org/10.1038/s41416-018-0332-2 .  7.   Rassy   E,   Assi   T,   Pavlidis   N.   Exploring   the   biological   hallmarks   of   cancer   of   unk-  nown   primary:   Where   do   we   stand   today?   Br   J   Cancer.   2020;122:1124–32,  http://dx.doi.org/10.1038/s41416-019-0723-z .  8 \nF.   Losa   Gaspà,   R.   Legido   Díaz   and   S.   Sánchez   Pérez   Medicina   Clínica   165   (2025)   107118  8.   Rassy   E,   Pavlidis   N.   Progress   in   refining   the   clinical   management   of   cancer   of  unknown   primary   in   the   molecular   era.   Nat   Rev   Clin   Oncol.   2020;17:541–54,  http://dx.doi.org/10.1038/s41571-020-0359-1 .  9.   Krämer   A,   Bochtler   T,   Pauli   C,   Shiu   KK,   Cook   N,   Menezes   JJ,   et   al.   Molecularly  guided   therapy   versus   chemotherapy   after   disease   control   in   unfavourable   can-  cer   of   unknown   primary   (CUPISCO):   An   open-label,   randomised,   phase   2   study.  Lancet.   2024;404:527–39,   http://dx.doi.org/10.1016/S0140-6736(24)00814-6 .  10.   Ross   JS,   Wang   K,   Gay   L,   Otto   GA,   White   E,   Iwanik   K,   et   al.   Comprehensive   genomic  profiling   of   carcinoma   of   unknown   primary   site:   New   routes   to   targeted   thera-  pies.   JAMA   Oncol.   2015;1:40–9,   http://dx.doi.org/10.1001/jamaoncol.2014.216 .  11.   Varghese   AM,   Arora   A,   Capanu   M,   Camacho   N,   Won   HH,   Zehir   A,  et   al.   Clinical   and   molecular   characterization   of   patients   with   cancer  of   unknown   primary   in   the   modern   era.   Ann   Oncol.   2017;28:3015–21,  http://dx.doi.org/10.1093/annonc/mdx545 .  12.   Kato   S,   Krishnamurthy   N,   Banks   KC,   De   P,   Williams   K,   Williams   C,   et   al.  Utility   of   genomic   analysis   in   circulating   tumor   DNA   from   patients  with   carcinoma   of   unknown   primary.   Cancer   Res.   2017;77:4238–46,  http://dx.doi.org/10.1158/0008-5472.CAN-17-0628 .  13.   Clynick   B,   Dessauvagie   B,   Strerrett   G,   Harvey   N,   Subramanian   S,   Herron   J,   et   al.  Detection   of   therapeutic   targets   in   carcinomas   of   unknown   primary.   Ann   Oncol.  2017;28   Suppl   5:v597,   http://dx.doi.org/10.1093/annonc/mdx391 .  14.   Møller   AK,   Loft   A,   Berthelsen   AK,   Pedersen   KD,   Graff   J,   Christensen   CB,  et   al.   A   prospective   comparison   of   18F-FDG   PET/CT   and   CT   as   diagnostic  tools   to   identify   the   primary   tumor   site   in   patients   with   extracervi-  cal   carcinoma   of   unknown   primary   site.   Oncologist.   2012;17:1146–54,  http://dx.doi.org/10.1634/theoncologist.2011-0449 .  15.   Oien   KA.   Pathologic   evaluation   of   unknown   primary   cancer.   Semin   Oncol.  2009;36:8–37,   http://dx.doi.org/10.1053/j.seminoncol.2008.10.009 .  16.   Lin   F,   Liu   H.   Immunohistochemistry   in   undifferentiated   neoplasm/tumor  of   uncertain   origin.   Arch   Pathol   Lab   Med.   2014;138:1583–610,  http://dx.doi.org/10.5858/arpa.2014-0061-RA .  17.   Conner   JR,   Hornick   JL.   Metastatic   carcinoma   of   unknown   primary:   Diagnos-  tic   approach   using   immunohistochemistry.   Adv   Anat   Pathol.   2015;22:149–67,  http://dx.doi.org/10.1097/PAP.0000000000000069 .  18.   Economopoulou   P,   Mountzios   G,   Pavlidis   N,   Pentheroudakis   G.   Cancer   of   unk-  nown   primary   origin   in   the   genomic   era:   Elucidating   the   dark   box   of   cancer.  Cancer   Treat   Rev.   2015;41:598–604,   http://dx.doi.org/10.1016/j.ctrv.2015.05.  010 .  19.   Erlander   MG,   Ma   XJ,   Kesty   NC,   Bao   L,   Salunga   R,   Schnabel   CA.   Performance   and  clinical   evaluation   of   the   92-gene   real-time   PCR   assay   for   tumor   classification.   J  Mol   Diagn.   2011;13:493–503,   http://dx.doi.org/10.1016/j.jmoldx.2011.04.004 .  20.   Fizazi   K,   Maillard   A,   Penel   N,   Baciarello   G,   Allouache   D,   Daugaard   G,   et   al.   A  phase   iii   trial   of   empiric   chemotherapy   with   cisplatin   and   gemcitabine   or   syste-  mic   treatment   tailored   by   molecular   gene   expression   analysis   in   patients   with  carcinomas   of   an   unknown   primary   site   (GEFCAPI   04).   Ann   Oncol.   2019;30   Suppl  5:v851,   http://dx.doi.org/10.1093/annonc/mdz394 .  21.   Moran   S,   Martínez-Cardús   A,   Sayols   S,   Musulén   E,   Bala    ̃ ná   C,   Estival-  Gonzalez   A,   et   al.   Epigenetic   profiling   to   classify   cancer   of   unknown  primary:   A   multicentre,   retrospective   analysis.   Lancet   Oncol.   2016;17:1386–95,  http://dx.doi.org/10.1016/S1470-2045(16)30297-2 .  22.   Hainsworth   JD,   Fizazi   K.   Treatment   for   patients   with   unknown   primary  cancer   and   favorable   prognostic   factors.   Semin   Oncol.   2009;36:44–51,  http://dx.doi.org/10.1053/j.seminoncol.2008.10.006 .  23.   Culine   S,   Lortholary   A,   Voigt   JJ,   Bugat   R,   Théodore   C,   Priou   F,   et   al.,   Cisplatin  in   combination   with   either   gemcitabine   or   irinotecan   in   carcinomas   of   unk-  nown   primary   site:   Results   of   a   randomized   phase   ii   study—Trial   for   the   French  Study   Group   on   Carcinomas   of   Unknown   Primary   (GEFCAPI   01).   J   Clin   Oncol.  2003;21:3479–82,   http://dx.doi.org/10.1200/JCO.2003.12.104 .  24.   Greco   FA,   Erland   JB,   Morrissey   LH,   Burris   HA   3rd,   Hermann   RC,   Steis  R,   et   al.   Carcinoma   of   unknown   primary   site:   Phase   II   trials   with  docetaxel   plus   cisplatin   or   carboplatin.   Ann   Oncol.   2000;11:211–5,  http://dx.doi.org/10.1023/a.1008369812295 .  25.   Huebner   G,   Link   H,   Kohne   CH,   Stahl   M,   Kretzschmar   A,   Steinbach  S,   et   al.   Paclitaxel   and   carboplatin   vs   gemcitabine   and   vinorelbine   in  patients   with   adeno-   or   undifferentiated   carcinoma   of   unknown   primary:  A   randomised   prospective   phase   ii   trial.   Br   J   Cancer.   2009;100:44–9,  http://dx.doi.org/10.1038/sj.bjc.6604818 .  26.   Dowell   JE,   Garrett   AM,   Shyr   Y,   Johnson   DH,   Hande   KR.   A   randomized   phase   ii   trial  in   patients   with   carcinoma   of   an   unknown   primary   site.   Cancer.   2001;91:592–7,  http://dx.doi.org/10.1002/1097-0142(20010201)91:3<592::AID-CNCR1039>  3.0.CO;2-5 .  27.   Briasoulis   E,   Fountzilas   G,   Bamias   A,   Dimopoulos   MA,   Xiros   N,   Aravantinos   G,  et   al.   Multicenter   phase- ii   trial   of   irinotecan   plus   oxaliplatin   (IROX   regimen)   in  patients   with   poor-prognosis   cancer   of   unknown   primary:   a   Hellenic   coope-  rative   oncology   group   study.   Cancer   Chemother   Pharmacol.   2008;62:277–84,  http://dx.doi.org/10.1007/s00280-007-0604-7 .  28.   Schuette   K,   Folprecht   G,   Kretzschmar   A,   Link   H,   Koehne   CH,   Gruenwald   V,  et   al.   Phase   II   trial   of   capecitabine   and   oxaliplatin   in   patients   with   adeno-   and  undifferentiated   carcinoma   of   unknown   primary.   Onkologie.   2009;32:162–6,  http://dx.doi.org/10.1159/000201125 .  29.   Hainsworth   JD,   Spigel   DR,   Burris   HA   3rd,   Shipley   D,   Farley   C,   Macias-Perez  IM,   et   al.   Oxaliplatin   and   capecitabine   in   the   treatment   of   patients   with  recurrent   or   refractory   carcinoma   of   unknown   primary   site:   A   phase   2   trial   of  the   Sarah   Cannon   Oncology   Research   Consortium.   Cancer.   2010;116:2448–54,  http://dx.doi.org/10.1002/cncr.25029 .  30.   Ross   JS,   Sokol   ES,   Moch   H,   Mileshkin   L,   Baciarello   G,   Losa   F,   et   al.   Comprehen-  sive   genomic   profiling   of   carcinoma   of   unknown   primary   origin:   Retrospective  molecular   classification   considering   the   CUPISCO   study   design.   Oncologist.  2021;26:e394–402,   http://dx.doi.org/10.1002/onco.13597 .  31.   Tothill   RW,   Li   J,   Mileshkin   L,   Doig   K,   Siganakis   T,   Cowin   P,   et   al.   Massively-parallel  sequencing   assists   the   diagnosis   and   guided   treatment   of   cancers   of   unknown  primary.   J   Pathol.   2013;231:413–23,   http://dx.doi.org/10.1002/path.4251 .  32.   Gatalica   Z,   Millis   SZ,   Vranic   S,   Bender   R,   Basu   GD,   Voss   A,   et   al.   Comprehensive  tumor   profiling   identifies   numerous   biomarkers   of   drug   response   in   cancers   of  unknown   primary   site:   Analysis   of   1806   cases.   Oncotarget.   2014;5:12440–7,  http://dx.doi.org/10.18632/oncotarget.2574 .  33.   Löffler   H,   Pfarr   N,   Kriegsmann   M,   Endris   V,   Hielscher   T,   Lohneis   P,   et   al.   Molecular  driver   alterations   and   their   clinical   relevance   in   cancer   of   unknown   primary   site.  Oncotarget.   2016;7:44322–9,   http://dx.doi.org/10.18632/oncotarget.10035 .  34.   Krämer   A,   Losa   F,   Gay   LM,   Sokol   E,   Page   DR,   Frampton   GM,   et   al.  Genomic   profiling   of   carcinomas   of   unknown   primary   (CUP)   to  support   clinical   decisions.   J   Clin   Oncol.   2018;36   Suppl   15:e24162,  http://dx.doi.org/10.1200/JCO.2018.36.15   suppl.e24162 .  35.   Okamura   R,   Boichard   A,   Kato   S,   Sicklick   JK,   Bazhenova   L,   Kurzrock   R.   Analy-  sis   of   NTRK   alterations   in   pan-cancer   adult   and   pediatric   malignancies:  Implications   for   NTRK-targeted   therapeutics.   JCO   Precis   Oncol.   2018;2018,  http://dx.doi.org/10.1200/PO.18.00183 .   PO.18.00183.  36.   Gatalica   Z,   Xiu   J,   Swensen   J,   Vranic   S.   Molecular   characterization  of   cancers   with   NTRK   gene   fusions.   Mod   Pathol.   2019;32:147–53,  http://dx.doi.org/10.1038/s41379-018-0118-3 .  37.   Cocco   E,   Scaltriti   M,   Drilon   A.   NTRK   fusion-positive   cancers   and  TRK   inhibitor   therapy.   Nat   Rev   Clin   Oncol.   2018;15:731–47,  http://dx.doi.org/10.1038/s41571-018-0113-0 .  38.   Brahmer   JR,   Tykodi   SS,   Chow   LQM,   Hwu   WJ,   Topalian   SL,   Hwu   P,   et   al.   Safety   and  activity   of   anti-PD-L1   antibody   in   patients   with   advanced   cancer.   N   Engl   J   Med.  2012;366:2455–65,   http://dx.doi.org/10.1056/NEJMoa1200694 .  39.   Galindo   Vázquez   O,   Flores   Constantino   M,   Hernández   Marín   J,  Costas   Mu    ̃ niz   R.   La   importancia   de   la   psicooncología   como   parte  integral   del   tratamiento   en   oncología.   Rev   Digit   Univ.   2023;24,  http://dx.doi.org/10.22201/cuaieed.16076079e.2023.24.6.5 .  40.   Ishida   K,   Sato   K,   Komatsu   H,   Morita   T,   Akechi   T,   Uchida   M,   et   al.   Nation-  wide   survey   on   family   caregiver-perceived   experiences   of   patients   with  cancer   of   unknown   primary   site.   Support   Care   Cancer.   2022;30:6353–63,  http://dx.doi.org/10.1007/s00520-022-07070-x .  41.   Symons   J.   Understanding   and   managing   cancer   of   unknown   primary.   Br   J   Nurs.  2008;17:1160–4.  42.   Guccione   L,   Fisher   K,   Mileshkin   L,   Tothill   R,   Bowtell   D,   Quinn   S,   et   al.  Uncertainty   and   the   unmet   informational   needs   of   patients   with   cancer   of   unk-  nown   primary   (CUP):   A   cross-sectional   multi-site   study.   Support   Care   Cancer.  2022;30:8217–29,   http://dx.doi.org/10.1007/s00520-022-07228-7 .  43.   Richardson   A,   Wagland   R,   Foster   R,   Symons   J,   Davis   C,   Boyland   L,   et   al.   Uncer-  tainty   and   anxiety   in   the   cancer   of   unknown   primary   patient   journey:   A  multiperspective   qualitative   study.   BMJ   Support   Palliat   Care.   2015;5:366–72,  http://dx.doi.org/10.1136/bmjspcare-2013-000482 .  9 \n";
+    const PDF_NAME = "articulo 4 marcadores tumorales.pdf";
+    const CHATBOT_THEME = "Cáncer de origen desconocido: diagnóstico, tratamiento y avances tecnológicos";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué significa que el cáncer de origen desconocido (COD) o primario oculto no se identifique tras una evaluación diagnóstica exhaustiva?","¿Qué porcentaje aproximado de casos de cáncer corresponden al COD y por qué representa un reto en oncología?","¿Qué papel tiene el estudio anatomopatológico en la clasificación del COD por estirpes (epitelial, mesenquimal, hematológico, germinal o neuroendocrino)?","¿Por qué se recomienda realizar la inmunohistoquímica (IHQ) de forma sistemática cuando el material tumoral disponible suele ser escaso?","¿Cómo ayudan CK7 y CK20, y qué interpretación se hace según sus combinaciones de positividad?","¿Qué marcadores inmunohistoquímicos podrían orientar el origen tumoral en ejemplos como TTF1 (adenocarcinoma pulmonar) o PAX8 (tracto ginecológico/riñón/tiroides)?","¿Cuáles son las limitaciones de la IHQ en muestras escasas o poco diferenciadas, y cómo puede afectar al perfil observado?","¿Cómo han revolucionado las técnicas de secuenciación masiva (NGS) y las plataformas de diagnóstico molecular el abordaje del COD?","¿Qué utilidad clínica pueden tener herramientas como CancerTYPE ID y EPICUP al analizar expresión génica y ayudar a seleccionar terapias dirigidas?","¿Qué tratamientos empíricos con quimioterapia suelen emplearse cuando no se identifica el tumor primario, y con qué combinaciones de fármacos?","¿De qué factores depende la respuesta y la supervivencia en el COD tratado de forma empírica, y cuál es el rango de supervivencia mediana descrito?","¿Qué necesidades específicas y apoyo requiere el paciente con COD (incluyendo el papel de la enfermera de práctica avanzada y el enfoque multidisciplinar), y qué avances se señalan como futuro (terapias dirigidas, inmunoterapia y ensayos clínicos)?"];
+    const INITIAL_PALETTE = {"primaryColor":"#6430e8","secondaryColor":"#8359ed","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#6430e8","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

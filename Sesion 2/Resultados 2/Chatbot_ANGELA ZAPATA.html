@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Exposición ocupacional a polvo de madera y cáncer de senos paranasales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Exposición ocupacional a polvo de madera y cáncer de senos paranasales</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "MEDICINA   y   SEGURIDAD   del   trabajo  Enero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   112  Revisiones  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Occupational exposure to wood dust and Paranasal Sinus Cancer  Yosimar Rojas-García  1-3 , Andreína Peñalver-Paolini  2-3  1.  Hospital Universitario Puerta de Hierro. Madrid. España  2.  Hospital Universitario de Fuenlabrada. Madrid. España  3.  Unidad Docente de Medicina del Trabajo de la Comunidad de Madrid. Madrid. España  Recibido: 02-03-15  Aceptado: 06-03-15  Correspondencia    Yosimar Rojas García  Hospital Universitario Puerta de Hierro. Madrid. España  Correo electrónico: yosi.med@hotmail.com  Este trabajo se ha desarrollado dentro del Programa Científico de la Escuela Nacional de Medicina del   Trabajo del Instituto de Salud Carlos III en convenio con Unidad Docente de Medicina del Trabajo de la   Comunidad de Madrid.  Resumen  Introducción:  Los tumores malignos de nariz y senos paranasales son relativamente poco frecuentes,   representando  el  0,2%-0,8%  de  los  tumores  malignos  del  organismo  y  el  3%  de  los  tumores  del  tracto    respiratorio  superior.  La  exposición  ocupacional  a  determinadas  sustancias,  entre  las  que  se  incluye  la    exposición a polvo de madera, puede explicar hasta un 40% de los casos.  Objetivo:  Revisar la literatura científica reciente de trabajos que aborden la exposición laboral a polvo   de madera y su posible relación con el desarrollo de cáncer de senos paranasales.  Materiales y métodos:  Búsqueda bibliográfica de artículos publicados entre 2009-2014 realizada en las   principales  bases  de  datos  biomédicas  (Medline,  Lilacs,  Ibecs,  Scielo,  OSH-Update,  y  Cochrane  library)  y    selección en base a criterios de inclusión y exclusión previamente establecidos.  Resultados:  Se obtiene un total de 7 artículos, 2 de casos y controles, 3 longitudinales retrospectivos,   1 serie de casos y 1 estudio transversal.  Conclusiones:  Existe asociación estadísticamente significativa entre la exposición laboral a polvo de   madera y el cáncer de senos paranasales, susceptibilidad que se incrementa con mayor tiempo de exposición.   Alteraciones genéticas derivadas de esta exposición como la mutación del gen TP53 y KRAS, inmupositividad   de  P53,  y  polimorfismo  de  enzimas  del  metabolismo  CYP1A  se  encuentran  también  implicadas  en  el    desarrollo de esta patología.  Med Segur Trab (Internet) 2015; 61 (238) 112-124  Palabras claves:  Exposición ocupacional, polvo de madera, Neoplasias de los Senos Paranasales.  Abstract  Introduction : Nasal Cavity and Paranasal Sinus Cancer are relatively uncommon. They account for just   0.2%-0.8% of all cancers and for 3% of the upper respiratory tract tumours. Occupational exposure to certain   substances, such as the exposure to wood dust, may account for 40% of cases. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   113  MEDICINA  y  SEGURIDAD   del   trabajo  Objective:  Review the recent scientific literature dealing with occupational exposure to wood dust and   its relation with the development of paranasal sinus cancer.  Material  and  Methods:     Bibliographic  search  of  articles  published  between  2009-2014  in  the  main    biomedical databases (Medline, Lilacs, Ibecs, Scielo, OSH-Update, and Cochrane library) and selected articles   according with inclusion-and-exclusion criteria.  Results:  7 articles obtained 2 cases-control articles, 3 longitudinal retrospective articles, 1 case series   studies and 1 transversal study.  Conclusions:    There  is  a  relevant  statistical  association  between  wood  dust  labour  exposure  and    paranasal  sinus  cancer.  Such  susceptibility  may  increase  with  heavier  exposure  or  longer  exposure  time .   TP53 and K-ras gene mutation, p53 inmunopositivity and polymorphism enzymes of CYP1A metabolism are   genetic alterations involved with the exposure which are as well part of the pathology development.  Med Segur Trab (Internet) 2015; 61 (238) 112-124  Key words:  Occupational exposure, wood dust, Paranasal Sinus Neoplasms. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   114  MEDICINA  y  SEGURIDAD   del   trabajo  INTRODUCCIÓN  Los  senos  paranasales  son  cavidades  aéreas  ubicadas  dentro  de  los  huesos  del    cráneo y la cara. Existen cuatro pares de senos paranasales, que reciben su nombre de   acuerdo al hueso que los rodean: maxilares, frontales, esfenoidales y etmoidales.  Los  tumores  malignos  de  nariz  y  cavidades  paranasales  o  nasosinusales  son    relativamente  poco  frecuentes,  representando  entre  el  0,2%  y  0,8%  de  los  tumores    malignos del organismo y, aproximadamente, el 3% de los tumores del tracto respiratorio   superior.  Son  más  frecuentes  en  hombres  que  en  mujeres  en  proporción  de  2:1;  se    presentan habitualmente en edades medias de la vida (cuarta década) 1  y entre los factores   predisponentes,  es  importante  la  exposición  ocupacional  a  determinadas  sustancias,    encontrándose dicho antecedente hasta en el 40% de los casos. 2  En cuanto a la localización,   40% de los de origen ocupacional se desarrollan en el seno etmoidal; en cambio de 20%   a  50%  de  los  esporádicos,  surgen  en  el  seno  maxilar. 3   El  polvo  de  madera  dura  se  ha    vinculado a una mayor incidencia de adenocarcinoma de etmoides, mientras que el polvo   de madera blanda a carcinomas escamosos.  La  industria  de  la  madera  engloba  múltiples  procesos,  que  van  desde  la  tala  de    árboles, hasta la producción de muebles y materiales de construcción, entre otros. Las   fases de transformación de la madera para fabricar productos son variadas y en ellas los   trabajadores  se  pueden  encontrar  expuestos  a  diferentes  sustancias,  principalmente  a    polvo de madera.  El polvo de madera, constituido fundamentalmente por celulosa, poliosa y lignina,   puede contener gran variedad de sustancias químicas que pueden ser nocivas, algunas   propias de la madera como las resinas y alcaloides y otras aplicadas por el hombre para   protegerla, como antifúngicos e insecticidas, o bien sustancias propias de la actividad   industrial  como  barnices,  colorantes  artificiales,  etc.  El  polvo  de  madera  dura  se  ha    clasificado  como  cancerígeno  del  grupo  1  por  la  Agencia  Internacional  para  la    Investigación  sobre  el  Cáncer  (IARC) 4   puesto  que  hay  suficiente  evidencia  de  que    produce cáncer en humanos; en cuanto a parámetros internacionales se han establecido   límites  por  la  Conferencia  Americana  de  Higienistas  Industriales  Gubernamentales    (ACGIH)  que  oscilan  entre  1  mg/m 3   para  maderas  duras  y  5  mg/m 3    para  las  blandas,    mientras en España se encuentra establecido un valor límite de 5mg/m 3  para exposición   a polvo de madera dura. 5  La  clasificación  de  la  madera  se  establece  en  función  de  criterios  botánicos,    considerándose maderas duras las provenientes de especies arbóreas caducifolias como   el  roble,  haya,  nogal,  cerezo,  castaño,  mientras  que  las  maderas  blandas  provienen  de    especias arbóreas coníferas, entre las que podemos indicar el pino, abeto y el cedro. 6  El   haya y el roble se consideran carcinógenos humanos confirmados y figuran en la guía de   la ACGIH americana con la anotación A1. El resto figuran en la guía de la ACGIH con la   anotación A2 (carcinógeno humano sospechoso).  En España existen aproximadamente medio millón de trabajadores expuestos en el   ámbito  laboral  a  la  inhalación  de  polvo  de  madera.  Principalmente  en  los  sectores  de    construcción, industria de fabricación de muebles, carpintería, silvicultura y aserraderos,   además de otras actividades que indirectamente emplean a carpinteros, ebanistas u otros   trabajadores de la madera. 7  Respecto a esta situación, en la legislación española vigente, el RD 374/2001, de 6   de abril, regula sobre la protección de la salud y seguridad de los trabajadores contra los   riesgos  relacionados  con  los  agentes  químicos  en  sus  diversas  formas  de  presentación    —entre ellas el polvo— presentes en el lugar de trabajo. 9  Este RD traspuso al ordenamiento   jurídico español la Directiva del Consejo 98/24/CE de 7 de abril y la Directiva 2000/39/  CE de la Comisión Europea de 8 de junio.  Respecto a sustancias cancerígenas, como es el caso del polvo de madera dura, es   de aplicación el R. D. 665/1997, 10  de 12 de mayo, sobre la protección de los trabajadores  \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   115  MEDICINA  y  SEGURIDAD   del   trabajo  contra  los  riesgos  relacionados  con  la  exposición  a  agentes  cancerígenos  durante  el    trabajo y la modificación contenida en el R. D. 349/2003, de 21 de marzo, 11  que incluye   por primera vez un valor límite de exposición profesional para el polvo de madera dura   y por el que se amplía su ámbito de aplicación a los agentes mutágenos. La neoplasia   maligna  de  cavidad  nasal  debido  a  polvo  de  madera  dura,  se  incluye  en  el  cuadro  de    enfermedades profesionales en el sistema de la Seguridad Social en el RD 1299/2006, de   10 de noviembre. 12  Desde hace décadas se vienen realizado estudios orientados a esclarecer el papel   que pueda jugar la exposición a polvo de madera en el desarrollo del cáncer nasosinusal,   y algunos autores concluyen que la utilización de maderas duras como el roble y el haya   están etiológicamente relacionados con el desarrollo de estos tumores, postulando que   dicha exposición ocupacional era el factor de riesgo más importante. 14-16    El  objetivo  principal  de  este  estudio  es  buscar  en  la  literatura  científica  reciente    trabajos que aborden la exposición laboral a polvo de madera y su posible relación con   el desarrollo de cáncer de senos paranasales, a objeto de describir la mayor evidencia   científica que en el momento actual se tenga sobre esta relación, así como buscar datos   relacionados con la dosis-respuesta, tiempo de exposición, tipo histológico más frecuente,   posible  asociación  a  mutaciones  genéticas  y,  en  la  medida  de  lo  posible,  definir  los    procesos  de  trabajo  dentro  de  la  industria  maderera  que  tienen  mayor  riesgo  para    desarrollar cáncer nasosinusal.  MATERIALES Y MÉTODOS  Se realiza una revisión sistemática en el mes de Noviembre del 2014 de la literatura   científica publicada durante el periodo comprendido entre 2009-2014 a partir de bases de   datos  bibliográficas  como  Medline-PubMed,  LILACS,  IBECS,  OSH-Update  y  Cochrane    library, así como del repositorio SciELO.  Se utilizaron descriptores del  Medical Subject Headings  (MeSH) y Descriptores en   Ciencias de la Salud (DeCS) como principales términos de búsqueda para las bases de   datos que utilizan dichos tesauros (Medline-PubMed, LILACS, IBECS y Cochrane library).   Los descriptores que consideramos fueron: neoplasms, otorhinolaryngologic neoplasms,   wood, wood/adverse effects, wood/ toxicity.  (Tabla I) .  La colección bibliográfica resultante se completó mediante una búsqueda libre en   Google Schoolar y otras fuentes bibliográficas de internet.  Se  definieron  criterios  de  inclusión  y  exclusión  para  seleccionar  los  artículos    atendiendo a los objetivos del mismo.  Criterios de inclusión    —   Población trabajadora en la industria de la madera.    —   Cáncer de senos paranasales.    —   Trabajos publicados entre los años 2009 y 2014.    —   Trabajos realizados en humanos.    —   Artículos en español, inglés, alemán e italiano.    —   Se incluyeron para este estudio los siguientes documentos: meta-análisis, ensayo   clínico,  estudios  experimentales,  casos  y  controles,  cohortes,  estudios    observacionales.  Criterios de exclusión    —   Población general.    —   Patologías generales del sistema respiratorio. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   116  MEDICINA  y  SEGURIDAD   del   trabajo    —   Artículos de opinión, ecológicos, cartas al director, protocolos, comunicaciones,   notas técnicas.    —   Artículos duplicados.  Se  realizó  una  revisión  por  pares  de  forma  independiente  de  cada  uno  de  los    artículos para establecer el criterio de pertinencia para su inclusión en el estudio y se   aplicaron criterios de consenso en las discrepancias, además se realizó la asignación del   nivel de evidencia científica correspondiente a través de los criterios Scottish Intercollegiate   Guidelines Network (SIGN). 17  RESULTADOS  Se encontró un total de 149 artículos publicados entre 2009-2014, 147 corresponde a   los encontrados en las bases de datos y 2 a la búsqueda libre. Tras la aplicación de los   criterios de inclusión y exclusión se descartaron 141 artículos que no los cumplían y no se   pudo recuperar el texto completo de 1 de ellos, quedando finalmente una colección de 7   artículos que abordaban como tema principal de estudio la relación del cáncer de senos   paranasales y la exposición a polvo de madera; con niveles de evidencia entre 2 y 3.  Tabla I.  Estrategias de búsquedas utilizadas para cada una de las bases     de datos bibliográficas y artículos encontrados  Bases de datos   Estrategia de búsqueda   Resultados obtenidos MEDLINE  (Vía PUBMED) ((«neoplasms»[MeSH Terms] OR   «otorhinolaryngologic neoplasms»[MeSH   Terms])) AND ((«wood»[MeSH Terms] OR   «wood/adverse effects»[MeSH Terms] OR   «wood/toxicity»[MeSH Terms]))  Filters: published in the last 5 years; Humans Sin aplicar fi ltros: 409  Tras aplicar fi ltros  40  LILACS   Cancer AND Madera OR Madera/efectos  (Palabras) 16  IBECS   Cancer AND Madera   0  SCIELO   Cancer AND Madera   0  OSH-UPDATE   Neoplasms OR otorhinolaryngologic   neoplasms AND wood OR wood effects   adverse OR wood toxicity 91  Tras aplicar fi ltro 2009-2014:  0  COCHRANE LIBRARY   Cancer AND Madera   0  BÚSQUEDAS BIBLIOGRÁFICAS   SECUNDARIAS  2  De los 7 artículos incluidos en el estudio, 2 son casos y controles, 3 son longitudinales   retrospectivos, 1 es una serie de casos y 1 es un estudio transversal. El análisis de los   resultados de los diferentes estudios se exponen a continuación de forma cronológica.  Holmila R y cols. (2009). 18  En una serie de casos analizaron las mutaciones del gen   TP53 en 358 casos de cáncer nasosinusal con o sin exposición ocupacional a polvo de   madera  mediante  electroforesis  capilar,  análisis  de  polimorfismo  de  conformación  de    cadena  sencilla  y  secuenciación  directa.  La  muestra  de  los  tejidos  se  obtuvieron  de  3    países;  Dinamarca  para  el  año  1991-  2001  (170  casos),  Finlandia  en  1989-  2002  (109    casos) y en Francia en los años 1990- 2002 (79 casos).  Los datos sobre la exposición a polvo de madera estaban disponible para 79% de los   casos. El estudio muestra una asociación significativa entre esta exposición y la histología   de adenocarcinoma (OR 12.6, IC95%, 5.0-31.6), el cual se asoció a polvo de madera dura   (IC95%  19-20)  mientras  que  los  expuestos  a  polvo  de  madera  blanda  presentaron    carcinoma de células escamosas (IC95% 23-43; p‘0,001). \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   117  MEDICINA  y  SEGURIDAD   del   trabajo  La mutación TP53 fue más común en el adenocarcinoma (OR 2.0; IC95%, 1.01-3.07).   El riesgo de mutación TP53 se incrementó en asociación con la duración de la exposición   a polvo de madera (mayor o igual 24 años, OR 5,1; IC95%, 1.5-17.1), nivel medio (’2 mg/  m 3 ; OR 3.6, IC95%, 1,2-10,8) y el nivel acumulativo (mayor o igual 30 mg/m 3  por años; OR   3.5; IC95%, 1.2-10.7).  Estos  autores  investigaron  la  mutación  del  gen  KRAS  en  la  muestra  de  casos  de    Dinamarca y encontraron que rara vez se altera, y que de las mutaciones ocurridas en su   mayoría eran en adenocarcinomas (7 casos de 58, 12%) y de estos 2 eran de tipo intestinal.  D`Errico A y cols. (2009). 19  Estudiaron en una muestra de 113 casos y 336 controles   el riesgo de cáncer nasosinusal por tipo histológico y por exposición previa a factores de   riesgo  ocupacionales  sospechosos.  Entre  1996  y  2000,  los  casos  incidentes  fueron    recogidos de hospitales de toda la región italiana de Piamonte por el Registro Regional   de Cáncer Nasosinusal.  El  estudio  mostró  que  cualquier  cáncer  epitelial  nasosinusal  se  relacionaba    significativamente con la exposición a polvo de madera (OR 11.4), ajustado por edad y   sexo; aumentando el riesgo de adenocarcinoma (OR 58.6) y se duplicó con cada 5 años   de exposición (p‘0.0001).  También encontraron relación dosis-respuesta entre el riesgo de adenocarcinoma y   años de exposición. La exposición de baja intensidad aumenta significativamente el riesgo   (OR 52.4).  Ekburanawat W y cols.   (2010) . 20  Confirman los hallazgos observados en trabajos   anteriores  a  nuestro  periodo  de  estudio,  en  los  que  asociaban  la  presencia  de    adenocarcinoma  nasosinusal  a  la  exposición  previa  a  polvo  de  madera.  El  estudio    identifica  algunos  factores  de  riesgos  para  cáncer  nasofaríngeo  en  una  población    tailandesa, ajustado por hábito tabáquico y nivel de educación, en la que encuentran que   dicha exposición en el ambiente ocupacional incrementa el riesgo (OR 1.63, IC95% 1.02-  2.61).  Cantu  G  y  cols.     (2010) . 21   Estudiaron  el  papel  que  podían  jugar  los  factores    individuales al observar que aunque todos los trabajadores habían estado sometidos a los   mismos niveles altos de exposición a polvos orgánicos (madera y cuero), solo algunos de   ellos  desarrollaban  un  adenocarcinoma  de  senos  paranasales  de  tipo  intestinal  (ITAC),    apuntando  hacia  la  hipótesis  de  que  el  polimorfismo  de  enzimas  del  metabolismo  en    xenobióticos puede jugar un papel importante y contribuir de esta forma a que se presente   un alto grado de variabilidad en la susceptibilidad individual en lo que respecta al riesgo   de desarrollar este tipo de cáncer.  Realizaron un estudio longitudinal retrospectivo en una muestra de 345 pacientes   con tumores malignos nasosinusales intervenidos quirúrgicamente en la unidad cráneo-  maxilo-facial  del  Instituto  Nacional  del  Tumor  de  Milán,  Italia;  entre  1997  y  2006,    interrogados  sobre  exposición  laboral  previa  a  polvos  orgánicos,  y  comparados  en  el    departamento  experimental  de  patología  molecular  los  genotipos  de  enzimas  del    metabolismo CYP1A1 y GSTM1 en 30 pacientes con ITAC etmoidal con los de 79 donantes   de sangre sanos, para verificar si estos polimorfismos podían identificar sujetos con alto   riesgo  para  desarrollar  ITAC.  Encontraron  una  asociación  estadísticamente  significativa    entre el ITAC de etmoides y exposición a polvos orgánicos (madera y cuero) (p‘0.0001),   así  como  una  sobreexpresión  del  polimorfismo  de  CYP1A,  en  pacientes  con  ITAC  en    comparación con controles, asociado frecuentemente a la supresión del genotipo GSTM1.   De este modo sugirieron que este polimorfismo puede estar asociado con un alto grado   de susceptibilidad a este tumor. El tiempo medio de exposición fue 7,5 años (rango, 4-18).  Breheret  R  y  cols.     (2011). 22   Realizaron  un  estudio  longitudinal  retrospectivo    incluyendo 42 sujetos en los que se conocía la ocupación de 41 de ellos y de los cuales   36 (85,7%) tuvieron exposición ocupacional a polvo de madera. Especificaron un tiempo   de exposición de 30,4 +/-14 años. El intervalo medio entre el fin de la exposición y el   diagnóstico de adenocarcinoma de etmoides fue de 10,9 años. Aunque no encontraron  \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   118  MEDICINA  y  SEGURIDAD   del   trabajo  relación entre el grado tumoral y tiempo de evolución (p=0,73) o exposición a polvo de   madera (p=0,19), encontraron que todos los tumores fueron ITAC; mientras en un 24% de   los pacientes el subtipo histológico fue inespecífico.  Giedre Smailyte   (2012) . 23  En un estudio retrospectivo, evaluaron la incidencia de   cáncer en una cohorte de 1518 carpinteros expuestos a polvo de madera blanda en una   fábrica  de  productos  de  carpintería  de  Lituania,  de  los  que  1080  eran  hombres  y  438    mujeres. El seguimiento de la cohorte se realizó desde el 1 de Enero de 1978 hasta el 31   de  Diciembre  de  2007.  Los  casos  de  cáncer  en  la  cohorte  fueron  identificados  en  el    registro de Cáncer Lituano. Se calcularon Razones de Incidencia Estandarizada por edad   y sexo (SIR- proporciones entre lo observado y esperado de cáncer).  En general la incidencia total de cáncer no fue mayor de la esperada tanto para la   cohorte de hombres como para al de mujeres (SIR hombres; 0.81, IC95% 0.69-0.95 y SIR   mujeres;  0.88,  IC95%  0.65-1.16).  En  el  grupo  de  mujeres  carpinteras  se  encontró  un    incremento de la SIR para el cáncer de nariz y senos paranasales (SIR 13.88, IC95% 0.35-  77.31), en la cohorte de hombres no se observó este incremento. Finalmente no pudieron   concluir que hubiera evidencia de un mayor riesgo de cánceres respiratorios entre los   trabajadores expuestos a polvo de madera blanda.  Pérez-Escudero J y cols.   (2012) . 24  Realizan un estudio transversal con una muestra   de 95 pacientes con adenocarcinoma primario de cavidad nasal y senos paranasales de   tipo intestinal, encontraron una frecuencia de la mutación TP53 en un 41% (18/44) y de   inmunopositividad de p53 en un 72% de los sujetos (66/92), encontrando una relación   con la exposición a polvo de madera estadísticamente significativa. Los 18 pacientes con   mutación  de  TP53  y  la  mayoría  de  los  casos  con  tinción  positiva  para  p53  tuvieron    exposición  profesional  a  polvo  de  madera. Alrededor  de  41  casos  donde  ambos  datos    fueron obtenidos, 14 mostraron tanto la mutación como la sobreexpresión proteica, otros   14 con sobreexpresión de la proteína pero no mutación y 1 caso con mutación pero no   sobreexpresión  proteica.  Demostrando  que  la  inmunohistoquímica  no  es  un  predictor    perfecto de la presencia o ausencia de la mutación de TP53.  En la  Tabla II  se presentan de forma esquemática los principales hallazgos de los   diferentes artículos incluidos en el estudio. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   119  MEDICINA  y  SEGURIDAD   del   trabajo  Tabla II. Estudios analizados y resultados obtenidos en relación con exposición ocupacional     a polvo de madera y el cáncer de senos paranasales  Título Autor Año Objetivo Tipo de estudio Población Sesgos Resultados  Mutations in TP53   tumor suppressor   gene in wood dust-   related sinonasal   cancer Holmila R,   y cols 2009Aclarar si los   mecanismos de   mutación (gen KRAS   y gen supresor   tumoral TP53)   están implicados en   la carcinogénesis   nasosinusal y   su relación a la   exposición a polvo de   madera. Serie de casos 358 Controlados:   Ajustaron los   resultados   según edad,   sexo y centro de   estudios –   Asociación signifi cativa entre la exposición a polvo de madera y la  histología de adenocarcinoma (OR 12.6, IC95%, 5.0-31.6). –   Mutación TP53 fue mayor en el adenocarcinoma (OR 2.0; IC95%).  –   Positividad de la mutación TP53 mostró una asociación no signifi cativa con   la exposición a polvo de madera (OR 1.6; IC95%, 0.8-3.1). –   Exposición a polvo de madera dura mostró casi exclusivamente  adenocarcinoma (IC95% 19-20), y los expuestos al polvo de madera blanda   presentaron carcinoma de células escamosas (IC 95% 23- 43; p < 0,001). –   Riesgo de mutación TP53 se incrementó con la duración de la exposición  a polvo de madera (≥ 24 años, OR 5,1; IC95%, 1.5-17.1), nivel medio   (> 2 mg/m3 ; OR 3.6, IC95%, 1,2 -10,8) y el nivel acumulativo (≥ 30 mg/m3  x  años; OR 3.5; IC95%, 1.2 -10.7). A case- control study   on occupational risk   factors for sino- nasalD`Errico A,   y cols. 2009Investigar el riesgo   de cáncer epitelial   nasosinusal y tipo   histológico por   exposición previa   a factores de riesgo   ocupacionales   sospechosos, en   particular, en la   metalurgia. Casos y   controles  113 casos y 336   controles De Confusión:   Cigarrillo –   Cáncer epitelial nasosinusal (SNEC) se relacionó con la exposición a polvo  de madera (OR 11.4). –   Riesgo de adenocarcinoma aumento con la exposición a polvo de madera  (OR 58.6). –   La exposición de baja intensidad aumenta signifi cativamente el riesgo de  adenocarcinoma (OR: 52.4). Evaluation of   non- viral for   nasopharyngeal   carcinoma in   Thailand: results from   a case- control study Ekburanawat W,   y cols 2010Investigar los factores   que incrementan el   riesgo de carcinoma   nasofaríngeo (NPC) en   Tailandia Casos y   controles 327 casos y  327 controles Controlado:   Ajustaron los   resultados según   el cigarrillo y el   nivel educación –   Exposición ocupacional a polvo de madera fue asociado con un alto riesgo  de cáncer nasofaríngeo (OR 1.63, IC95% 1.02- 2.61). \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   120  MEDICINA  y  SEGURIDAD   del   trabajo  Título Autor Año Objetivo Tipo de estudio Población Sesgos Resultados  Intestinal type   Adenocarcinoma   of the ethmoid   sinus in wood and   leather workers: a   retrospective study of   153 cases Cantu G, y cols 2010Identifi car el papel   de la exposición   en el trabajo a   polvos orgánicos   en trabajadores con   tumores malignos de   senos paranasales. Longitudinal:   Retrospectivo - 345   trabajadores con   adenocarcinoma   etmoidal:  *153 (tipo intestinal)   y *16 (tipo no   intestinal)  * 176 otro tipo Controlados:  Ajustaron los   resultados según   el cigarrillo –   153 casos con adenocarcinoma de seno etmoidal tipo intestinal (ITAC): 148  estaban expuestos a polvos orgánicos (91 a polvo de madera). –   16 casos con adenocarcinoma de seno etmoidal tipo no intestinal: 3 casos  expuestos a polvos orgánicos (1 a madera). –   176 de otro tipo, 10 expuestos a posibles agentes carcinogénicos (3 a  madera). –   Asociación signifi cativa (p < 0.0001) entre el ITAC de etmoides y  exposición a polvos orgánicos (madera y cuero). –   Con una alta signifi cación (p=0,0001) se encontró asociación entre  histología (ITAC) y exposición a madera o cuero. –   El tiempo medio de exposición fue 7,5 años (rango, 4-18). Adenocarcinoma of   the ethmoid sinus:   Retrospective study   of 42 cases Breheret R,   y Cols 2011Análisis retrospectivo   de los resultados   oncológicos y   morbilidad de   la cirugía de   adenocarcinoma   de seno etmoidal   e identifi cación   de factores de   supervivencia. Longitudinal:   retrospectivo. 42 pacientes   incluida una   mujer con   adenocarcinoma de   etmoides. No se hace   mención de   posibles sesgos.–   La ocupación fue conocida en 41 pacientes, 36 de ellos (85,7%) con  exposición a polvo de madera. –   El tiempo promedio de exposición fue de 30.4+/-14 años.  –   No hubo relación entre el grado tumoral y tiempo de evolución (p=0,73) o  exposición a polvo de madera (p=0,19).  –   Todos los tumores fueron ITAC: 40,5% mucinoso, 26% colonico, 7,1 papilar   y 2,4 sólido. Cancer incidence   among workers   exposed to softwood   dust in Lithuania Giedre Smailyte 2012Evaluar la incidencia   de cáncer en una   cohorte de carpinteros   expuestos a polvo de   madera blanda en una   fábrica de productos   de carpintería de   Lituania. Longitudinal   Retrospectivo 1518 trabajadores   (1080 hombres y   438 mujeres) De Confusión:   cigarrillo y   consumo de   alcohol. Carpinteros masculinos:  –   Incidencia total de cáncer no fue mayor de la esperada (SIR 0.81, IC95%  0.69- 0.95). –   No se observaron cánceres nasosinusales (0.47 casos esperados).  Carpinteros mujeres:  –   Incidencia total de cáncer no aumentó (SIR 0.88, IC95% 0.65-1.16).  –   Aumento del SIR en cáncer nasosinusal (SIR 13.88, IC95% 0.35-77.31). \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   121  MEDICINA  y  SEGURIDAD   del   trabajo  Título Autor Año Objetivo Tipo de estudio Población Sesgos Resultados  Wood dust- related   mutational profi le of   TP53 in intestinal-   type sinonasal   adenocarcinoma Perez-Escuredo,   J y cols 2012Analizar el espectro   de la mutación de   TP53 y relacionar los   resultados a polvo de   madera como etiología   en estos pacientes. Transversal 95 pacientes con   adenocarcinoma   primario de cavidad   nasal y senos   paranasales tipo   intestinal (ITAC). Controlados:   Ajustaron los   resultados según   el cigarrillo –   Mutación TP53: de 44 ITAC primarios en 18 (41%) fue encontrada la  mutación. –   Expresión proteína p53: 66 casos fueron positivos.  –   P53 en relación a etiología:  *  Los 18 pacientes con mutación de TP53 y la mayoría de los casos con   tinción positiva para p53 tuvieron exposición profesional a polvo de madera.  *  Alrededor de 41 casos donde ambos datos fueron obtenidos, 14   mostraron tanto la mutación como la sobreexpresión proteica, otros 14 con   sobreexpresión de la proteína pero no mutación y 1 caso con mutación pero   no sobreexpresión proteica. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   122  MEDICINA  y  SEGURIDAD   del   trabajo  DISCUSIÓN  Aunque el cáncer de senos paranasales es un tumor raro y muchos de los estudios se   realizan sobre muestras pequeñas, la mayor parte de ellos describen una asociación causa-  efecto  estadísticamente  significativa  entre  la  exposición  laboral  a  polvo  de  madera  y  el    cáncer de senos paranasales, riesgo que además parece incrementarse con mayores tiempos   de exposición, lo que llevó a la Agencia Internacional para la Investigación sobre el Cáncer   (IARC) a clasificar al polvo de la madera como un agente cancerígeno del grupo 1.  El consenso sobre la evidencia de esta relación causa efecto y el que en la actualidad   el polvo de la madera se encuentra clasificado dentro del grupo 1, pueden justificar el   escaso número de artículos que recientemente se hayan podido publicar abordando el   tema y una de las razones por la que tan sólo se encontraron 7 artículos que cumpliesen   los criterios de inclusión pertinentes para este estudio.  En general todos los artículos seleccionados confirman la relación entre la exposición   a  polvo  de  madera  dura  y  la  aparición  de  cáncer  nasosinusal. 18-21 El  único  trabajo  que    aborda de forma específica el estudio de la relación entre el desarrollo de este tipo de   tumor con la exposición a polvo de madera blanda, no encuentra relación estadísticamente   significativa. 23  Estudios  publicados  anteriormente,  describen  el  adenocarcinoma  de  senos    paranasales  de  tipo  intestinal  (ITAC)  como  el  tipo  de  cáncer  que  más  se  asocia  a  la    exposición  a  polvo  de  madera  dura,  mientras  el  tipo  histológico  epidermoide  parece    encontrase  más  relacionado  con  la  exposición  a  polvo  de  madera  blanda.  Estos  datos    concuerdan con la prevalencia de adenocarcinoma de tipo intestinal nasosinusal descritos   por  algunos  autores  de  artículos  incluidos  en  este  estudio   18,19,  21,22   en  relación  a  la    exposición laboral a polvo de madera.  Cantu y su equipo concluyen que el ITAC se origina solamente en el seno etmoidal   mientras que los No-ITAC pueden ocurrir en cualquier otro seno paranasal. Incluso que el   ITAC de etmoides es el único que tiene una relación claramente relacionada con la exposición   laboral a polvo de madera. La mayor limitación de estos estudios radica en que muchos de   ellos  no  especifican  la  localización  exacta  del  tumor,  encontrando  sólo  dos  artículos  que    describen el adenocarcinoma de etmoides entre los principales objetivos del estudio.  Los trabajos que estudiaban el efecto dosis-respuesta revelan datos que concuerdan   con la literatura científica publicada anteriormente. En cuanto al tiempo de exposición a   polvo de madera y el riesgo de desarrollar adenocarcinoma de senos paranasales, D ́Errico   y Holmila describen una relación directa entre mayor tiempo de exposición y mayor riesgo   de padecer este cáncer, que además se incrementa cuando se asocia a una mutación TP53.  Otro aspecto diferencial de los artículos publicados durante el periodo 2009-2014,   se centra en el abordaje de aspectos diferentes a los ya conocidos, tales como el papel   que  puede  desempeñar  en  el  proceso  causal  la  presencia  de  determinados  factores    individuales y ciertas mutaciones genéticas.  Las alteraciones genéticas principalmente estudiadas se centran en la mutación del   gen  TP53,  inmunopositividad  de  p53  y  el  polimorfismo  de  enzimas  del  metabolismo    CYP1A (supresor del genotipo GSTM1).  Pérez-Escudero  J  y  cols.,  examinaron  tumores  primarios  ITAC  encontrando  una    asociación con la mutación de TP53 en casi la mitad de la muestra estudiada y todas ellas   se producían en pacientes que describían haber tenido una exposición a polvo de madera,   por lo que establecen la hipótesis, que radicales libres liberados en condiciones inflamatorias   crónicas generadas por dicha exposición laboral, son responsables de la alta frecuencia de   la transición de GàA en el TP53 en el ITAC, hipótesis con la que coincide Holmila y cols.,   que además investigaron la relación del ITAC con mutaciones del gen KRAS, encontrando   que  rara  vez  se  altera  pero  que  de  las  mutaciones  ocurridas  en  su  mayoría  eran  en    adenocarcinomas (7 casos de 58, 12%) y de estos 2 eran de tipo intestinal (ITAC). \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   123  MEDICINA  y  SEGURIDAD   del   trabajo  Dos de los artículos encuentran presencia de inmunopositividad de p53 en la relación   de  exposición  a  polvo  de  madera  y  la  aparición  de  adenocarcinoma  de  tipo  intestinal,    observando que se presentaba con mayor frecuencia en el ITAC subtipo papilar/colónico.  Cantu-Giulio  y  cols.  Compararon  el  polimorfismo  de  enzimas  del  metabolismo    CYP1A relacionadas con el supresor del genotipo GSTM1, encontrando una sobreexpresión   de este polimorfismo en pacientes con ITAC, por lo que resaltan la importancia de realizar   estudios futuros que puedan confirmar el papel de estas enzimas y la susceptibilidad de   los  sujetos  a  desarrollar  adenocarcinoma  nasosinusal,  aunque  este  tipo  de  estudios    puedan suponer un coste relativamente elevado en determinados casos.  En cuanto a la posibilidad de identificar las profesiones que mayor riesgo tienen de   desarrollar cáncer de senos paranasales, Ekburanawat W y su equipo describen una lista   de  ocupaciones  más  relacionadas  con  este  tipo  de  cáncer,  destacando  los  carpinteros,    trabajadores  de  la  construcción,  ebanistas,  aserradores,  fabricantes  de  madera    contrachapada y otros trabajos relacionados con la manufactura de la madera, lo que en   cierto modo se encuentra avalado por los resultados encontrados en la mayoría de los   estudios sobre una evidencia más o menos confirmada de la relación existente entre la   exposición a polvo de madera y la aparición de este tipo de tumores. Para Pérez-Escudero,   un  carpintero  varón  presenta  500  veces  mayor  riesgo  de  padecer  cáncer  de  senos    paranasales  que  el  resto  de  la  población  masculina  y  900  veces  más  posibilidades  en    comparación con la población general, no se han encontrado datos objetivos que puedan   avalar esta ponderación de riesgo.  En  conclusión,  el  polvo  de  madera  dura  es  el  compuesto  más  relacionado  con  la    aparición de cáncer de senos paranasales, principalmente adenocarcinoma tipo intestinal   (ITAC) y localización etmoidal.  Factores  individuales  relacionados  con  mutaciones  genéticas  en  las  que  podrían    estar  implicados  los  genes  TP53,  inmunopositividad  de  p53  y  el  KRAS  así  como  el    polimorfismo  de  enzimas  del  metabolismo  CYP1A  relacionado  con  el  supresor  del    genotipo GSTM1, parece que pueden jugar también un papel en el proceso causal.  Por último, dado que diferentes autores describen un mayor riesgo relacionado con   el tiempo de exposición, incluso algunos de ellos señalan un incremento del riesgo en   presencia  de  bajos  niveles  de  exposición,  es  importante  recordar  que  en  ningún  caso    existen niveles seguros, como lo reconoce el INSHT (instituto nacional de seguridad e   higiene  en  el  trabajo)  en  la  guía  de  Límites  de  exposición  profesional  para  agentes    químicos en España: «los límites de exposición profesional son valores de referencia y no   constituyen una barrera definida de separación entre situaciones seguras y peligrosas»,   donde el único nivel seguro es la no exposición.  REFERENCIAS BIBLIOGRÁFICAS    1.     Sociedad Española de Oncología Médica. Tumores cabeza y cuello- O. R. L. 13 Febrero 2013. http://www.  seom.org/es/informacion-sobre-el-cancer/info-tipos-cancer/tumores-orl/orl?start=11#content  Consultada    en Enero 2015    2.     R Quitral C, M Rahal E, I Morales G, C Daszenies S, MP Vallejos U. Tumores malignos de nariz y cavidades   paranasales.  Otorrinolaringol.  Cir.  Cabeza  Cuello  2003;  63:  21-28.  (http://www.sochiorl.cl/  uploads/63-01_05.pdf)    3.     Lazos M. Adenocarcinomas sinonasales. Rev Med Hosp Gen Méx 2011;74(1):35-41.    4.     Toscani D. El riesgo de cáncer en los trabajadores de la industria de la madera. 2007; 41: 39. http://www.  ladep.es/ficheros/documentos/El%20riesgo%20de%20c%E1ncer%20en%20los%20trabajadores%20de%20  la%20industria%20de%20la%20madera.pdf    5.     Límites de Exposición Profesional para Agentes Químicos adoptados por el Instituto Nacional de Seguri -  dad e Higiene en el Trabajo para el año 2014. http://www.insht.es/portal/site/Insht/menuitem.1f1a3bc79 -  ab34c578c2e8884060961ca/?vgnextoid=2f312741f9f34410VgnVCM1000008130110aRCRD&vgnextchanne  l=75164a7f8a651110VgnVCM100000dc0ca8c0RCRD Consultada en Enero 2015. \nEnero - marzo 2015   Med Segur Trab (Internet) 2015; 61 (238) 112-124  Exposición ocupacional a polvo de madera y cáncer de senos paranasales  Yosimar Rojas-García, Andreína Peñalver-Paolini   124  MEDICINA  y  SEGURIDAD   del   trabajo    6.     Guía técnica para la evaluación y prevención de los riesgos relacionados con la exposición durante el   trabajo  a  agentes  cancerígenos  o  mutágenos.  http://www.insht.es/InshtWeb/Contenidos/Normativa/  GuiasTecnicas/Ficheros/Agentes_cancerigenos.pdf Consultada en Enero 2015.    7.     Centro tecnológico del mármol y la piedra. El polvo de la madera: Riesgo laboral y su prevención. Metal,   Construcción  y  Afines  de  UGT  (MCA-UGT),  Federación  de  Industria.  2010.  (http://portal.ugt.org/  saludlaboral/publicaciones/manual_estudio/2010-04.pdf)    8.     Ley 31/1995, de 8 de noviembre, de Prevención de Riesgos Laborales. BOE n.º 269 10/11/1995. http://  www.insht.es/portal/site/Insht/menuitem.1f1a3bc79ab34c578c2e8884060961ca/?vgnextoid=771be9369a  3d3110VgnVCM100000dc0ca8c0RCRD&vgnextchannel=1d19bf04b6a03110VgnVCM100000dc0ca8c0RCR  D&tab=tabConsultaCompleta Consultada en Enero 2015.    9.     Real Decreto 374/2001, de 6 de abril sobre la protección de la salud y seguridad de los trabajadores con -  tra los riesgos relacionados con los agentes químicos durante el trabajo. BOE n.º 104 01/05/2001. http://  www.insht.es/portal/site/Insht/menuitem.1f1a3bc79ab34c578c2e8884060961ca/?vgnextoid=feb4f956a51  d5110VgnVCM100000dc0ca8c0RCRD&vgnextchannel=75164a7f8a651110VgnVCM100000dc0ca8c0RCRD  &tab=tabConsultaCompleta Consultada en Enero 2015.  10.  Real Decreto 665/1997, de 12 de mayo, sobre la protección de los trabajadores contra los riesgos relacio -  nados con la exposición a agentes cancerígenos durante el trabajo. http://www.insht.es/portal/site/Insht/  menuitem.1f1a3bc79ab34c578c2e8884060961ca/?vgnextoid=45fab1eae3065110VgnVCM100000dc0ca8c0R  CRD&vgnextchannel=1d19bf04b6a03110VgnVCM100000dc0ca8c0RCRD Consultada en Enero 2015.  11.  Real Decreto 349/2003, de 21 de marzo, por el que se modifica el Real Decreto 665/1997, de 12 de mayo,   sobre la protección de los trabajadores contra los riesgos relacionados con la exposición a agentes can -  cerígenos durante el trabajo, y por el que se amplía su ámbito de aplicación a los agentes mutágenos BOE   n.º 82 05/04/2003. http://www.insht.es/portal/site/Insht/menuitem.1f1a3bc79ab34c578c2e8884060961ca  /?vgnextoid=74f5b09a49dc5110VgnVCM100000dc0ca8c0RCRD&vgnextchannel=1d19bf04b6a03110VgnV  CM100000dc0ca8c0RCRD&tab=tabConsultaCompleta  12.  Real Decreto 1299/2006, de 10 de Noviembre, por el que se aprueba el cuadro de enfermedades profe -  sionales en el sistema de la Seguridad Social y se establecen criterios para su notificación y registro. BOE   n.º 302 19/12/2006. http://www.insht.es/portal/site/Insht/menuitem.1f1a3bc79ab34c578c2e8884060961c  a/?vgnextoid=8949e23615dc5110VgnVCM100000dc0ca8c0RCRD&vgnextchannel=1d19bf04b6a03110Vgn  VCM100000dc0ca8c0RCRD&tab=tabConsultaCompleta Consultada en Enero 2015.  13.  Acheson  ED,  Cowdell  RH,  Hadfield  E,  Macbeth  RG.  Nasal  cancer  in  woodworkers  in  the  furniture    industry. Br Med J. 1968 Jun 8;2(5605):587–96.  14.  Fontana L, Liétin B, Catilina P, Devif C, Féneon B, Martin F, et al. [Occupational exposure to wood dust   and  nasal  sinus  cancer].  Ann  Oto-Laryngol  Chir  Cervico  Faciale  Bull  Société  Oto-Laryngol  Hôp  Paris.    2008 Apr;125(2):65–71.  15.  Mensi C, Sieno C, Bordini L, Dicredico N, Pesatori AC, Riboldi L. [Systematic surveillance of occupational   cancer: the Lombardy Sinonasal Cancer Registry]. Med Lav. 2010 Feb;101(1):19–25.  16.  Barnes L, Choisea SI, Seethala RR. Head and Neck Pathology. Demos Medical Publishing; 2010. 211 p.  17.  Scottish Intercollegiate Guidelines Network. SIGN 50: A guideline developer’s handbook. http://www.   sign.ac.uk. 2008. España.  18.  Holmila R, Bornholdt J, Heikkilä P, Suitiala T, Févotte J, Cyr D, et al. Mutations in TP53 tumor suppressor   gene in wood dust-related sinonasal cancer. Int J Cancer J Int Cancer. 2010 Aug 1;127(3):578–88.  19.  D’ Errico A, Pasian S, Baratti A, Zanelli R, Alfonzo S, Gilardi L, et al. A case-control study on occupational   risk factors for sino-nasal cancer. Occup Environ Med. 2009 Jul;66(7):448–55.  20.  Ekburanawat W, Ekpanyaskul C, Brennan P, Kanka C, Tepsuwan K, Temiyastith S, et al. Evaluation of   non-viral risk factors for nasopharyngeal carcinoma in Thailand: results from a case-control study. Asian   Pac J Cancer Prev APJCP. 2010;11(4):929–32.  21.  Cantu G, Solero CL, Mariani L, Lo Vullo S, Riccio S, Colombo S, et al. Intestinal type adenocarcinoma of   the  ethmoid  sinus  in  wood  and  leather  workers:  a  retrospective  study  of  153  cases.  Head  Neck.  2011    Apr;33(4):535–42.  22.  Breheret R, Laccourreye L, Jeufroy C, Bizon A. Adenocarcinoma of the ethmoid sinus: retrospective study   of 42 cases. Eur Ann Otorhinolaryngol Head Neck Dis. 2011 Nov;128(5):211–7.  23.  Smailyte  G.  Cancer  incidence  among  workers  exposed  to  softwood  dust  in  Lithuania.  Occup  Environ    Med. 2012 Jun;69(6):449–51.  24.  Pérez-Escuredo J, Martínez JG, Vivanco B, Marcos CÁ, Suárez C, Llorente JL, et al. Wood dust-related mutational   profile of TP53 in intestinal-type sinonasal adenocarcinoma. Hum Pathol. 2012 Nov;43(11):1894–901. \n";
+    const PDF_NAME = "ca_senos paranasales.pdf";
+    const CHATBOT_THEME = "Exposición ocupacional a polvo de madera y cáncer de senos paranasales";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué porcentaje de los tumores malignos del organismo representan los cánceres de nariz y senos paranasales y qué relación se propone con la exposición a polvo de madera?","¿Cuál fue el objetivo de la revisión y qué aspectos adicionales buscaban (dosis-respuesta, tiempo de exposición, tipo histológico y mutaciones)?","¿Qué bases de datos y periodo (2009–2014) usaron para la búsqueda bibliográfica y en qué mes se realizó la revisión?","¿Qué descriptores MeSH/DeCS utilizaron para identificar estudios sobre neoplasias y madera (wood/adverse effects/toxicity)?","¿Cómo definieron los criterios de inclusión y qué características debía tener la población y los estudios seleccionados?","¿Qué tipos de artículos excluyeron (p. ej., población general u opiniones) y por qué creen que eso afecta la calidad de la evidencia?","¿Cuántos artículos encontraron inicialmente, cuántos descartaron y cuántos quedaron finalmente para analizar la relación polvo de madera–cáncer?","Según los resultados resumidos, ¿qué hallazgo apoya una asociación estadísticamente significativa y cómo influye el tiempo o la intensidad de exposición?","¿Qué papel se atribuye a alteraciones genéticas como TP53, KRAS, la inmunopositividad de p53 y el polimorfismo de CYP1A en el desarrollo del cáncer?","En la tabla de estudios, ¿qué diferencia se reporta entre adenocarcinoma y otros tipos histológicos según el tipo de polvo de madera (dura vs blanda)?","¿Qué muestran los estudios sobre dosis-respuesta y sobre la duración de la exposición (por ejemplo, incremento de riesgo con el tiempo y valores de OR reportados)?","¿Qué conclusiones se extraen sobre profesiones con mayor riesgo y qué recomendaciones se desprenden sobre investigación futura y prevención/identificación ocupacional?"];
+    const INITIAL_PALETTE = {"primaryColor":"#309fe8","secondaryColor":"#59b2ed","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#309fe8","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Redalyc.40 Años de la teoría del liderazgo situacional: una revisión</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Redalyc.40 Años de la teoría del liderazgo situacional: una revisión</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "     Revista Latinoamericana de Psicología  ISSN: 0120-0534  direccion.rlp@konradlorenz.edu.co  Fundación Universitaria Konrad Lorenz  Colombia  Santa-Bárbara, Emilio Sánchez; Rodríguez Fernández, Andrés 40 Años de la teoría del liderazgo situacional: una revisión Revista Latinoamericana de Psicología, vol. 42, núm. 1, 2010, pp. 25-39 Fundación Universitaria Konrad Lorenz Bogotá, Colombia  Disponible en: http://www.redalyc.org/articulo.oa?id=80515880003     Cómo citar el artículo    Número completo    Más información del artículo    Página de la revista en redalyc.org  Sistema de Información Científica  Red de Revistas Científicas de América Latina, el Caribe, España y Portugal  Proyecto académico sin fines de lucro, desarrollado bajo la iniciativa de acceso abierto \n25 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534  Recibido: Octubre de 2007  Aceptado: Noviembre de 2009  40 Años de la teoría del  liderazgo situacional: una revisión   40 Years of the situational leadership theory: a review  Emilio Sánchez Santa-Bárbara   Andrés Rodríguez Fernández Universidad de Granada, España   Correspondencia:   Emilio  Sánchez  Santa-Bárbara  (Ph  D).  Departamento  de  Psicología Social.   Universidad de Granada (España). Email: esanchez@ugr.es  Resumen  En este artículo, el objetivo es presentar una revisión de   los  elementos  principales  de  este  modelo  teórico.  Para   ello,  se  comenzará  con  un  recorrido  histórico  sobre   el  avance  de  esta  propuesta.  Se  señalarán  los  aspectos,   estudios  y  modelos  previos  en  que  se  basaron  Hersey   y Blanchard para conformar la TLS, y se mostrarán sus   puntos fuertes y débiles. Entre esas fortalezas y también   debilidades, se puede incluir la integración de elementos   procedentes  de  otros  autores  y  de  otras  disciplinas.  En   seguida  se  presentarán  los  supuestos  que  sustentan  la   teoría, y se señalarán las principales críticas en el plano de   la lógica o de la congruencia del modelo. Por último, se   describirán  los  tres  instrumentos  de  medida  vinculados   con  esta  teoría.  En  otro  lugar  (en  preparación),  se   revisarán  los  puntos  fuertes  y  débiles  de  la  TLS  en  el   plano empírico, así como la calidad de los instrumentos   vinculados con ella.   Palabras claves: revisión teórica, liderazgo situacional.  Abstract  In this paper, our aim is to present a review of  the main   elements  of   this  theoretical  model.  Thus,  we  will  start   with a historical revision on the advance of  this proposal.   We will point at the previous aspects, studies and models   in which Hersey and Blanchard put their basis to conform   SLT  and  strengths  and  weaknesses  will  be  addressed.   Among those strong –and weak- points, that integration   of  elements coming from other authors and areas can be   included.  In  addition,  we  will  address  the  assumptions   which uphold the theory and we will point out the main   criticisms on the logic or the congruence of  the model.   As an end, we will describe the three instruments linked   to this theory. In another place (in preparation), empirical   strengths and weaknesses of  the SLT will be revised as   well as the quality of  the instruments linked to it.  Keywords: theoretical review, situational leadership.  Introducción  La Teoría del Liderazgo Situacional (TLS) es un modelo   que  se  dio  a  conocer  en  1969.  Desde  entonces,  ha    experimentado varias modificaciones. Sus autores han    presentado  diversas  propuestas  y  han  incorporado   elementos nuevos con el fin de mejorar la versión inicial.    En el prefacio de la primera edición de su libro,  Management  of   Organizational  Behavior ,  Hersey  y  Blanchard  (1969a)    afirman que su propuesta teórica pretende incorporar    los  aportes  de  distintas  disciplinas  del  conocimiento    científico sobre el liderazgo alcanzado hasta entonces.  \n26 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  Este modelo, como reconocen Yukl (1989) o Moorhead   y Griffin (1995), tiene un gran atractivo intuitivo y suele   citarse en  la  literatura  científica como  un  importante    enfoque situacional respecto a la efectividad del liderazgo,   además de ser muy conocido entre los directivos. Sánchez   Santa-Bárbara (2000) reconoce un gran potencial a esta   teoría. De hecho, en la revisión crítica de Graeff  (1997),   se reconoce que no sólo es una teoría popular (Johansen,   1990),  sino  que  es  una  de  las  más  conocidas  (Sashkin,   1982;  Vecchio,  1987),  más  empleadas  (Randolph  &   Blackburn, 1989), y es uno de los modelos de liderazgo   más populares aplicados en la industria (Hersey, Angelini   & Carakushansky, 1982) en los últimos 30 años. Además,   las  principales  empresas  exitosas  en  Estados  Unidos,   emplean  este  modelo  para  entrenar  a  sus  mandos.  En   2009  se  cumplió  el  40  aniversario  de  la  TLS  desde  su   publicación,  y  parece  un  buen  momento  para  evaluar   si  se  encuentra  en  la  crisis  de  los  cuarenta  o  si,  por  el   contrario, disfruta de buena salud en su madurez.    Según sus autores, la TLS es una teoría sobre el liderazgo  y  no  sobre  la  dirección.  La  distinción  entre  liderazgo  y   dirección  es  importante.  El  director  es  un  individuo  que   ocupa  una  posición  formal  en  una  organización  y  es   responsable  del  trabajo  de  al  menos  una  persona  y  tiene   autoridad  formal  sobre  ésta  (Reddin,  1967,  citado  por   Hersey & Blanchard, 1969b). Por otra parte, el liderazgo   es  un  concepto  más  amplio,  dado  que  incluye  tanto  los   contextos  formales  como  los  informales.  Como  señalan   Hersey, Blanchard y Johnson (1998, p. 99), el liderazgo es   “el proceso de influir en las actividades de un individuo   o grupo en los esfuerzos por alcanzar una meta en cierta   situación”. Esta distinción permitió a Hersey y Blanchard   aplicar su teoría a cualquier situación en la que una persona   –el líder– tiene influencia sobre otra –el seguidor–, ya sea   en  las  relaciones  entre  padres  e  hijos,  entre  profesores  y   alumnos, o en cualquier contexto organizacional (empresas   privadas,  hospitales,  centros  educativos,  ámbito  militar,   organizaciones voluntarias, etc.).     El objetivo de este trabajo es presentar una revisión  de  los  elementos  principales  de  este  modelo  teórico.   Para ello, se comenzará con un recorrido histórico sobre   el  avance  de  esta  propuesta.  Se  señalarán  los  aspectos,   estudios  y  modelos  previos  en  que  se  basaron  Hersey   y  Blanchard  para  conformar  la  TLS,  y  se  pondrán  en   evidencia  sus  puntos  fuertes  y  débiles.  Entre  estas   dos  últimas  se  incluyen  la  integración  de  elementos  procedentes de otros autores y de otras disciplinas. Por   último,  se  presentarán  los  supuestos  que  sustentan  la   teoría y se señalarán las principales críticas en el plano de   la lógica o de la congruencia del modelo. En otro lugar   (en preparación), se revisarán los puntos fuertes y débiles   de la TLS en el plano empírico, así como la calidad de los   instrumentos vinculados con ella.   Historia de la TLS  En  mayo  de  1969,  la  revista    Training  and  Development  Journal   fue  la  primera  en  publicar  las  ideas  innovadoras   de Hersey y Blanchard sobre el liderazgo. Este artículo se   reimprimió en la misma revista en junio de 1979. Entonces   se  denominó  Teoría  del  Ciclo  Vital  del  Liderazgo.  Con    motivo del 25 aniversario de la publicación de su artículo    inicial,  Hersey  y  Blanchard  (1996)  reconocieron  que  el   nombre  de  su  teoría  se  inspiró  en  la  necesidad  de  los   padres para cambiar sus estilos de “liderazgo” conforme   sus  hijos  avanzan  desde  la  infancia  a  la  adolescencia  y   a  la  edad  adulta.  También  plantearon  su  aplicación  al   contexto  en  que  los  profesores  se  encuentran  con  sus   alumnos  en  diferentes  niveles  educativos.  Consideraron   que  la  misma  lógica  podría  aplicarse  a  la  persona  que   dirige  a  trabajadores  recién  incorporados  y  a  otros  más   experimentados.  La  denominación  de  “ciclo  vital”  del   liderazgo sugiere un estilo básico para diferentes niveles    de  madurez  con  el  fin  de  ajustarse  a  contingencias   específicas. En los casos anteriores, la edad puede ser un    factor importante, pero no está directamente relacionada   con la madurez en la Teoría del Ciclo Vital.    En el artículo de 1969, los cuatro cuadrantes en que  se  representaba  la  combinación  de  las  dos  dimensiones   del  comportamiento,  no  tenían  etiquetas  para  nombrar   los cuatro estilos de liderazgo. Se hablaba de Cuadrante 1,   2, 3 y 4. Con el desarrollo del liderazgo situacional, éstos   pasaron a denominarse “Dirigir” o Estilo 1, “Persuadir”   o Estilo 2, “Participar” o Estilo 3 y “Delegar” o Estilo 4.     A partir de la segunda edición, en 1972, empezaron  a utilizar el nombre de Liderazgo Situacional más que el   de Teoría del Ciclo Vital del Liderazgo. Como su nombre   indica,  esta  teoría  concede  una  especial  atención  a  la   situación.  En  la  TLS  se  reconoce  que  cada  líder  puede   tener un estilo preferido, pero la efectividad del liderazgo   depende del grado en que el líder es capaz de adaptar o    modificar su estilo cuando la situación lo requiere. \n27 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534    En  1974,  Hersey  y  Blanchard  desarrollaron  un  instrumento (LASI,  Leader Adaptability and Style Inventory )  que,  en  1977,  pasará  a  denominarse  LEAD  ( Leader  Effectiveness and Adaptability Description ). Este instrumento  se diseñó para evaluar la percepción del comportamiento   del  líder,  especialmente  con  respecto  a  tres  aspectos   del  mismo:  el  estilo  del  líder,  el  rango  de  estilos  y  la   adaptabilidad del estilo.    La edición de 1977 de la TLS, es explícita en describir  los  fundamentos  teóricos  de  la  versión  original  del   modelo (Graeff, 1997). Hersey y Blanchard se apoyaron   en  unas  conclusiones  de  Korman  (1966)  acerca  de  la   posibilidad  de  una  relación  curvilínea  (más  que  lineal)   entre  “iniciación  de  estructura”  y  “consideración”  y    otras variables. Esta afirmación les servirá para incluir    en  el  modelo  la  “curva  prescriptiva”  mediante  la  cual   el  aumento  o  la  disminución  de  tarea  y  relación  será   curvilíneo. Más adelante, al revisar los problemas teóricos   del modelo, se volverá sobre esta cuestión.     En  la  edición  de  1982,  la  madurez  del  subordinado  pasará de ser considerada como un indicador global que   se evalúa en un continuo a entenderse como una variable   con  componentes  separados:  “madurez  psicológica”   o  motivación,  y  “madurez  para  el  puesto”  o  capacidad.   También  este  cambio  será  objeto  de  crítica  porque   amenaza la lógica del modelo.    Años después, será patente que Hersey y Blanchard  tienen  concepciones  diferentes  acerca  de  cómo  debería   evolucionar  la  TLS.  Blanchard,  Zigarmi  y  Zigarmi    (1985)  presentaron  el  Liderazgo  Situacional  II,  que    posteriormente  se  aplicaría  al  desarrollo  de  los  grupos.   Este  artículo  se  limitará  al  análisis  del  modelo  que   desarrollaron conjuntamente ambos autores.    Hersey  y  Blanchard  (1988)  añadieron  una  nueva  prescripción  a  su  modelo,  acerca  del  ajuste  entre  el   liderazgo  y  la  preparación  (madurez).  “El  Liderazgo   Situacional  no  sólo  sugiere  los  estilos  de  liderazgo  de   alta  probabilidad  para  distintos  niveles  de  preparación,   sino  que  también  indica  la  probabilidad  de  éxito  de  los   otros  estilos  si  el  líder  no  está  motivado  o  no  es  capaz   de emplear el estilo ‘deseado’” (p. 274). Más adelante se   concretará  la  prescripción  del  modelo  al  desarrollar  el   apartado de la efectividad del liderazgo.   Una  vez  presentados  los  hitos  más  relevantes  en  la  evolución  de  la  TLS,  es  el  momento  de  recordar  y   describir lo esencial de este modelo. La idea fundamental   de  esta  teoría,  es  que  la  efectividad  del  liderazgo  se   consigue  a  través  del  ajuste  del  estilo  del  liderazgo  con   el  nivel  de  madurez  o  de  preparación.  Dicho  en  otras   palabras,  el  líder  debe  evaluar  y  reconocer  el  nivel  de   preparación  de  los  miembros  del  grupo  que  dirige,  y    modificar su estilo mediante el aumento o disminución   de la conducta a través de la cual define el trabajo de los    seguidores y de la conducta, mediante la cual recompensa   a  estos,  fomentando  la  participación  y  la  comunicación   bidireccional.  En  el  modelo  se  indica  que,  a  cada  nivel   de  madurez,  le  corresponde  más  o  menos  una  de  las   conductas del líder, y se predice mayor efectividad cuanto   mayor sea el ajuste entre el nivel de madurez y el estilo   mostrado.  Figura 1. Teoría del Liderazgo Situacional. \n28 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  Fundamentos y conceptos de la TLS  La TLS se gestó a partir de los aportes de diversas teorías   e investigaciones sobre el liderazgo y las organizaciones.   Entre  sus  conceptos  fundamentales  están:  a)  Estilo  de   liderazgo:  Comportamiento  de  Tarea  y  de  Relación,  b)   Independencia  de  las  dimensiones  del  comportamiento   del  líder,  c)  Concepto  de  madurez,  d)  Efectividad   como ajuste entre el estilo y la situación, e) Técnicas de    modificación del comportamiento, y f) Percepción del    poder.     Con el desarrollo de estos conceptos fundamentales,  se pretende llegar a las bases que sustentan este modelo   teórico  sobre  el  liderazgo.  Se  destaca  el  mérito  de  sus   autores que integran diferentes disciplinas y teorías.  Estilo de liderazgo  Hersey  y  Blanchard  (1996,  p.  42)  reconocen  las   investigaciones,  sobre  el  liderazgo  como  uno  de  sus   principales referentes, de la  Ohio State University , cuando  trabajaban en la  Ohio University  a finales de los años 60..  Esos estudios fueron publicados en la década del 50   del siglo XX. No se puede negar la influencia que estos    estudios  tuvieron  sobre  la  TLS,  no  sólo  por  su  valor    teórico y empírico, sino por la proximidad geográfica.     En  la  TLS  se  reconoce  que  tarea  y  relaciones  son  dos  dimensiones  importantes  del  comportamiento  del   líder.  Este  planteamiento  ya  lo  habían  señalado  con   anterioridad  otros  teóricos  de  la  dirección.  Entre  otras,   las  denominaciones  que  se  dieron  a  esas  dimensiones   fueron: autocrático y democrático, autoritario e igualitario,   orientado a la producción y al empleado, instrumental y   expresivo, logro de metas y mantenimiento de grupo.      El estilo del líder se define por la combinación de dos   dimensiones, a las que llaman “comportamiento de tarea”   y  “comportamiento  de  relación”.  Por  comportamiento   de  tarea,  se entiende el  grado  en  que el  líder  detalla  los   deberes  y  responsabilidades  del  individuo  o  del  grupo.   Este comportamiento incluye explicar qué hacer, cómo,   cuándo,  dónde  y  por  quién.  El  comportamiento  de    relación, se define como el grado en que el líder practica    una comunicación en dos direcciones. Incluye escuchar,   facilitar y respaldar a los seguidores.   Conviene  destacar  la  distinción  que  hacen  Hersey  y  Blanchard  sobre  comportamiento  y  actitudes.  Las   dimensiones  de  la  Rejilla  Gerencial  (interés  por  la   producción / interés por las personas) son actitudinales:   indican una disposición, una tendencia, un sentimiento.   Sin embargo, las dimensiones de los estudios de la  Ohio  State  University   miden  cómo  se  comportan  realmente  las  personas.  El  artículo  de  Blake  y  Mouton  (1982a),   en el que defienden “un estilo óptimo” y critican los   enfoques  situacionales,  generó  una  réplica  por  parte  de   Hersey  y  Blanchard  (1982b)  al  cuestionar  si  el  estilo  de   liderazgo  se  basa  en  actitudes  o  en  comportamientos.   Estos  últimos  concluyeron  que,  “aunque  los  modelos   actitudinales  como  la  Rejilla  Gerencial  y  un  modelo   conductual  como  el  Liderazgo  Situacional  examinan   diferentes aspectos del liderazgo, no son incompatibles”    (1982b, p. 50). Sin embargo, Hersey y Blanchard (1969b),   señalan que se genera un conflicto cuando se plantean    supuestos sobre  el comportamiento a  partir  del análisis   sobre  las  dimensiones  actitudinales  de  la  Rejilla.  Una   persona  puede  tener  un  alto  interés  por  las  personas  o   estar  orientado  a  las  relaciones  y,  sin  embargo,  puede   entender que no es apropiado dar apoyo socioemocional   en un momento determinado. En la TLS se tomará como    referente el comportamiento manifiesto del líder y se    alejará de la perspectiva actitudinal.    En muchos de los estudios en los que se basa la TLS,  se  constató  que  un  líder  orientado  por  la  tarea  obtiene   mejores  resultados  de  sus  empleados  que  otro  con   menos interés por la tarea. En cambio,,un líder orientado   a las relaciones, consigue mayores niveles de satisfacción   entre los miembros de su equipo. En esos años existía un   debate  teórico  y  se  buscaban  pruebas  empíricas  acerca   de la relación entre ambas dimensiones de conducta. A   continuación se verá a qué postura se adscribe la TLS.   Independencia de las dimensiones del  comportamiento del líder  La independencia de las dimensiones del comportamiento   del  líder  –tarea  y  relaciones–,  ya  había  sido  constatada   empíricamente  en  numerosas  ocasiones  y  en  distintos   ámbitos antes de que Hersey y Blanchard plantearan su   modelo. En esos años, Blake y Mouton (1964) presentaron   un modelo que tuvo gran difusión en textos académicos   y en programas de formación en las organizaciones.  \n29 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534    Blake  y  Mouton  dieron  un  paso  más  allá  de  las  aportaciones  de  la    Ohio  State  University,   al  combinar  ambas  dimensiones  en  dos  ejes  ortogonales,  para   representar  gráficamente  la  independencia  de  tarea  y    relación.  Blake  y  Mouton  (1982a,  b)  postulan  que  las   variables  del  liderazgo  en  su  modelo  se  conceptualizan   como    interdependientes.   De  este  modo,  como  el  liderazgo  no  puede  ejercerse  sin  tareas  ni  sin  personas,  las  dos   variables producen diferentes compuestos dependiendo   de cómo se combinan.   Sostienen que existen diferencias  cualitativas en el pensamiento, en el sentimiento y en el    comportamiento, que se manifiestan en el compuesto    que  resulta  de  la  interacción  de  estas  dos  variables   interdependientes.    De este modo, queda patente que un directivo puede  tener una puntuación alta en una dimensión, y alta, media   o baja en la otra dimensión. El modelo de Blake y Mouton   también se llamó de la Rejilla Gerencial, y combinaba los   posibles estilos de dirección en una cuadrícula de 9 por   9. En la Rejilla Gerencial, se postula que el estilo óptimo   en cualquier situación es el denominado 9,9 (dirección de   equipo, con alto interés por la producción y alto interés   por  las  personas);  es  decir,  un  comportamiento  en  el   que el líder se caracteriza por un alto interés en alcanzar    los  objetivos,  fijar  plazos,  establecer  procedimientos,    etc.,  y  un  alto  interés  por  mantener  una  comunicación   bidireccional  con  los  subordinados,  un  ambiente  de    confianza y atención a las necesidades socioemocionales    de  los  mismos.  Llama  atención  que  los  supuestos  de  la   Rejilla Gerencial, tan conocidos en el ámbito académico   y tan aplicados en el entrenamiento del personal directivo   en las organizaciones, no se hayan sometido a una prueba   empírica.    Se debe tener en cuenta que, con algunas excepciones  –entre  las  que  se  encuentran  la  TLS,  la  Teoría  3D  del   Liderazgo o la Teoría de la Contingencia de Fiedler–, en   esos  años  imperaba  el  modelo  centrado  en  el  estilo  del   líder,  aún  no  se  había  introducido  la  variable  situación   como moderadora entre el comportamiento del líder y la   efectividad.    A  partir  de  las  dimensiones  de  comportamiento  de  tarea y comportamiento de relación, cada una presentada   de  forma  dicotómica  (alta  o  baja)  y  en  unos  ejes  de   coordenadas, se obtienen los cuatro estilos ya mencionados:   a) E1 (Dirigir) se caracteriza por un comportamiento alto   en tarea y bajo en relación, dar instrucciones específicas    y  supervisar  de  cerca  el  desempeño;  b)  E2  (Persuadir)   se  reconoce  porque  ambos  comportamientos  están   por  encima  del  promedio,  explicar  las  decisiones  y  dar   la  oportunidad  de  hacer  aclaraciones;  c)  E3  (Participar)   se  caracteriza  por  un  alto  comportamiento  de  relación,   mientras  que  el  comportamiento  de  tarea  es  bajo,   compartir  ideas  y  facilitar  la  toma  de  decisiones;  y  d)   E4  (Delegar)  es  el  que  muestra  un  líder  cuando  tanto   el  comportamiento  de  tarea  como  el  de  relación  están   por debajo del promedio, ceder la responsabilidad de las   decisiones y su puesta en práctica.    Una vez presentados los estilos de liderazgo como se  consideran en la TLS, es preciso abordar ahora la variable   situacional en la que se centra el modelo.  Concepto de madurez   De Argyris (1957, 1962, 1964) tomaron el concepto de    madurez y el concepto de la misma como un continuo.   Mientras  trabajaba  en  Yale,  examinó  qué  efecto  tienen   las prácticas organizacionales en el comportamiento y en   el desarrollo personal dentro del entorno organizacional.   Siete cambios que deben ocurrir en una persona cuando   se produce el desarrollo hacia la madurez a lo largo del   tiempo.     Tabla 1 Continuo Inmaduro-Maduro  INMADURO   MADURO  Pasivo  ........................................................................................................ Activo Dependencia ................................................................................. Independencia Comportamiento limitado  ..................Capaz de comportarse de muchas formas Intereses erráticos y superficiales  ......... Intereses más profundos y más fuertes Perspectiva a corto plazo  ................ Perspectiva a largo plazo (pasado y futuro) Posición subordinada  ....................................................Posición igual o superior Falta de conocimiento de sí mismo  .............Conocimiento y control de sí mismo    Argyris  postula  que  estos  cambios  residen  en  un  continuo y que la personalidad “sana” se desarrolla desde   la  “inmadurez”  a  la  “madurez”.  Hersey  y  Blanchard   consideran,  al  igual  que  Argyris,  que  con  frecuencia   en  las  organizaciones  se  asume  la  teoría  clásica  de  la   administración (basada en los supuestos de la Teoría X),   con lo que la gerencia crea roles infantiles que frustran su   desarrollo natural hacia la madurez.  \n30 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534    La  variable  madurez  en  la  TLS  se  mide  sólo  en  relación  con  una  tarea  concreta  desempeñada  por  un   subordinado.  Es  decir,  una  persona  no  es  madura  o   inmadura  en  términos  generales,  sino  para  tareas  u    objetivos específicos. El seguidor puede ser más maduro    para ciertas facetas de su trabajo y menos maduro para   otras.  Considerada  así,  la  madurez  es  una  cualidad   personal de cada uno de los seguidores que el líder debe   evaluar  para  cada  objetivo  e  individualmente.  El  grupo   podría ser homogéneo o no en su nivel de madurez. La   madurez  del  subordinado  incluye  dos  componentes:   a)  Madurez  para  el  puesto,  referida  a  las  habilidades,  la   experiencia  y  el  conocimiento  técnico  en  relación  con    la tarea, y se puede identificar como la capacidad; y b)   Madurez  psicológica,  hace  referencia  a  la  confianza    en  sí  mismo  y  al  auto-respeto,  y  se  puede  asimilar  a  la   disposición o motivación.    Hersey y Blanchard (1996), al comparar la Teoría del  Ciclo  Vital  en  la  versión  original  con  su  evolución  tras   25 años, explican que, durante los años 60 del siglo XX,    el  término  “madurez”  no  resultaba  ofensivo  cuando  se   aplicaba  a  la  evaluación  de  las  personas,  Sin  embargo,   años después, pasó a ser inapropiado; por ello, en 1988,   se  denominó  “preparación”.  Además,  “madurez  del   seguidor”  era  una  expresión  válida  cuando  se  partía  de  un modelo de liderazgo que destacaba el ciclo vital, pero   no tanto cuando se centraba en el aspecto situacional y   centrado en la tarea.    En  la  TLS,  inicialmente  la  madurez  se  consideró  como  una  variable  homogénea  que  se  representaba  en   un  continuo  unidimensional,  y  conforme  aumentaba  la   madurez del seguidor, el líder debía cambiar su estilo (que   combina más o menos tarea y relación). Posteriormente,   aunque  la  madurez  se  seguirá  considerando  como  un    continuo, se definirá a partir de los dos componentes    ya  señalados.  De  este  modo,  la  madurez  aumentará  o   disminuirá por cambios en cada uno de sus componentes.   Como  se  verá  más  adelante,  este  cambio  tendrá   consecuencias sobre la consistencia interna del modelo.    A  pesar  de  que  en  la  TLS  se  plantea  como  un  continuo,  la  madurez  del  seguidor  se  divide  en  cuatro   niveles  (M1  o  madurez  baja,  M2  o  madurez  de  baja  a   moderada,  M3  o  madurez  de  moderada  a  alta  y  M4  o   madurez alta). M1 implica que tanto la motivación como    la capacidad son bajas; M2 significa que la capacidad es    baja pero la motivación es alta; M3 es la situación en la   que  el  seguidor  presenta  poca  motivación  pero  mucha   capacidad  y,  por  último,  en  M4  el  seguidor  cuenta  con   alta capacidad y alta motivación.  Tabla 2 Nivel de madurez y Estilo de Liderazgo (adaptado de Nicholls, 1985)  Nivel de Madurez:   M1   M2   M3   M4  Capacidad/Motivación:   Baja Capac./ Baja Motiv. Baja Capac./ Alta Motiv. Alta Capac./ Baja Motiv. Alta Capac./ Alta Motiv. Estilo prescrito:  Dirigir   Persuadir   Participar   Delegar Alta/Baja  Tarea/Relación ATBR   ATAR   BTAR   BTBR    El siguiente paso, una vez presentadas las dimensiones  de  conducta  que  conforman  los  cuatro  estilos  de   liderazgo, y abordado el concepto de madurez, es analizar   la efectividad del liderazgo. En esta teoría, la efectividad   se mide a partir del grado de ajuste que hay entre el estilo   que emplea el líder para tratar a sus seguidores y el nivel   de madurez de los mismos.   Efectividad como ajuste entre el estilo   y la situación  Algunos  elementos  de  la  TLS  proceden  de  Blake  y   Mouton  –o  al  menos  éstos  los  habían  presentado  con   anterioridad–. Pero Hersey y Blanchard no sólo quieren   separarse o distinguirse de la Rejilla Gerencial, y de todos  \n31 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534  los  autores  que  defendían  “un  mejor  estilo”  –un  estilo   óptimo para cualquier situación–, sino respaldar el ajuste   entre  el  estilo  del  líder  y  las  demandas  de  la  situación.   Como se ha indicado, en la Rejilla Gerencial se apuesta por   el 9,9 como el estilo óptimo hacia el que debe orientarse   la  formación  de  los  líderes  para  ser  efectivos.  En  otros   casos,  se  habló  del  estilo  democrático  y  participativo   como el apropiado frente al autocrático.    Una  de  las  primeras  propuestas  que  muestra  la  situación  como  la  variable  que  modera  la  efectividad   del  liderazgo  (entendida  como  la  combinación  de  tarea   y  relación),  es  la  Teoría  Tridimensional  del  Estilo  de   Dirección (Reddin, 1967).     La  Teoría  3D  presenta  no  pocas  similitudes  con  la  Teoría  del  Ciclo  Vital  del  Liderazgo  de  Hersey  y   Blanchard  (1969b),  tanto  en  su  formulación  como  en    los gráficos que emplean para representar las relaciones    entre las variables. Ambos artículos fueron publicados en    Training  and  Development  Journal .  El  parecido  fue  tal  que   suscitó una “carta al editor” en la misma revista por parte   de Reddin (1969) en la que advertía que  ...en  parte  del  artículo  ( de  Hersey  y  Blanchard )  se  sugiere  que  ellos  habían  sido  los  primeros  en   proponer  una  tercera  dimensión  de  efectividad   al  modelo  de  dos  dimensiones  de  Ohio  State.   Puede  haber  sido  simplemente  un  descuido  por   su  parte  pero  yo  desarrollé  esta  innovación  y  su   planteamiento  estuvo  contenido  en  su    Journal   en  abril de 1967.   En  la  Teoría  3D  se  destaca  la  importancia  de  la  orientación  por  la  tarea  y  por  las  relaciones  de  un   directivo en conjunción con la efectividad (Reddin, 1967,    p. 65). Fue Reddin quien propuso dicotomizar las dos    variables  subyacentes  de  orientación  por  la  tarea  y  por   las relaciones, obteniendo una tipología de cuatro estilos.   De la combinación de estas dimensiones (Reddin, 1964)   propuso una variedad de estilos de dirección (cuatro no   efectivos,  cuatro  latentes  y  cuatro  efectivos).  Asimismo    definió la efectividad de un directivo a partir del ajuste   del  estilo  de  un  líder  a  una  situación  específica.  Sin    embargo, como señaló Vecchio (1987, p. 444), esta teoría    no  especificó si  ciertas  características situacionales se    podrían  incorporar  de  forma  inequívoca  en  un  modelo   predictivo.    Reddin  (1997) no  abandonó  su  modelo.  Trabajó  en  Harvard, en el Instituto Tecnológico de Massachussets y   en  distintas  universidades  de  Canadá.  En  un  momento   determinado,  dejó  el  entorno  universitario  y  durante   años se dedicó a la consultoría. Posteriormente, una vez    ganada suficiente experiencia, decidió empezar su carrera    como escritor.    A partir de la idea de Reddin, que no existe un estilo  óptimo  para  cualquier  situación,  sino  que  la  efectividad   depende  del  grado  de  ajuste  entre  el  estilo  y  ciertas   variables situacionales, Hersey y Blanchard (1969b, p. 29)   propusieron su Teoría del Liderazgo del Ciclo Vital. En esta   teoría, la madurez del seguidor es la variable situacional,   ya  que  determinará  la  efectividad  del  liderazgo  a  partir   de  su  interacción  con  mayor  o  menor  comportamiento   de tarea y mayor o menor comportamiento de relación.   Así, a cada nivel de madurez le corresponde un estilo de   liderazgo concreto (M1 -> E1, M2 -> E2, M3 -> E3 y   M4 -> E4).    Un supuesto central de la Teoría del Ciclo Vital, es que  conforme aumenta el nivel de madurez en un seguidor, el   estilo efectivo del líder implicará menos comportamiento   de  tarea  y  menos  comportamiento  de  relación.  Sin   embargo,  la  disminución  de  ambos  comportamientos   del  líder  no  es  lineal.  Esta  circunstancia  también  será    abordada en la sección de cuestiones no suficientemente    expuestas o resueltas por la TLS.    En  1988,  Hersey  y  Blanchard  ampliaron  las  prescripciones de su modelo, señalando no sólo cuál es el   mejor estilo para un determinado nivel de madurez, sino   cuáles  son  el  segundo  mejor,  el  tercero  mejor  y  el  peor   estilo. Por ejemplo, si los subordinados están al nivel de   madurez/preparación  más  bajo  (M1),  Dirigir  o  E1  será   el  mejor  estilo,  Persuadir  o  E2  será  el  segundo  mejor,   Participar o E3 es el tercero mejor y, por último, Delegar   o E4 será el peor.     Se  comentó  que  el  líder  debe  estar  atento  al  nivel  de  madurez  o  de  preparación  de  cada  uno  de  sus   subordinados,  con  el  fin  de  acomodar  su  estilo  a  la   situación específica y tratar a cada uno del modo que    se  prescribe  desde  la  teoría.  Ahora  se  verá  cómo  el   líder,  a  través  de  su  comportamiento,  puede  contribuir   al  desarrollo  de  la  preparación  de  los  miembros  de  su   equipo. \n32 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  Técnicas de modificación del comportamiento  Un  aspecto  inherente  a  la  situación  es  su  carácter   cambiante. Desde la TLS se debe dar respuesta también   a  la  situación  en  la  que  la  madurez  de  los  subordinados   pueda  experimentar  avances  o  retrocesos.  Hersey  y   Blanchard  se  plantearon  cómo  debería  actuar  el  líder   con sus seguidores cuando el nivel de madurez de éstos   aumenta o disminuye. Incluso, en la TLS se postula que   cuando el liderazgo es efectivo, es decir, cuando se produce   el ajuste entre el estilo de liderazgo y el nivel de madurez   de  los  seguidores,  el  líder  contribuye  al  desarrollo  de  la   madurez –lo que implica que el líder deberá acomodar de   nuevo  su  comportamiento  al  nuevo  nivel  de  madurez  o    preparación de su seguidor–. Además de la influencia del    comportamiento del líder, el seguidor puede, por sí mismo,   experimentar avances en su madurez (mediante el aumento   de  sus  conocimientos,  experiencia,  etc.,  estando  más   motivado  por  la  tarea...).  También  puede  experimentar   retrocesos en su madurez cuando, por ejemplo, se reduce   su  capacidad  al  enfrentarse  a  tareas  nuevas  para  las  que   no  cuenta  con  la  formación  apropiada  o  la  experiencia    suficiente, o cuando disminuye su motivación porque, por    ejemplo, se enfrenta a problemas personales o familiares   que requieren una atención prioritaria y lo distraen de sus   responsabilidades laborales.    En  esos  años  ya  existía  un  debate  en  la  disciplina  acerca del tiempo y del esfuerzo requerido para cambiar el   estilo de un directivo y, sin embargo, en las organizaciones   se invertían cantidades inmensas de dinero en formación   para  cambiar  los  estilos  de  las  personas  en  cargos  de    mando.  Fiedler  (1978),  y  Fiedler  y  Chemers  (1985),   señalaron que el estilo de liderazgo de una persona refleja    su estructura motivacional y sus necesidades básicas. De    alguna forma, se afirma que el modo en que un directivo   se comporta en el trabajo con sus empleados refleja lo    que  es  prioritario  para  él  (tarea  o  relaciones).  Una  vez   satisfecha esa necesidad, podrá atender la otra, antes no.   Está en su personalidad y, por tanto, sería difícil, costoso    e, incluso, cuestionable éticamente intentar modificar la    estructura de su personalidad.    Lo que se plantea en la TLS es que el líder debe adaptar  su estilo al nivel cambiante de madurez de sus seguidores.   La  clave  para  conseguir  el  cambio  en  los  subordinados   es  reforzar,  mediante  aproximaciones  sucesivas,  el   comportamiento  que  se  acerca  a  las  expectativas  del  supervisor  de  alcanzar  un  buen  desempeño.  El  cambio   debe  ser  gradual,  como  resultado  de  un  crecimiento    planeado  y  mediante  la  creación  de  una  confianza  y    respeto mutuos. El enfoque de aproximaciones sucesivas   fue  tomado  por  Hersey  y  Blanchard  para  la  TLS  a   partir  del  conocimiento  que  se  tenía  de  las  técnicas  de   modificación del comportamiento (Skinner, 1953, 1961   y Bandura, 1969).     Hersey  y  Blanchard  (1982a)  señalaron  que,  para  intentar  ayudar  a  una  persona  o  a  un  grupo  a  madurar   –y  conseguir  de  este  modo  que  asuma  cada  vez  más   responsabilidad para desempeñar una tarea específica–,   “el líder debe, en primer lugar, decir al/a los seguidor(es)   y  enseñarle(s)  qué  hacer;  segundo,  delegar  alguna   responsabilidad  (no  demasiada,  o  podría  fracasar);  y   tercero,  recompensar  tan  pronto  como  sea  posible  en   la  dirección  deseada”  (p.  202).  Expresamente  remiten  a    esta forma de modificación del comportamiento como   aproximaciones  sucesivas  con  reforzamiento  positivo.   Este  proceso  de  tres  fases,  “tiende  a  continuar  con   pequeños incrementos hasta que la persona asume niveles   moderados  de  madurez.  Esta  disminución  continua  del    comportamiento de tarea no significa que la persona   tendrá menos estructura, sino que, más que ser impuesta   de forma externa por el líder, la estructura puede ahora   aportarla internamente el seguidor” (p. 204).      Skinner  (1953,  1961),  y  Bandura  (1969),  entre   otros,  serán  los  autores  en  los  que  se  apoyará  la  TLS   para justificar la modificación del comportamiento del   seguidor. Hersey y Blanchard, desde su perspectiva basada    en el estilo del líder, encuentran en la modificación de la    conducta  una  herramienta  apropiada  para  el  cambio  en   el comportamiento del seguidor. Esta técnica conductual   se  concentra  en  el  comportamiento  observado  –no   en  emociones,  actitudes  o  sentimientos  internos  y  no   observados–,  y  emplea  metas  o  recompensas  fuera  del    individuo para modificar y dar forma al comportamiento    hacia  el  desempeño  deseado,  así  éste  puede  aumentar,   disminuir  o  suprimirse  a  partir  de  lo  que  ocurre   inmediatamente después de ese comportamiento.    Un aspecto que se incorporó tardíamente a la TLS,  es  el  relacionado  con  la  fundamentación  del  poder  que   el líder puede emplear para influir en el comportamiento   de  sus  seguidores.  A  continuación  se  desarrolla  este   aspecto. \n33 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534  Bases del poder   Hersey  y  Blanchard  (1972a,  b,  c)  expusieron  su  visión   sobre  “la  gestión  del  cambio”  en  tres  artículos  que   posteriormente  se  publicaron  en  la  misma  revista  en   1980. En el primero de ellos, destacaron la importancia   para el personal directivo de conocer el poder que tienen   y  cómo  podrían  emplearlo  de  un  modo  adecuado.  Se   aproximaron  al  concepto  de  poder  desde  la  distinción   de  Etzioni  (1961)  entre  poder  personal  y  poder  de  la   posición, y discutieron el uso de ambas formas de poder   en  situaciones  cambiantes.  Aunque  en  la  introducción   señalan  que  en  el  segundo  artículo  abordarán  “cómo   los  directivos  pueden  crear  un  ambiente  para  mover  a   las personas de un nivel de madurez y responsabilidad a   un nivel más alto” (Hersey & Blanchard, 1972a, p. 6), lo   cierto es que la palabra madurez no aparece en el texto ni   tampoco en ese artículo establecen vínculos con la Teoría   del  Ciclo  Vital.  En  el  segundo  artículo,  desarrollaron  el    concepto de la modificación del comportamiento como    estrategia de cambio en el contexto de las organizaciones,   y, en el tercero, integraron un marco teórico para evaluar   el impacto del cambio en el sistema total.    Esa  referencia  al  poder  sería  posteriormente  retomada, cuando Hersey, Blanchard y Natemeyer (1979)   añadieron  un  nuevo  elemento  a  la  TLS:  el  concepto  de   poder. Así, relacionaron el poder del líder con los estilos   de liderazgo y con la madurez de los seguidores. Como    justificación de la inclusión del poder, mostraron distintos    estudios  en  los  que  se  examinaba  la  relación  entre  la   principal base de poder del líder y el desempeño de los   seguidores. Los resultados de esos estudios sugerían que   la base de poder apropiada estaba afectada por variables   situacionales. Argumentaron que el poder y el liderazgo   son  inseparables,  ya  que  el  liderazgo  es  el  proceso  de    influir en el comportamiento de otros y el poder es el    medio a través del cual el líder consigue la obediencia del   seguidor.     En  la  TLS  se  introducen  siete  bases  de  poder  (coercitivo,  de  conexión,  de  experto,  de  información,   legítimo,  referente  y  de  recompensa).  Cinco  de  ellas   fueron adaptadas desde la propuesta de French y Raven    (1959), el  poder  de  información  fue introducido  por   Raven y Kruglanski (1975) y el poder de conexión fue    una aportación original de Hersey y Blanchard.   El  paso  siguiente  que  dieron  los  autores  de  la  TLS,  fue relacionar el nivel de madurez de los seguidores con   las  bases  de  poder.  Como  señalan  Hersey,  Blanchard  y   Natemeyer  (1979,  p.  420),  “la  madurez  del  seguidor  no   sólo  dicta  qué  estilo  de  liderazgo  tiene  la  probabilidad   más  alta  de  éxito,  sino  que  también  determina  la  base   de  poder  que  debería  emplear  el  líder  para  inducir  la   obediencia o influir en el comportamiento”.   Figura 2. Bases de poder prescritas para distintos niveles de madurez    Un  elemento  considerado  un  acierto  en  el  planteamiento de la TLS en 1982(a), es la inclusión, no   sólo  del  poder,  sino  de  la  percepción  del  poder,  ya  que   “es la percepción de los otros acerca del poder del líder   la que da al líder la capacidad de inducir la obediencia o    para influir en su comportamiento” (p. 186). Dicho en    términos coloquiales, no es el poder que tiene el líder lo    que genera influencia en sus seguidores, sino el poder   que los seguidores creen que tiene el líder para influir.    Además,  no  es  sólo  el  estilo  lo  que  determina  si  el  líder   está  maximizando  la  efectividad.  Es  también   importante  conocer  si  las  bases  de  poder   disponibles para el líder son consistentes con el/  los  estilo(s)  de  liderazgo  apropiado(s)  al  nivel  de   madurez  de  los  individuos  o  grupos  a  los  que  el    líder intenta influir. (p. 188)    Hasta  este  punto,  se  han  revisado  los  principales  fundamentos  de  la  Teoría  del  Liderazgo  Situacional,   y  abordado  los  conceptos  que  la  conforman.  En   el  desarrollo  de  los  apartados  anteriores,  en  varias   ocasiones se ha hecho referencia a ciertas cuestiones que   debilitan el modelo por no estar resueltas determinadas  \n34 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  inconsistencias.  En  seguida  se  verá  cuáles  son  esas   cuestiones.  Cuestiones que amenazan la lógica del modelo  En este apartado, la discusión se centrará en las críticas   que se han hecho a la TLS, en cuanto a su ambigüedad   conceptual,  consistencia  interna  o  su  lógica.  Entre  esas   críticas  destacan  las  de  Graeff   (1983,  1997)  y  las  de    Nicholls (1985, 1986).    Graeff  (1983) señaló varios problemas en el modelo.  Uno de ellos tiene que ver con un aspecto central de la   teoría:  la  “curva  prescriptiva”.  Esta  curva,  con  forma   de  campana,  se  plantea  como  un  modo  de  representar   la  relación  en  que  el  comportamiento  de  tarea  y  el   comportamiento de relación interactúan con la madurez.   Como se ha señalado con anterioridad, Hersey y Blanchard   (1977,  p.  160)  se  basaron  en  la  sugerencia  de  Korman   (1966)  de  la  posibilidad  de  una  relación  curvilínea  más   que  una  relación  lineal  entre  iniciación  de  estructura,   consideración y otras variables. Tal como está redactada    la afirmación de Korman, indica la relación de cada una    de ellas por separado con otra (que en la TLS se postula   que es la madurez del seguidor). Sin embargo, a partir de   esa frase, los autores interpretan que ambas dimensiones   del comportamiento del líder interactúan con la madurez   del seguidor. Esa conversión o interpretación de Hersey    y Blanchard no queda suficientemente justificada.  Nicholls (1985) manifestó que la curva   no hace otra cosa que dar un falso aire de validez   científica o matemática a la conexión arbitraria    entre  el  nivel  de  desarrollo  (o  madurez)  y  los   cuadrantes  de  la  matriz  en  la  secuencia  que  han   encontrado  conveniente  para  que  se  ajuste  a  los   nombres  elegidos  (...)  antes  de  que  uno  se  dé   cuenta,  la  curva  con  forma  de  campana  se  ha   establecido  a  pesar  de  las  inconsistencias  que   subyacen a su creación. (p. 3)   Otro de los problemas señalados por Graeff  (1983)  tiene  relación  con  el  concepto  de  madurez.  Desde  el   artículo  de  Hersey  y  Blanchard  (1969b),  la  madurez    se definió como el logro, la independencia relativa y la    capacidad para asumir la responsabilidad. Lo que genera    confusión fue el paso –no justificado por los autores–   de  la  consideración  de  la  variable  madurez  como  un   constructo unidimensional en la edición de 1977, a dos   componentes separados en la edición de 1982: madurez   psicológica,  o  motivación,  y  madurez  para  el  puesto,   o  capacidad.  El  problema  no  es  sólo  que  no  quede    justificado un aspecto tan importante de la teoría. En la    versión de 1977, fue imposible determinar el peso relativo   de la motivación y la capacidad para explicar los niveles   extremadamente bajos de desempeño en los seguidores   (se asume que son debidos a su baja madurez).     Sin embargo, el problema es mayor en la presentación  del modelo en 1982. Dicotomizan (alto o bajo) cada uno   de  los  componentes  de  la  madurez  y  señalan  cómo  se    combinan para definir los cuatro niveles de madurez.    Madurez  baja  (M1),  implica  baja  capacidad  y  baja   motivación; Madurez alta (M4), es consecuencia de alta   capacidad  y  alta  motivación.  Lo  que  no  queda  claro  es    la definición de la madurez en los niveles intermedios.   La madurez de baja a moderada (M2), se define como    baja capacidad y alta motivación y, sin embargo, en M3   hay  alta  capacidad  y  poca  motivación.  Se  asume  que  el   avance en la madurez del seguidor de M2 a M3 implica   un aumento en la capacidad. Lo que no se explica en la   TLS es por qué si la motivación era alta en M2 pasa a ser   baja en M3 y vuelve a ser alta en M4.      Nicholls (1985) también constató arbitrariedad en   la  escala  del  nivel  de  madurez.  Considera  que  no  es  un   continuo  suave,  sino  que  es  la  conjunción  separada  de   capacidad  y  motivación,  lo  que  socava  la  validez  de  la   curva  prescriptiva.  Nunca  llegan  a  explicar  por  qué  la   motivación  aparece,  desaparece  y  reaparece  conforme   aumenta  el  nivel  de  madurez.  Además,  encontró   problemas  con  los  estilos  de  dirección:  tampoco  está    justificado por qué, en el avance de Persuadir (alta tarea-   alta  relación)  a  Participar  (baja  tarea-alta  relación),  en   un  caso  el  modelo  prescribe  que  el  líder  debe  emplear   alta  relación  con  personas  motivadas  (M2)  y  en  el  otro   debe  emplear  también  alta  relación  con  personas  poco   motivadas (M3).       En la misma línea, Nicholls (1985) destaca una crítica   más  dirigida  a  la  lógica  del  modelo:  la  TLS  prescribe   el  estilo  “Dirigir”  (alta  tarea-baja  relación)  como  el   apropiado  para  personas  con  baja  capacidad  y  baja   motivación  (M1).  Si  es  preciso  que  el  líder  emplee  alta   tarea para personas con poca capacidad, ¿por qué la TLS  \n35 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534  no sigue el mismo razonamiento de emplear alta relación   para personas con baja motivación?      Nicholls  (1985)  concretó  las  inconsistencias   señaladas  en  tres  principios  lógicos  que  se  violan  en  la   TLS y que subyacen a un nuevo modelo que él planteó.   Estos principios son la consistencia, la continuidad y la    conformidad. El principio de consistencia afirma que    “debería  haber  una  conexión  entre  el  nivel  de  tarea/  relaciones del estilo del líder y la capacidad/motivación   de  la  situación”  (p.  3).  El  principio  de  continuidad  se   formula  en  los  términos  siguientes:  “el  continuo  en  el   nivel de madurez debería, de hecho, ser un continuo y no   un conjunto de puntos separados que van saltando entre   los  niveles  de  capacidad  y  motivación  a  lo  largo  de  la   escala” (p. 3). En el principio de conformidad se postula   que “para conformarse con el vínculo de una persona o   un grupo “no capaz” con un estilo de dirección de alta   tarea,  una  persona  o  grupo  “no  motivado”  requiere  un   estilo de dirección de alta relación” (p.4).     El “modelo congruente” de Nicholls (1986a, 1986b),  que cumple con los principios señalados, consiste en que   el  líder  debe  empezar  con  un  estilo  de  alta  tarea  y  alta   relación  ante  una  persona  o  grupo  con  poca  capacidad   y  poca  motivación,  haciendo  que  el  grupo  aprenda  los   requerimientos  del  puesto  y  construya  una  relación.   Desde aquí, avanzará de forma progresiva hacia el estilo   de baja tarea y baja relación para aumentar el desempeño.   Si el grupo o la persona desarrolla primero la motivación   y luego la capacidad, el líder debe concentrarse en la tarea   porque se encuentra ante personas que quieren aprender.   Si,  por  otro  lado,  la  persona  o  el  grupo  desarrolla   la  capacidad  antes  que  la  motivación,  el  líder  debe   aprovechar esa capacidad a pesar de la poca motivación   para  usarla.  Nicholls  (1986a,  b)  desarrolla  su  modelo   de  forma  congruente  y  postula  que  la  introducción  en   el  mismo  de  los  roles  de  liderazgo  añade  una  nueva   dimensión  al  modelo  y  permite  extenderlo  al  liderazgo   transformacional (y no sólo transaccional, como ocurre   con otros modelos centrados en el comportamiento del   liderazgo).      Se  han  señalado  deficiencias  teóricas  encontradas   en  la  TLS  y  presentado  una  propuesta  que,  al  menos   en  el  plano  teórico,  las  solventan.  A  continuación,  se   describirán los tres instrumentos derivados de la TLS.  Instrumentos de Medida  A  continuación  se  describirán  los  instrumentos  de   medida de las variables abordadas en este modelo teórico.   En  otro  lugar  (Sánchez  Santa-Bárbara  &  Rodríguez   Fernández,  en  preparación)  se  presentará  una  revisión   de  las  investigaciones  que  han  sometido  a  prueba  los   supuestos de la TLS y de aquellas otras que han evaluado   la calidad de los instrumentos vinculados con ella.  LEAD  El LEAD ( Leader Effectiveness and Adaptability Description )  es  un  instrumento  que  permite  determinar  el  estilo   preferido  del  líder,  el  rango  o  amplitud  de  estilos  y  la    adaptabilidad  o  flexibilidad  del  estilo.  El  cuestionario    consta  de  doce  situaciones  con  cuatro  alternativas  de   respuesta  cada  una.  En  cada  situación,  se  describe  un   caso en el que se da información para que el líder capte   el nivel de madurez de los subordinados (mayor o menor   madurez  psicológica  y  mayor  o  menor  madurez  para  el   puesto).  Las  cuatro  alternativas  de  respuesta  para  cada   situación corresponden a los cuatro estilos de liderazgo    definidos por la TLS: E1 (alta tarea y baja relación), E2    (alta tarea y alta relación), E3 (baja tarea y alta relación) y   E4 (baja tarea y baja relación). Las personas que contestan   al  test,  escogerán  aquella  opción  que  más  se  aproxime   a  la  manera  de  actuar  del  líder.  Este  instrumento  tiene   dos  versiones,  una  para  ser  contestada  por  el  líder,  y   otra para que otros (superiores, iguales o subordinados)   determinen esos mismos valores sobre el estilo del líder.    Por  una  parte,  este  instrumento  mide  el  estilo  preferido del líder, así como su rango de estilos, es decir,   la frecuencia relativa de las respuestas a los cuatro estilos   posibles. El estilo preferido es el de mayor frecuencia y   el rango hace referencia a la amplitud de los estilos que   es capaz de mostrar el líder ante distintas situaciones. Por   otra parte, la adaptabilidad se evalúa a través del grado en   que las respuestas del líder se ajustan a las prescripciones   de la TLS. Para ponderar el grado de ajuste de la respuesta   a la prescripción del modelo, la plantilla asigna un peso de   -2, -1, +1 y +2 a cada uno de los cuatro estilos. De este    modo, las puntuaciones totales aportan un coeficiente    total que indica el grado de adaptabilidad en el estilo de   liderazgo, que puede adoptar valores entre -24 y +24. (una   descripción más detallada del instrumento y de su modo   de puntuación, se encuentra en Rodríguez Estrada, 1988,  \n36 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  pp. 54-59 y Fernández Ríos & Sánchez García, 1997, pp.   115-146).  Escala de madurez  Para  este  instrumento  hay  una  sola  versión,  que  debe    contestar el líder con el fin de determinar el nivel de    madurez  para  cada  subordinado  y  para  cada  tarea  u   objetivo concreto de su trabajo.    Consta  de  ocho  escalas  y  mide  las  dos  dimensiones  que  componen  la  madurez  del  subordinado,  madurez   psicológica y madurez para el puesto. Para medir cada una   de ellas, se emplean cuatro escalas de ocho puntos con el    fin de que el líder evalúe la motivación de logro, la voluntad    para asumir responsabilidades, la experiencia previa en ese   trabajo, conocimientos, etc. del seguidor. De este modo, se   obtiene una puntuación en cada una de las dimensiones.  Perfil de percepción del poder  Consta de 21 pares de afirmaciones de elección forzosa    que describen cada una de las siete bases del poder. Esas    afirmaciones reflejan las razones que se dan cuando a    alguien se le pregunta por qué hace lo que su líder o jefe   le  sugiere  o  quiere  que  haga.  Cada  una  es  comparada   con todas las restantes. La persona tiene que distribuir 3    puntos entre las dos alternativas de cada par con el fin de    explicar por qué sigue las instrucciones de este líder. Con   la suma de las valoraciones de cada dimensión se obtiene   una puntuación para cada fuente de poder.    De  este  instrumento  también  existen  dos  versiones  (percepción  propia  y  heteropercepción),  según  sea  el   propio  líder  u  otras  personas  –superiores,  iguales  o   subordinados–, respectivamente, quienes contesten.    Este instrumento mide dos aspectos de la percepción  del  uso  de  los  diversos  tipos  de  poder  como  base  del   liderazgo.  Por  un  lado,  la  importancia  relativa  de  las   distintas  bases  de  poder;  por  otra,  permite  comparar   cada una de las bases de poder con la de otros líderes que   ocupan  posiciones  semejantes  o  desempeñan  papeles   similares en una escala de 9 puntos.    Hasta ahora, se ha presentado un repaso de la evolución  de la teoría del liderazgo situacional a lo largo del tiempo,   y  señalado  los  principales  fundamentos  y  conceptos  de  este modelo teórico así como las inconsistencias que se   han encontrado en el mismo. Asimismo se han descrito   los tres instrumentos de medida vinculados con él. Ahora   es el momento de indicar los puntos fuertes y débiles.  Fortalezas y debilidades de la TLS  La  revisión  hecha  hasta  aquí  del  modelo  de  Hersey  y   Blanchard, permite destacar, a modo de resumen, algunas   de sus fortalezas y de sus debilidades.    Entre sus fortalezas se subrayan, en primer lugar, la  capacidad intuitiva del modelo, pues con pocos elementos   presenta  relaciones  entre  variables  para  explicar  el   liderazgo y su efectividad. En segundo lugar, se destaca   que es uno de los modelos más presentes y divulgados en   la formación de directivos en las Escuelas de Negocios,   y que es citado con frecuencia en el contexto académico.    En tercer lugar, la TLS ha tenido un impacto significativo    en el campo aplicado y de la investigación en el contexto   de las organizaciones en general, y sobre el liderazgo, en    particular. Un cuarto aspecto a destacar es el hecho de fijar    la atención sobre la naturaleza situacional del liderazgo,    haciendo el énfasis en la flexibilidad de la persona que   ocupa una posición para influir en el comportamiento de    otros, y reconociendo la dualidad inherente del liderazgo.   Con  todo  ello,  atiende  a  las  necesidades  tanto  de  los   líderes como de los subordinados.    Por  último,  se  advierte  que  desde  esta  teoría  se  asume que, en un grupo de trabajo, los miembros pueden   variar  en  sus  niveles  de  madurez  y,  por  tanto,  requerir   comportamientos distintos por parte del líder. Además,   en  una  misma  persona,  puede  haber  cambios  en  su   nivel de madurez, cambios a los que deberá estar atento   el  líder  para  ajustar  su  comportamiento  conforme  a  la   prescripción del modelo.    Entre sus debilidades, está el hecho de que, a pesar  de  ser  un  modelo  muy  empleado  por  consultores  y   formadores, no se ha sometido a mucha investigación y,   además, no cuenta con un soporte de investigaciones que   proporcionen  apoyo  empírico  a  los  supuestos  teóricos   de que parte. Así mismo, uno de los conceptos centrales   de  la  teoría,  como  es  el  concepto  de  madurez  del    seguidor, no está bien definido. Además, hay importantes    inconsistencias  en  la  lógica  del  modelo  que  no  se  han   resuelto en versiones posteriores. \n37 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534    Por  todo  ello,  está  considerado  por  la  mayoría  de  los académicos como el modelo de la contingencia más   débil  y  la  aproximación  más  simple  a  la  situación  pero,   a pesar de ello, sigue presente en Escuelas de Negocios,   Universidades y en la literatura sobre el liderazgo.  Conclusiones  La  conclusión  principal  que  se  puede  extraer  de  esta   revisión, es que el liderazgo es un proceso complejo en   el  que  intervienen  multitud  de  elementos,  tanto  en  su   génesis como en sus resultados. A pesar de los avances   conseguidos a lo largo de las siete últimas décadas, persiste    un sentimiento de frustración en la comunidad científica    por  no  haber  encontrado  una  teoría  que  sea  capaz  de   describir,  explicar  y  predecir,  así  como  intervenir  sobre   el liderazgo y su efectividad en los diversos contextos de   la vida humana.      La dificultad que presenta el estudio del liderazgo,   se  debe  a  distintas  razones  entre  las  que  se  pueden   mencionar las siguientes. En primer lugar, no se dispone   de  un  conocimiento  completo  de  la  lista  exhaustiva  de   variables  que  intervienen  en  el  liderazgo.  Se  han  citado   variables individuales, de grupo, de la organización y de la   situación, como las características personales y habilidades   del  líder,  de  sus  superiores,  iguales  y  subordinados;  las   circunstancias  del  momento  concreto,  del  lugar  y  de  la   tarea; la cultura de la organización o institución en la que   desempeñan su trabajo, la coyuntura económica y social   del entorno inmediato y general, etc., pero no han sido    suficientes.      En  segundo  lugar,  una  vez  identificadas  todas  las  variables  del  liderazgo,  habría  que  especificar  la   ponderación  de  cada  una  de  ellas  para  predecir  su    efectividad en una situación específica. Esta tarea no es    más sencilla que la primera, ya que en cada intervención   del líder, la situación puede haber cambiado y, por tanto,    también se habrá modificado el peso de cada variable en    relación con las demás. En este sentido, la TLS ha hacho   contribuciones  importantes  al  estudio  del  liderazgo,  sin   duda,  como  son  el  reconocimiento  de  que  el  estilo  del   líder puede llevarse a cabo con mayor o menor habilidad;   el  énfasis  en  que  el  comportamiento  del  líder  debe  ser    flexible  y  adaptarse  a  situaciones  cambiantes  de  sus    subordinados  y,  lo  más  importante,  el  reconocimiento   de  que  los  líderes  tienen  la  oportunidad  de  mejorar   las  capacidades  y  la  confianza  en  sí  mismos  de  sus    subordinados.      Sin embargo, presenta algunas deficiencias en relación  con la definición del concepto de madurez, y que sigue   siendo ambigua, en torno a la operacionalización de los   comportamientos de cada uno de los cuadrantes, que se    considera insuficiente, o con respecto al olvido de incluir    otras variables de contexto que intervienen, sin duda, en   el proceso.     Hay dos elementos que no se recogen en la TLS: el  cambio  y  la  cultura.  El  cambio  comprende  las  grandes   mejoras  de  innovación  (en  procesos,  productos  o   servicios)  y  alta  adaptación  a  cambios  externos.  Por   tanto, su incorporación al modelo podría incrementar su   potencial explicativo, pero no un cambio liderado desde   arriba, sino un cambio que surge en el día a día, por las   acciones que las personas llevan a cabo y por las redes de   relaciones que controlan.     De acuerdo con Drucker (1999), en un período como  el que se aproxima, de muchos y muy rápidos cambios,   las únicas organizaciones que pueden sobrevivir –sea un   negocio, una universidad o un hospital...–, serán las que   se posicionen como organizaciones líderes en el cambio.    Por  último,  en  estas  cuatro  décadas  han  sucedido  acontecimientos  de  gran  calado  que  han  afectado  al   contexto  de  las  organizaciones  y  al  mundo  social,  en   general, por lo que es necesario y urgente introducir una    nueva cultura orientada a modificar de forma sustancial    los  procedimientos  y  las  formas  de  trabajo,  así  como   la  relación  entre  sus  miembros.  Lógicamente,  esto   requiere  un  liderazgo  que  participe  en  la  organización   modelando  su  futuro  a  través  del  fortalecimiento  de   la  cultura,  ya  que  para  comprender  y  para  dirigir  con    éxito una organización es necesario haber identificado y    comprendido previamente su cultura.  Referencias  Argyris, C. (1957).  Personality and organization . New York.  Harper & Row Publishers. Argyris, C. (1962).  Interpersonal competence and organizational  effectiveness.  Homewood,  Ill.  Dorsey  Press  and  Richard D. Irwin, Inc. \n38 Sánchez & Rodríguez  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 25-39   2010   ISSN 0120-0534  Argyris,  C.  (1964).  Integrating  the  individual  and  the  organization.  New York. John Wiley & Sons, Inc. Bandura, A. (1969).  Principles of  behavior modification . New  York: Holt, Rinehart & Winston. Blake,  R.R.  &  Mouton,  J.S.  (1964).    The  managerial  grid.   Houston: Gulf  Publishing, Blake,  R.R.  &  Mouton,  J.S.  (1982a).  How  to  choose  a  leadership style.  Training and Development Journal, 36  (2),  38-47. Blake,  R.R.  &  Mouton,  J.S.  (1982b).  A  comparative  analysis of  situationalism and 9,9 management by   principle.  Organizational Dynamics , 20-43.  Blanchard,  K.H.,  Zigarmi,  P.  &  Zigarmi,  D.  (1985).   Leadership  and  the  one  minute  manager .  New  York:   William Morrow. Drucker, P., (1999).  Management challenges for the 21st century .  New York: Harper Collins. Etzioni,  A.  (1961).  A  comparative  analysis  of   complex  organizations.  New  York:  The  Free  Press  of   Glencoe. Fernández Ríos, M. y Sánchez García, J.C. (1997).  Manual  de  prácticas  de  psicología  organizacional .  Salamanca:   Amarú.  Fiedler,  F.E.  y  Chemers,  M.M.  (1985).    Liderazgo  y  administración efectiva.  México: Trillas. Fiedler,  F.E.  (1978).  The  contingency  model  and  the  dynamics  of   the  leadership  process.  En  L.   Berkowitz  (Ed.).    Advances  in  Experimental  Social  Psychology . New York: Academic Press.  French, J. & Raven, B. (1959). The basis of social power.   En  D.  Cartwright  (ed.)    Studies  in  social  power .  Ann  Arbor. Institute for Social Research, University of    Michigan. Graeff, C.L. (1983). The Situational Leadership Theory:  A critical view.  Academy of  Management Review ,  8  (2),   285-291.   Graeff, C.L. (1997). Evolution of  Situational Leadership  Theory: A critical review.  Leadership quarterly, 8  (2),   153-170.  Hersey P. Angelini A.L. & Carakushansky S. (1982). The  impact  of   situational  leadership  and  classroom   structure  on  learning  effectiveness.  Group  &  Organization Studies, 7  (2), 216-224. Hersey,  P.  &  Blanchard,  K.H.  (1969a).    Management  of   organizational  behavior.   Englewood  Cliffs,  New   Jersey: Prentice Hall. Hersey,  P.  &  Blanchard,  K.H.  (1969b).  The  life  cycle  theory  of   leadership.  Training  and  Development  Journal, 23  (5), 26-34.  Hersey,  P.  &  Blanchard,  K.H.  (1969c).  Letters  to  the  editor:  A  response  to  Reddin.    Training  and  Development Journal , November, 56-57.  Hersey, P. & Blanchard, K.H. (1972a). The management  of   change.  Part  1-change  and  the  use  of   power.    Training and Development Journal, 26  (1), 6-10. Hersey, P. & Blanchard, K.H. (1972b). The management  of   change.  Part  2-change  through  behavior    modification.  Training  and  Development  Journal ,    26   (2), 20-24. Hersey, P. & Blanchard, K.H. (1972c). The management  of   change.  Part  3-planning  and  implementing   change.  Training and Development Journal, 26  (3), 28- 33. Hersey,  P.  &  Blanchard,  K.H.  (1974).  So  you  want  to  know your leadership style?  Training and Development  Journal, 28  (2), 22-37. Hersey,  P.  &  Blanchard,  K.H.  (1977).    Management  of   Organizational  Behavior.   (3rd  edition).  Englewood  Cliffs, New Jersey: Prentice Hall. Hersey,  P.  &  Blanchard,  K.H.  (1982a).    Management  of   organizational  behavior.  Utilizing  human  resources.    (4th  edition).  Englewood  Cliffs,  New  Jersey:  Prentice   Hall. Hersey, P. & Blanchard, K.H. (1982b). Leadership style:  attitudes  and  behavior.    Training  and  Development  Journal ,  36  (2), 50-52.  Hersey,  P.  y  Blanchard,  K.H.  (1988).  Management  of   organizational behavior: Utilizing human resources.  (5th   ed.). Englewood Cliffs, NJ: Prentice-Hall. Hersey, P. & Blanchard, K.H. (1996). Great ideas revisited.   Training and Development Journal ,  50  (1), 42-47. Hersey,  P.,  Blanchard,  K.H.  y  Johnson,  D.  (1998).   Administración  del  comportamiento  organizacional    (7ª  Edición). México: Prentice Hall. Hersey,  P.,  Blanchard,  K.H.  &  Natemeyer,  W.E.  (1979).  Situational leadership, perception  and  the impact   of  power.  Group and Organization Studies, 4  (4), 418- 428. \n39 Liderazgo Situacional  Revista Latinoamericana de Psicolog í a   Volumen 42   No 1   pp. 29-39   2010   ISSN 0120-0534  Johansen,  B.P.  (1990).  Situation  leadership:  a  review  of   the research.  Human Resource Development Quarterly ,   1 , 73-85.  Korman, A.K. (1966). Consideration, initiating structure,  and  organizational  criteria:  a  review.  Personnel  Psychology, 19 , 349-361. McGill,  M.E.  (1988).    American  business  and  the  quick-fix.   New York: Henry Holt.  Moorhead,  G.  &  Griffin,  R.W.  (1995).    Organizational  behavior.  Managing  people  and  organizations .  Boston:   Houghton Mifflin. Nicholls,  J.R.  (1985).  A  new  approach  to  Situational   Leadership.  Leadership and Organizational Development  Journal ,  6  (4), 2-7. Nicholls,  J.R  (1986),  “Congruent  leadership”,    Leadership  and  Organization  Development  Journal,   Vol.  9  No.1,   pp.27-31. Nicholls,  J.R.  (1986a).  Beyond  Situational  Leadership  –  congruent and transforming models for leadership   training.  European Management Journal, 4  (1), 41-50.  Nicholls,  J.R.  (1986b).  Congruent  leadership.    Leadership  and Organization Development Journal, 7  (1), 27-31. Randolph,  W.A.  &  Blackburn,  R.S.  (1989).    Managing  organizational behavior . Homewood, IL: Irwin.  Raven, B. & Kruglanski, W. (1975).   Conflict and power.   En  P.  Swingle  (ed.).    The  structure  of   conflict .  New  York: Academic Press. Reddin,  W.J.  (1964).  The  tri-dimensional  grid.    Training  Directors Journal, 18  (7) ,  9-18. Reddin,  W.J.  (1967).  The  3D  management  style  theory.   Training and Development Journal ,  21 ,   8-17. Reddin,  W.J.  (1969).  Letters  to  the  editor:  Reddin  on  Hersey-Blanchard  Style  Dimensions.    Training  and  Development Journal , November, 56.  Reddin, W.J. (1997).  Cómo mejorar su estilo de gestión . Bilbao:  Deusto. Rodríguez  Estrada,  M.  (1988).    Liderazgo.  Desarrollo  de  habilidades directivas.  México: El Manual Moderno.  Sánchez  Santa-Bárbara,  E.  y  Rodríguez  Fernández,  A.  (2009).  40  años  de  la  Teoría  del  Liderazgo   Situacional:  una  revisión  empírica.  En   preparación. Sánchez  Santa-Bárbara,  E.  (2000).  Teoría  del  Liderazgo  Situacional en la administración local: validez del   modelo.  Psicothema, 12  (3),   435-439 .  Sánchez  Santa-Bárbara,  E.  &  Rodríguez  Fernández,  A.  (en  preparación).  40  años  de  la  Teoría  del   Liderazgo  Situacional:  una  revisión  empírica.   Revista Latinoamericana de Psicología. Sashkin,  M.  (1982).  Commentary.  The  editor.    Group  &  Organization Studies ,  7(2) , 131-133.  Skinner, B.F. (1953).  Science  and  Human  Behavior.   New  York: Macmillan. Skinner,  B.F.  (1961).    Analysis  of   behavior .  New  York:  McGraw-Hill Book Company. Vecchio, R.P. (1987). Situational Leadership Theory: An  examination  of   a  prescriptive  theory”.    Journal  of   Applied Psychology ,  72  (3), 444-451.  Yukl, G.A. (1989).  Leadership in organizations . (2nd edition).  Englewood Cliffs, New Jersey: Prentice-Hall.  \n";
+    const PDF_NAME = "Liderazgo 16.pdf";
+    const CHATBOT_THEME = "Redalyc.40 Años de la teoría del liderazgo situacional: una revisión";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué objetivo y estructura de revisión plantea el artículo sobre la teoría del liderazgo situacional (TLS)?","¿Cómo se justifica históricamente la TLS desde su presentación en 1969 y sus posteriores modificaciones?","¿Qué supuestos iniciales sustentan la TLS y por qué se consideran relevantes sus críticas de lógica o congruencia?","¿Qué antecedentes teóricos y modelos previos sirvieron de base para que Hersey y Blanchard conformaran la TLS?","¿Cómo define el texto los comportamientos de tarea y de relación, y qué papel cumple la comunicación bidireccional?","¿Cuál es la diferencia entre “comportamientos” y “actitudes” en la TLS, según la discusión con la Rejilla Gerencial?","¿Por qué se afirma que la TLS se centra en el comportamiento manifiesto del líder y se aleja de una perspectiva actitudinal?","¿Qué relación se observa (según el texto) entre orientación a la tarea/orientación a las relaciones y resultados como desempeño o satisfacción?","¿Cómo se representa la independencia entre las dimensiones tarea y relación en el modelo de Blake y Mouton (rejilla gerencial)?","¿Qué idea clave introduce la TLS respecto al cambio del estilo del líder y la madurez cambiante de los seguidores?","¿Cómo funcionan las “aproximaciones sucesivas” con reforzamiento positivo en el proceso de cambio del seguidor (tres fases)?","¿Qué instrumentos vinculados con la TLS se describen al final del artículo (LEAD, Escala de madurez y Perfil de percepción del poder) y para qué mide cada uno?"];
+    const INITIAL_PALETTE = {"primaryColor":"#e83a30","secondaryColor":"#ed6159","bgColor":"#140611","textColor":"#f8fafc","cardBgColor":"#271a24","cardBorderColor":"#4a3f47","inputBgColor":"#342831","inputBorderColor":"#60565d","chatBubbleBotBg":"#30242e","chatBubbleBotText":"#f8fafc","chatBubbleUserBg":"#e83a30","chatBubbleUserText":"#f8fafc","headerBorderColor":"#4a3f47","systemMessageBg":"#433329","systemMessageText":"#fef3c7"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Grupo Planificación y Desarrollo Sostenible del Turismo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Grupo Planificación y Desarrollo Sostenible del Turismo</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL  TURISMO         METODOLOGÍA PARA LA   ELABORACIÓN DEL   INVENTARIO DE ATRACT IVOS   TURÍSTICOS   Abril 2020    VICEMINISTERIO DE TURISMO    DIRECCIÓN DE CALIDAD Y DESARROLLO SOSTENIBLE     \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    1                                                    CONTENIDO       Presentación                                                                                                                       2    Objetivo                   4    Conceptos Básicos               6    Metodología                 8                  Proceso                 9                  Diligenciamiento   de los formularios    A.   Generalidades                       12    B.   Características                         13    C.   Valoración y Significado                                           2 0    D.     Características relevantes                     2 7    E.   Actividades y servicios                   2 8    F.   Promoción del atractivo                          2 8    G.     Servicios  para  personas  en  condición  de   discapacidad  o  condiciones  especiales   (embarazadas, tercera edad, otros)                       2 8    H.     Otros                                  2 8                                      Ane xos                                                                      30      Formularios  (archivo Excel)      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    2                        Presentación   \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    3                            Con  el  propósito  de  dar  a  conocer  las  herramientas  para  que  las  regiones  fortalezcan  su   capacidad técnica en función del desarrollo turístico, el Viceministerio de Turismo ha elaborado   esta  versión  de  la    METODOLOGÍA     PARA  L A  ELABORACIÓ N  DE L  INVENTARIO   TURÍS TICO .       La elaboración de los inventarios es una prioridad para el país en tanto que la ley 300 de 1996   y la ley 1101 de 2006 establecen la obligación de actualizar dicha información.       Es importante recalcar que los inventarios de atractivos junto con otros   insumos de información   producidos en los procesos de planificación turística ,   constituyen elementos de trascendencia   para  la  toma  de  decisiones  tanto  para  el  sector  público  como  para  el  privado  en  los  niveles   regional y nacional.       El propósito de esta Guí a es gene rar una herramienta de utilidad que pueda ser   compartida en   todo el país, que facilite el trabajo a los actores regionales y municipales del turismo y propicie   el diálogo armónico con miras a la diversificación y consolidación de productos competitivos.       En esta versión  20 20   revisada, actualizada  y  c omplementada tiene  como  propósito tener una   información  a  efecto s  de  planificación,  promoción,  c omercialización ,    identificación  y  diseño   de     producto  turístico;  así  mismo  mantiene  los  elementos  de  la  metodología  de  2010  con  el   objeto de tener elementos de c omparabilidad y trazabilidad con inventarios realizados en este   periodo.     \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    4                                                                                                                                           Objetivo      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    5                                  Realizar una evaluación objetiva (cualitativa y cuantitativa) de los atractivos y recursos de los   cuales  dispone  la    región ,  el  departamento  o  el  municipio     con  el  fin  de  seleccionar  aquellos   susceptibles  de  uso  turístico  inmediato  o  para  establecer  las  acciones  de  mejoramiento  de  su   calidad  que  hagan  viable  su  inclusión  en  el  diseño  de  productos  turísticos ,  la  planifi cación   turística, la promoción y la  comercialización .        \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    6                                                                                              Conceptos Básicos      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    7                   Inventario:        Es el proceso por el cual se registran ordenadamente los factores físicos y culturales como un   conjunto de atractivos, que sirven para  elaborar productos turísticos en   una región.        Es necesario establecer diferencia entre:              Recurso:        Factores físicos  y culturales potencialmente aprovechables   por el turismo.           Atractivo:     Factores físicos y culturales que reúnen las condiciones para ser integrados de inmediato a los   productos turísticos.      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    8                           Metodología      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    9                         Proceso          1.   Revisión de fuentes  secundarias       Para iniciar  el proceso  e s muy importante revisar inventarios anteriores, planes de desarrollo   turísticos,  planes  de  desarrollo  recientes,  planes  de  ordenamiento  territori al,  investigaciones   reconocidas . Elabore   un listado preliminar   en el formulario 0 (Anexo 1)   de recursos y atractivos   del destino, territorio o región fundamentado en guías turísticas, bienes con declaratoria local,   nacional o internacional, artículos   de prensa  y  revistas. Registre   los recursos  y  atractivos    del   listad o preliminar    en el formulario 00   (Anexo 2)   clasificándolos de acuerdo al tipo de bien y   en   el  formulario a diligencia r   de acuerdo a la siguiente clasificación:       Grupo 1        Patrimonio Cultural:        Se define como el  conjunto de bienes  y manifestaciones    culturales materiales e inmateriales,   que  se  encuentra n     en  permanente  construcción  sobre  el  territorio  transformado  por  las   comunidades.  Dichos  bienes  y  manifestaciones  se  constituyen  en  valores  que  conforman   sentidos y lazos de permanencia, identidad y me moria para un grupo o colectivo humano. 1          Patrimonio  Cultural  Material:  (Formulario   1)       Se  caracteriza  por  tener  un  cuerpo  físico  que  puede  ser  dimensiona do  y  percibido   sensorialmente,  constituido por el territorio geográfico con sus recursos ambientales  y naturales   como  hábitat  humano;  los  hechos  construidos,  las  manifestaciones  físicas  de  la  estructura   productora  y  de  los  procesos  de  poblamiento;  los  sistemas  de  transporte  y  las  obras  de   infraestructura como vías, caminos y puentes, entre otros; y todo e l universo de herramientas,   utensilios,  máquinas  y  demás  objetos  que  apoyan  la  vida  productiva  y  cotidiana  de  los  seres   humanos.  Agrupa dos grandes áreas, la inmueble y la mueble.                                                                           1   Definición tomada del Manual para Inventarios Bienes Culturales Inmuebles, 2005, Ministerio de Cultura,   página 30   \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    10                Patrimonio  Cultural  Inmaterial:  (Formulario   2)       Comprende las  tradiciones y expresiones orales, prácticas sociales, rituales y actos festivos, el   conocimiento y prácticas sobre la naturaleza y el universo; y expresiones artísticas, entre otras,   que continuamente se están recreando en la sociedad y reproduciendo gener acionalmente. Estas   manifestaciones  pueden  agruparse  bajo  la  denominación  de  folklore  (entendido  como  la   sabiduría del pueblo) y deben ajustarse a ciertas características, como lo son: la colectividad,   tradición, anonimato, espontaneidad y popularidad.             Festividades y eventos:   (Formulario   3)       Son atractivos que se generan en la realización de eventos con contenido actual o tradicional,   en los cuales la población es actora o espectadora.             Grupos de Especial Interés : (Formulario   4)       Constituidos por comun idades indígenas, comunidades negras y comunidades raizales, en las   cuales se valora el respeto por sus costumbres como una forma de conservación auténtica de su   legado cultural.       En la Constitución Política de Colombia, se reconoce y se protege la diversi dad étnica y cultural   de los ciudadanos; por tal motivo se considera de vital importancia el  reconocimiento de los   grupos de especial interés en el sentido estricto del respeto por sus valores y costumbres ,   y no   como objetos pasivos para ser mostrados al visitante. La decisión de participar en actividades   turísticas o abstenerse de hacerlo está en cabeza de la propia comunidad.          Grupo 2        Sitios Naturales :  (Formulario   5)       Contemplan las áreas geográficas (c onjunto de atractivos con sus componentes) y los recursos   naturales (que por sus características no permiten estar agrupados) de importancia e interés para   el turismo.            \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    1 1                                  2.   Conformación del eq uipo de trabajo (Grupo Técnico)         Este  debe  ser    integrado     interdisciplinariamente  por  personas  con  conocimientos  en  temas   turísticos,  naturales  y  culturales;  se  constituye  en  el  soporte  de  todo  el  proceso  pues  es  el   encargado de la búsqueda, organización y análisis de la información.          3.   Familiariz arse con la guía   y los formatos         En  un  taller,  dirigido  y  coordinado  por  el  Ministerio  de  Comercio,  Industria  y  Turismo    –    Viceministerio de Turismo o por un grupo debidamente capacitado, se brindará una explicación   específica  de  la  guía  para  la  elaboración  del  inventario :  estructura,  contenidos,  criterios  de   valoración,  forma  de  diligenciamiento  de  los  formularios  y  la  forma  de  entrega  del  informe   final.   En el taller debe estar presente el Grupo Técnico.       4.   Definición de   las prioridades       S itios  para  visitar     de  acuerdo  al  listado  preliminar ,  materiales  que  se  van     a  utilizar,  equipos   necesarios y   recorridos.       5 .         Trabajo de campo       Debe programarse de manera adecuada la visita a cada uno de los  recursos y  atractivos de tal   manera  que  la  recopilación  de    la  información  se  haga  de  manera  eficiente  y  se  realice  la   calificación in situ.   Los  formularios   de captura de información deben diligenciarse para cada   uno de los recursos y  atractivo   identificados .       Todos  los  integrantes  del  equipo  deben  hacer  la  valorac ión  y  luego  se  hace  una  ronda  para   promediar el puntaje final.   NOTA:  Para evitar los sesgos en la  calificación  (por exceso o por   defecto)  es  fundamental  que  haya  la  mirada  interdisciplinaria  (cultural,  ambiental,  turística).   Una  vez  se  hay  concluido  la    pri mera  ronda    de  calificación,  es  recomendable  que  personas   conocedoras  del  turismo  pero  con  visión  externa  al  lugar,  hagan  una    segunda  calificación ,   especialmente de los atractivos que obtuvieron un puntaje más alto.          \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    12                   6.         Formularios a  diligenciar       Son  cinco   formularios los que se   deben diligenciar de manera conjunta con la participación de   todos  los  integrantes  del  equipo ;  la  información  se  debe  consignar  en  Excel     de  la  siguiente   manera :       a.   Listado preliminar de recursos y atractivos   (0)       b.   Clasificación de recursos y atractivos   (00)       c.   Los  formularios   por tipo de atractivo .   (1, 2, 3, 4 Y 5)       d.   Las  fichas de resumen   (1, 2, 3, 4 Y 5)       e.   El  cuadro general de resumen             Diligenciamiento de los f ormularios       Están  diseñados  para  cada  uno  de  los    recursos  y    atractivos.  En  el  encabezado  se  puede   identificar el que se debe emplear en cada caso.  Así mismo el formulario de resumen por tipo   de atractivo y uno de compendio general.       Formulario 1.  Patrimonio material  –   bienes muebles e inmuebles     Formulario 2.  Patrimonio inmaterial     Formulario 3.  Patrimonio  in material  –   festividades y eventos    Formulario 4 . Patrimonio  in material  –   grupos de especial interés     Formulario 5.  Sitios naturales            A.     GENERALIDADES       La denominación del recurso o atractivo debe contener su  nombre   y los sustantivos   comunes     que lo identifica n . P.ej. rio Magdalena, iglesia de San Pedro, Feria de Cali, comunidad indígena   Emberá.  En  caso  de  los bienes  de  patrimonio  inmaterial  pod rán  llevar  solo  su  denominación   \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    13       como en el siguiente ejemplo ; ajiaco, ruana,  tamal , etc.  d e la misma manera se deben diligenciar    los datos del administrador o tenedor del bien cuando estos sean naturales, culturales materiales,   grupos de especial interés,   festividades y eventos.        Adicionalmente registre:               B.     CARACTERÍSTICAS        Identifique el bien a ser inventariado a qué tip o de recurso o atractivo turístico corresponde de   acuerdo a la siguiente clasificación:             a.   Código       Elabore el código de  7   números teniendo en cuenta la siguiente clasificación.                       1.     PATRIMONIO CULTURAL       1.1   Patrimonio Cultural Material Inmueble; Grupo Arquitectónico       1.1.1 Arquitectura Militar    1.1.1.1 Recinto Amurallado (Acceso Principal; Baluarte; Cortina; Espigón;  Cuartel Militar)    1.1.1.2 Muralla del Arrabal ( Baluarte; Cortina )    1.1.1.3 Fortificación (Almacén de Provisiones; Batería; Castillo; Fuerte; Plataforma; Puente;   Trincherón)    1.1.1.4 Escuela de Adiestramiento    1.1.1.5 Batallón    1.1.1.6 Otro       1.1.2 Arquitectura   Habitacional    1.1.2.1 Vivienda Urbana (Unifamiliar; Multifamiliar)    1.1.2.2 Vivienda Rural (Casa de Hacienda; Quinta, vivienda raizal, tradicional, popular)   1.8. Datos de Georrefereniciación  Terrestre   Acuático  Aéreo  1.10. Indicaciones para el acceso:  1.3. Municipio 1.2. Departamento   1.4. Corregimiento, Vereda o Localidad  1.5. Administrador o Propietario  1.9. Tipo de Acceso  1.7. Teléfono / Móvil  1.6. Dirección / Ubicación  2.2. Código  \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    14          1.1.3 Arquitectura Religiosa    1.1.3.1 Templo (Iglesia; Claustro; Capilla; Ermita; Templo Parroquial;   Templete; Santuario;   Oratorio; Basílica; Catedral; Sinagoga; Mezquita; Otros)    1.1.3.2 Conjunto Parroquial (Iglesia  –   Casa Cural)    1.1.3.3 Conjunto Conventual (Claustro; Convento )    1.1.3.4 Centro Doctrinero (Capilla doctrinera; Iglesia doctrinera)    1.1.3.5  Palacio (Arzobispal; Episcopal)    1.1.3.6 Otro       1.1.4. Arquitectura Institucional    1.1.4.1  Edificación  Gubernamental  (Capitolio  Nacional;  Palacio  Nacional;  Palacio  de  la   Gobernación; Palacio Municipal; Palacio de la Policía; Edificio de Rentas    Departamentales;   Tribunales y Cárceles del Santo Oficio; Aduana; Banco de la República; Centro Cívico; Centro   Administrativo; Otro...)    1.1.4.2  Edificación  para  la  Educación  (Institución  de  Educación  Básica;  Institución  de   Educación  Técnica;  Universidad;  Facu ltad  Universitaria;  Centro  de  Formación  Cultural;   Conservatorio; Seminario ; Otro )    1.1.4.3  Edificación  para  la  Ciencia  (Observatorio  Astronómico;  Laboratorio;  Planetario;   Centro de inves tigación; Jardín Botánico; Otro )    1.1.4.4 Edificación para la Cultura (B iblioteca; Paraninfo; Sala de Cine; Sala de Conciertos;   Sala Múltiple; Teatro; Museo; Casa de la Cultura ; Otro )    1.1.4.5 Escenario para la Recreación y el Deporte (Estadio; Plaza de Toros; Circo; Club Social;   Parque temático y recreativo; Otro )    1.1.4.6 Cen tro Hospitalario y Asistencial (Hospital; Clínica; Centro Médico; Puesto de Salud;   Penitenciaría; Panóptico; Cárcel ; Otro   )    1.1.4.7 Funeraria (Cementerio; Parque Cementerio; Mausoleo; Tumba)    1.1.4.8  Arquitectura  para  el  Comercio  (Edificación  Comercial;  Pas aje;  Plaza  de  Mercado;   Complejo Comercial; Centro Comercial; Edificios; Entidad Bancaria ; Otro   )    1.1.4.9 Arquitectura para la Industria ( Imprenta; Fábrica; Horno; Otra)    1.1.4.10  Arquitectura  para  el  Transporte  (  Estación  de  Ferrocarril;  Estación  de  Tranví a;   Terminal  de  Transporte;  Terminal  de  Transporte  Masivo  Urbano;  Aeropuerto  de  Pasajeros;   Aeropuerto de Carga; Transporte; Puerto de Pasajeros; Puerto de Carga; Muelle ; Otro )     1.1.5 Obras de Ingeniería e Infraestructura (Camino real; Corredor Férreo; Puente Colgante;   Puente Metálico; Torre del Cable Aéreo; Túnel; Embalses y represas; Otro )     1.1.6. Otro       1.2 Patrimonio Cultural Material Inmueble; grupo Urbano o Rural     1.2.1 Sect or Urbano o rural de interés     1.2.2  Elementos  del  espacio  público  (Plaza;  Plaza  Mayor;  Plazoleta;  Plazuela;  Alameda;   Parque Urbano; Avenida y calle; Otro )     1.2.3. Otro        1.3. Realizaciones técnico científicas    \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    15       1.3.1. Minera     1.3.2. Agropecuaria     1.3.3. Industrial     1.3.4. Técnica     1.3.5. Otro       1.4 Patrimonio Cultural Material Inmueble; Grupo Arqueológico     1.4.1 Sitio arqueológico     1.4.2 Zona arqueológica     1.4.3 Parque arqueológico     1.4.4 Otro        1.5. Patrimonio Cultural Material Mueble     1.5.1 Obras de arte en museos, colecciones o recintos cerrados     1.5.1.1 Pintura    1.5.1.2 Escultura     1.5.1.3 Otro     1.5.2 Obras en espacio público     1.5.2.1 Cabeza     1.5.2.2 Busto     1.5.2.3 Estatua     1.5.2.4 Escultura     1.5.2.5 Relieve     1.5.2.6 Monumento     1.5.2.7 Pila     1.5.2.8 Farol     1.5.2.9 Templete     1.5.2.10 Reloj     1.5.2.11 Fuente     1.5.2.12 Cruz     1.5.2.13 Mural     1.5.2.14 Otro     1.5.3 De Carácter Científico     1.5.3.1 Especímenes Biológicos     1.5.3.2 Especímenes Geológicos     1.5.3.3 Cuerpos Astronómicos     1.5.3. 4 Otro        1.6 Patrimonio Cultural Inmaterial     1.6.1 Conocimientos y prácticas sobre el universo y la naturaleza     1.6.2 La gastronomía y los saberes culinarios    1.6.3 Lenguas y expresiones orales     1.6.4 La medicina tradicional     1.6.6 Expresiones musicales y sonoras    \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    16       1.6.7 Expresiones dancísticas     1.6.8 Las artes escénicas     1.6.9 Los juegos tradicionales     1.6.10 Las técnicas de elaboración de objetos artesanales e instrumentos     1.6.11 Elaboración de vestuario y ornamentación corporal     1.6.12 Las técnicas de construcción.     1.6.13 Las celebraciones y rituales     1.6.14 Otro        1.7 Festividades y Eventos     1.7.1 Fiestas     1.7.1.1 Aniversarios de fundación y/o Fiestas del Retorno     1.7.1.2   Carnavales     1.7.1.3 Concursos y/o reinados     1.7.1.4 Fiesta patria y/o acontecimiento histórico     1.7.1.5 Religiosas, patronales y/o profanas     1.7.1.6 Encuentros     1.7.1.7 Otras     1.7.2 Ferias y exposiciones     1.7.2.1 Agrícola     1.7.2.2. Agroindustrial     1.72.3.   Artesanal     1.7.2.4. Artística    1.7.2.5 Científica     1.7.2.6. Comercial     1.7.2.7. Equina     1.7.2.8. Ganadera     1.7.2.9 Gastronómica     1.7.2.10. Industrial     1.7.2.11 Mercado     1.7.2.12. Otras        1.7.3. Eventos artísticos y culturales     1.7.3.1 Danza     1.7.3.2. Música     1.7.3.3. Poesía, letras y/o narración oral     1.7.3.4. Teatro     1.7.3.5 Cine y/o Audiovisuales     1.7.3.6 Otros        1.7.4 Eventos deportivos        1.7.5 Otros       \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    17       1.8 Grupos de Especial Interés     1.8.1 Comunidad Indígena     1.7.2 Comunidad Negra     1.8.3 Co munidad Raizal     1.8.4 Comunidad Rom     1.8.5 Otra       2. SITIOS NATURALES        2.1 Montañas     2.1 .1 Nudo     2.1.2 Macizo     2.1.3 Cordillera     2.1.4 Sierra     2.1.5 Serranía     2.1.6 Monte     2.1.7 Loma o colina     2.1.8 Nevado     2.1.9 Volcán     2.1.10 Depresión     2.1.11 Desfiladero     2.1.12 Páramo     2.1.13 Cerro     2.1.14 Alto     2.1.15 Otra        2.2 Altiplanicies     2 .2.1 Meseta     2.2.2 Valle     2.2.3 Cañón     2.2.4 Cuenca     2.2.5 Otro        2.3 Llanuras     2.3.1 Sabana o llano     2.3.2 Pradera    2.3.3 Desierto    2.3.4 Otro       2.4 Aguas  lénticas    2.4.1 Ciénegas    2.4.2 Lagos    2.4.3 Lagunas    2.4.4 Humedales   \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    18       2.4.5 Otra       2.5 Aguas lóticas    2.5.1 Cascada, catarata o salto    2.5.2 Estero    2.5.3 Fuente o manantial    2.5.4 Quebrada    2.5.5 Río    2.5.6 Arroyo o riachuelo    2.5.7 Rápido    2.5.8 Caudal    2.5.9 Torrente    2.5.10 Ribera    2.5.11 Otro       2.6 Costas litorales    2.6.1 Acantilado    2.6.2 Bahía    2.6.3 Ensenada    2.6.4 Golfo    2.6.5 Playa    2.6.6 Punta    2.6.7 Rada    2.6.8 Fondeadero    2.6.9 Península    2.6.10 Cabo    2.6.11 Promontorio    2.6.12 Istmo    2.6.13 Estrecho    2.6.14 Otro       2.7  Tierras insulares    2.7.1 Islas continentales    2.7.2 Islas oceánicas    2.7.3 Islas en espacios fluviales y lacustres    2.7.4 Archipiélago    2.7.5 Islote    2.7.6 Cayo    2.7.7 Arrecife    2.7.8 Barra    2.7.9 Otras       2.8 Lugares de caza y pesca      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    19       2.9 Lugares de observación de fl ora y fauna       2.10 Áreas protegidas        2.10.1 Sistema de Parques Nacionales Naturales     2.10.1.1 Parque nacional natural     2.10.1.2 Reserva natural     2.10.1.3 Área natural única     2.10.1.4 Santuario de flora y fauna     2.10.1.5 Vía parque     2.10.2 Áreas con declaratorias departamentales     2.10.3 Áreas con declaratorias municipales     2.10.4 Reservas de la sociedad civil     2.10.5 Otra       2.11 Aguas subterráneas     2.11.1 Aguas minerales     2.11.2 Aguas termales     2.11.3 Geyser     2.11.4 Otra        2. 12 Formaci ones cársicas     2.12.1 Cueva     2.12.2 Cavernas     2.12.3 Otro        Tanto    en  los  formularios    (para  cada  atractivo)  como  en  los  generales  (de  resumen)  deben   aparecer claramente el código que está compuesto por  7   números; los dos primeros tienen en   cuenta  la  ubicación  DIVIPOLA  ( Código  de  la  división  político  a dmi nistrativa  del  país )   departamento  y  municipio;    y  los    5     siguientes  de  acuerdo  a  la  clasificación  de  los  bienes   culturales y naturales. El  7º    y último núm ero en orden alfabético.       Código DIVIPOLA       Primer   nivel     Segundo   nivel     Tercer nivel    Cuarto nivel    Listado de   atractivos   (en orden   alfabético)    Departamento   Municipio   Tipo de   Patrimonio    Grupo   Componente   Elemento          13.    Bolívar       001   13.001.1.   Patrimonio     Cultural     13.001.1.1   Material        13.001.1.1.1   Arquitectura   militar    13.001.1.1.1.1.  1.2      Recinto   amurallado /   baluarte /    1, 2, 3 etc.   \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    20           11.    Bogotá D.C.    001   11.001.2   Sitio     Natural    11.001.2.1   Montañas           11.0012.1.13   Cerros     11.001. 2.1.2.1.  1.1    1, 2, 3 etc.       * Los códigos deben tener  7   números. Cuando el nivel de clasificación llega solo al componente en   el 4, 5 y 6  número se consigna el 1       Ejemplos:    Baluart e de San Ignacio  13.001.1.1. 1.2.3       1. Baluarte de La Merced    2. Baluarte de San Francisco Javier    3. Baluarte de San Ignacio     4. Baluarte de San Lucas    5. Baluarte de Santa Catalina    6. Baluarte de Santa Clara    7. Baluarte de Santo Domingo       Cerro de Monserrate 11.001.2.1.1.1.2       1. Cerro de Guadalupe    2. Cerro de Monserrate              b.   Descripción       La  descripción de los atractivos  y de las actividades sugeridas debe ser  concisa  y referirse   sólo a aquellos aspectos sustanciales que pueden contribuir a un adecuado uso del atractivo   para el diseño de productos turísticos, la planificación, la promoción y l a comercialización.   Debe  contener  de  manera  sintética  elementos  que  componen  el  bien  sin  el  empleo  de   adjetivos y aspectos históricos ,   cuando sea pertinente.         C.     VALORACIÓN    Y SIGNIFICADO         TOTAL  Subtotal  Constitución del Bien (21)  C. PUNTAJES DE VALORACIÓN   SIGNIFICADO   Local (6) Regional (12) Nacional (18) Internacional (30)  Estado de Conservación (21)  CALIDAD  PUNTAJE  Representatividad General (28) \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    21                La valoración de los atractivos turísticos se hace teniendo en cuenta dos grandes temas: calidad   y significado.        Los  criterios  de  calidad  varían  de  acuerdo  con  el  atractivo  que  se  esté  evaluando  y  hacen   referencia  al  grado  de  conservación  en  el  que  se  enc uentre  el  atractivo;  la  calificación  de  la   calidad representa el 70% del total del puntaje asignable y se deben valorar todos los criterios   para cada atractivo. Los puntajes propuestos son tope.        Los criterios de significado hacen referencia al grado de reconocimiento que tiene el atractivo.   Representan  el  30%  de  la  calificación.  Sólo  se  valora  con  uno  de  los  criterios  (es  una   calificación excluyente) y se aplica un valor único.              Criterios para  la valoración del Patrimonio Cultural           Calidad        Para  calificar  la  calidad  de  estos  bienes  es  importante  tener  en  cuenta  la  categorización   mencionada en la sección: “Clasificación de los Bienes y Atractivos” y los criterios que se   enuncian a continuación:        Patrimonio Material           Estado de Conservación:  S i conserva su homogeneidad estética y su integridad física desde   su  situación  original  o  a  partir  de  las  posibles  acciones  del  hombre  (restauración)  para   mejorar la calidad del recurso.           Constitución  del  Bien:    Se  refiere  a  los  materiales  y  las  técnicas  de     elaboración  del  bien.   Existen  bienes  que  por  su  antigüedad  poseen  materiales  y  técnicas  en  desuso  o   desaparecidas  que  merecen  ser  destacadas  en  el  ejercicio  de  la  valoración.  pero  también   pueden existir bienes con materiales o combinación de técnicas mode rnas que igualmente,   pueden  valorarse  por  su  singularidad  o  porque  representan  avances  tecnológicos.    ( Definición  tomada  del  Manual  para  Inventarios  Bienes  Culturales  Muebles,  2005,   Ministerio de Cultura, página 45  )          Representatividad:    Importancia  del  bien  como  un  elemento  que  dio  partida  a  un  hecho   histórico, social o cultural.       \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    22                          Puntaje    Calidad    Estado de conservación     Constitución del bien     Representatividad     Total     21     21     28     70                  Patrimonio Inmaterial           Colectiva:  Común a un grupo humano que se siente representado en este hecho, que lo   usufructúa y lo transmite.           Tradicional:  Se transmite de generación en generación y sus orígenes se pierden en el   tiempo.           Anónima:  No tiene autor conocido y su origen se remonta a  tiempos muy antiguos.           Espontánea:    Responde  al  modo  natural,  sencillo  e  ingenuo  con  que  se  transmite  una   expresión.           Popular:  Representa la cotidianidad de las masas populares.               Puntaje    Calidad    Colectiva     Tradicional     Anónimo     Espontáneo     Popular     Total     14     14     14     14     14     70                      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    23             Festividades y eventos           Organización del evento : Tiene en cuenta el nivel de organización del evento, valorando   aspectos como el contenido del mismo, programación, cumplimiento, logística.           Beneficios  socioculturales  para  la  comunidad:    Arraigo  dentro  de  la  comunidad,   divulgación  del  folclore  regional,  nivel  en  que  ayuda  el  evento  a  la  promoción  de  la   región, nivel de integración comunitaria en la realización del evento.           Beneficios  económicos  locales:    Aumento  en  los  ingresos  regionales,  beneficios  en  el   mejoramiento  de  la  calidad  de  vida  de  la  población  y  la  correcta  utilización  del   presupuesto destinado a la organización del evento.                  Puntaje    Calidad    Organización del evento     Beneficios socioculturales     Beneficios económicos locales    Total     30     20     20        70              Grupos de Especial Interés           Respeto por las costumbres:  Forma de conservación auténtica de su legado cultural.        Calidad    Respeto por las costumbres                                                                        Total                              70             Sitios Naturales        Tiene en cuenta el estado de conservación del atractivo a nivel ambiental, es decir, la escasa o   nula    presencia  de  deterioro  que  puede  ser  ocasionada  por:  c ontaminantes  primarios  como   residuos  de  petróleo,  detergentes,  plásticos,  latas,  restos  orgánicos,  residuos  industriales,   agrícolas;    contaminantes  secundarios  c omo  ruido,  olores  desagradables,    obstrucción  visual,  \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    24       mala disposición de basuras; a cción depredadora del hombre  ocasionada por un uso irracional   de los recursos.        Los criterios para evaluar la calidad son:           Sin  contaminación  del  aire:    Generalmente  representada  en  smog,  proveniente  de  lo s   automóviles, plantas petroleras, el cual causa daños en las plantas y pérdidas agrícolas.           Sin  contaminación  del  agua:    Provocada  por  elementos  químicos,  por  derrame  de   combustibles (gasolina y derivados del petróleo) en los mantos acuíferos que también   se puede provocar por escurrimientos de fertilizantes utilizados en las zonas agrícolas y   por el uso de jabones y detergentes caseros que llegan a las aguas destruyendo la vida.           Sin  contaminación  visual:  originada  en  el  empleo  de  arquitectura  inadecuada,    obstrucción visual, dispersión de basuras.           Sin  contaminación  sonora:    representada  en  niveles  que  impidan  el  disfrute  de  la   naturaleza.           Estado de conservación:  Situación en que se encuentra la fauna y la flora del lugar, si   hay presencia de erosión, ma nifestaciones de actividades extractivas de supervivencia.           Diversidad:  Riqueza de aspectos a observar (diversidad de especies de flora o fauna) y   de habitats o paisajes (vistas panorámicas, topografía), olores, visiones.        Singularidad:  Son rasgos excepci onales o únicos que en la flora y fauna se denominan   endemismo  (no  se  encuentra  sino  en  una  área  restringida,  o  relictuales  (especies   aparentemente desaparecidas evolutivamente). En paisajes se podría definir como que   no se encuentra otro de característica s similares en un ámbito determinado (rareza).               Puntaje    Calidad    Sin contaminación   del ...   aire (10) , agua (10) ,   visua l (10) , sonora (10   )    Estado de conservación     Diversidad     Singularidad     Total     40          10     10     10     70                      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    25       SIGNIFICADO        Este  segundo  grupo  de  criterios  de  valoración  tiene  como  objetivo  el  poder  determinar  los   siguientes aspectos:           El reconocimiento del recurso o del atractivo turístico frente a mercados turísticos en el   ámbito local, regional, nacional o internacional.        Cuáles de los bienes culturales o naturales son recursos y cuales atractivos.        Establecer acciones de planificación turística.       Establecer acciones de diseño y caracterización del producto turístico del destino.        Determinar  los  mercados  a  los  cuales  puedo  a cceder  con  acciones  inmediatas  de   promoción y comercialización.          Identificar los recursos sobre los cuales puedo establecer acciones de promoción, para   que motiven desplazamientos hacia el destino donde estos se encuentran.           El significado de un atracti vo turístico está determinado por el conocimiento que se tenga de   éste fuera del entorno local; cuando se identifica y se evidencia este reconocimiento en uno o   más departamentos (se le asigna el puntaje correspondiente al significado regional); en el país    (se  le  asigna  el  puntaje  correspondiente  al  significado  nacional);  en  dos  o  más  países  (se  le   asigna el puntaje correspondiente al significado internacional).             Local    Grado  de  reconocimiento  del  atractivo   dentro del área municipal.    Regional   Grado de  reconocimiento del atractivo en un   área de uno o más departamentos.    Nacional   Grado  de  reconocimiento  del  atractivo   dentro del país.    Internacional   Grado  de  reconocimiento  del  atractivo  en   dos o más países. *          *  Cuando  el  reconocimiento  del  atractivo  se    da  en  dos  regiones  (departamentos,     estados ,   provincias) fronterizas se le debe dar puntaje como regional.        La forma de determinar el significado no está dada por elementos soportados en el criterio de   calidad  ya evaluado en las diferentes variables que lo   componen o en percepciones  afectivas   dada su importancia local. Este se debe determinar frente al conocimiento que de él tengan en   los mercados turísticos otorgándole el carácter de regional, nacional o internacional de acuerdo   a las siguientes fuentes:       \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    26          Guías turísticas nacionales o internacionales virtuales e impresas.           Paquetes  turísticos  diseñados  y  operados  por  agencias  de  viajes  operadoras  locales,   regionales y nacionales.           Paquetes  turísticos  diseñados  por  agencias  de  viajes  mayorista  (touroperad ores)   nacionales o internacionales nacionales.           Revistas especializadas en turismo del orden regional, nacional o internacional virtuales   o impresas.           Periódicos regionales, nacionales o internacionales y sus secciones de turismo.           Mapas y planos turíst icos del orden regional, nacional o internacional.        Cuando un bien cultural o natural no cuenta con reconocimiento frente a mercados turísticos   (Significado  local)    queda  como  un  recurso  turístico  y  como    potencial    componente  de  un   producto turístico que  puede ser  objeto   de acciones de mejoramiento y promoción para que sea   integrado posteriormente en procesos de l a cadena productiva del turismo; si  cuenta    registros   de   diferentes fuentes     de orden regional, naciona l o internacional se le podrá asignar del puntaje   respectivo.        Para efectos de determinar la vocación turística de un destino y la elaboración del inventario de   atractivos  turísticos,  los  municipios  que  cuenten  sólo  con  bienes  de  significado  local  lo  que   habrán realizado es la identificación de recursos turísticos.            Significado    Local     Regional     Nacional     Internacional     Total     6     12      18      30      30         Para la variable de significado los puntajes son totales y excluyentes.           Inserte dos imágenes   originales   en alta resolución registrando   la fuente.   Recuerde elaborar un   archivo con las imágenes empleadas y debidamente referenciadas.      \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    27                     D. CARACTERÍSTICAS RELEVANTES                                        Fuente:   imágen 2  imágen 1  Cálido   En º C  Medio   En %  Frio   Km x   Muy frio   En mm  Extremadamente frio  Subnival  Nival  Clima Entrada  Tarifas  (niños, adultos, adulto   mayor, extranjeros, estudiantes,   con cita previa, otra)   Libre o gratuita Satisfactorio   Compo  nentes  Bueno   Compo  Regular   Compo  nentes  Malo o ruinoso   Estado   en que   Estado del atractivo Ingreso Horario   Acceso  Visita interior  Días y horas de visita Restringido  Permanente   Dias y  horas de visita  Visita exterior \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    28          E. ACTIVIDADES Y SERVICIOS                  F. PROMOCIÓN DEL ATRACTIVO            G.  SERVICIOS  PARA  PERSONAS  EN  CONDICIÓN  DE  DISCAPACIDAD  O   CONDICIONES ESPECIALES (EMBARAZADAS, TERCERA EDAD, OTROS)            H. OTROS      Después de diligenciados los formularios en Excel elabore los cuados de resumen (uno por tipo   de formulario y uno general). Esto s no se deben  pasar a Word o en PDF.   Tipos   Culturales  Artisticas  Físicas  Recreativas  Otras  Tipos   Otros   Actividades  Servicios que se ofrecen en   el lugar donde se encuentra   ubicado el atractivo  (tienda, salas   temporales, audioguías, guianza, baños,   auditorio, restaurante, café-cafetería,   parqueadero, material promocional,   regalos,alojamiento, otros)  Descripción  Descripción Tipos   Otros  Folletos y guías, publicaciones,   TripAdvisor, colombia travel, Google   Maps, pagina web del municipio,   youtube, otros  Descripción Otros  Rampas, baños, sistema de   discapacidad auditiva, sistema de   invidentes, ascensores, puertas,   elementos de movilidad, vehiculopara   personas de movilidad reducida, otro  Descripción Nombre  Dirección / Ubicación  Correo electrónico  Telefono(s)  Página Web  Facebook  Twitter  Instagram  Otra  Referencia Bibliográfica  Redes Sociales  Datos Propietario/Tenedor  \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    29                      ANEXOS                                                                                    N°   Nombre   Ubicación   Fuente  FORMATO ÚNICO PARA LA ELABORACIÓN DE INVENTARIOS TURÍSTICOS.                      FORMULARIO 0.   LISTADO PRELIMINAR  Región / Departamento / Municipio:  \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    30                                                               N°   Nombre   Tipo de bien   Formulario  FORMATO ÚNICO PARA LA ELABORACIÓN DE INVENTARIOS TURÍSTICOS.                      FORMULARIO 00.   CLASIFICACIÓN DE RECURSOS Y ATRACTIVOS  Región / Departamento / Municipio:  \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    31                                  Cuadro General de  Resumen                                                                                                          N°   Nombre   Código   Calificación   Ubicación   Características       Departamento / Municipio    FORMATO ÚNICO PARA LA ELABORACIÓN DE INVENTARIOS TURÍSTICOS.                      FORMULARIO 2. PATRIMONIO CULTURAL  -                                                                                          PATRIMONIO INMATERIAL     CUADRO DE RESÚMEN                              \n  GRUPO DE PLANIFICACIÓN Y DESARROLLO SOSTENIBLE DEL TURISMO    32                                                           \n";
+    const PDF_NAME = "1. Guía_elaboración_inventario ABR 2020.pdf";
+    const CHATBOT_THEME = "Grupo Planificación y Desarrollo Sostenible del Turismo";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Cuál es el objetivo de realizar un inventario de atractivos turísticos en una región, departamento o municipio?","¿Qué se entiende por “inventario” y qué tipos de factores se registran en él?","¿Quién debe integrar el Grupo Técnico y qué funciones cumple dentro del proceso de inventario?","¿En qué consiste el taller de familiarización con la guía y los formatos, y qué debe incluir para poder diligenciar correctamente?","¿Cómo se definen las prioridades para el trabajo de campo (visitas, materiales, equipos y recorridos)?","¿Qué se recomienda hacer para evitar sesgos al calificar los atractivos durante la visita (mirada interdisciplinaria y segunda calificación)?","¿Qué cinco formularios deben diligenciarse y en qué formato (por ejemplo Excel) se consigna la información?","¿Cuándo se usa cada formulario según el tipo de patrimonio o atractivo (1 a 5) y qué ejemplos de denominación se sugieren para el nombre del recurso?","¿Cómo se organiza la categoría de “Festividades y Eventos” (por ejemplo fiestas, ferias y eventos artísticos o deportivos) en el inventario?","¿Qué subtipos se contemplan dentro de “Sitios Naturales” (por ejemplo montañas, aguas lénticas y aguas lóticas) y cómo se clasifican?","¿Cómo se construye el código de 7 números de cada atractivo (incluyendo la parte DIVIPOLA y el orden alfabético final)?","¿Qué variables evalúan los criterios de “Significado” y “Calidad” (por ejemplo reconocimiento, mercados, y contaminación/estado/conservación), y cómo impactan la valoración final?"];
+    const INITIAL_PALETTE = {"primaryColor":"#bde830","secondaryColor":"#caed59","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#bde830","chatBubbleUserText":"#111827","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>
