@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: VOCABULARIO DE COCINA BASICA (6)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>VOCABULARIO DE COCINA BASICA (6)</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "   1   Cocina Básica                   VOCABULARIO DE COCINA BASICA       ABLANDAR  –   ATTENDRIR : Acción que se realiza a las carnes, para hacerlas mas tiernas, sin   utilizar  aparatos  ablandadores,  ya  que  no  esta  permitido.  Se  pueden  utilizar  técnica  como   marinadas,  maduración  a  temperaturas  correctas,  introducción  de  grasa  y  cocción  por  mucho   tiempo.          ACABAR  –   FINIR : Toque final que se le da a las preparaciones o al plato.       ACANALAR    –     CANNELER :  Hacer  pequeños  surcos  en  v,  paralelos  y  poco  profundos  con  la   ayuda de un acanalador (utensilio) o con un cuchillo de chef.       ACECINADO    – BOUCANAGE :  Secado  con     humo  que  se  le  da  a  la  carne  para  conservarla   después de pasarla  por  una  salmuera.  Este  procedimiento  cambia  de  nombre  según  región o   país.        AGRUDULCE  –   AIGRE - DOUX : Combinación de ácido y azúcar.        AGRIO    –     AIGRE :  Calificativo  que  se  da  a  un  alimento  de  a cidez  anormal.  No  aceptable  en   productos  como  la  leche,  pero  que  en  algunas  preparaciones  es  buscado  con  la  adición  de   vinagre o yogur.       AHUMADO  –   FUMAGE : En cocina este método en aplicado para conservar, para cocinar o para   aportar sabor a humo, conserva  por medio de sustancias antisépticas y aporta coloración oscura,   este método puede elaborarse en frió o calor bajo, en seco o medio liquido. En la actualidad se   consigue humo líquido que es más saludable.        AL DENTE: Expresión que designa grado justo de co cción de la pasta alimenticia. También se   emplea para algunas verduras que se quieren crujientes. (Literalmente al diente).       ALARGAR    –     DISSOUDRE :  Añadir  un  líquido  a  una  preparación  demasiado  ligada  o  reducida   para que sea más fluida o atenuar su sabor.       A LBARDILLA    –     BARDE :  Tira  estrecha  de  tocino  graso  con  la  que  se  envuelven  porciones  de   carne, para protegerlos del calor excesivo o para mejorar el sabor y dar presentación. También   se utiliza para cubrir moldes como las terrinas y patés. La albardilla por  lo general es ahumada,   pero cuando es muy fuerte puede afectar el sabor.       ALIGERADOS  –   LIGHT -   ALLÉGÉ : Palabra que designa la disminución de ciertos productos en   una preparación, ej: el azúcar, grasas o aditivos como conservantes.        ALMIZCLADO    –     MUSQUÉ :  Calificativo  que  designa  un  aroma  de  plantas  que  se  hacen  en   infusión o vino con perfumes de frutos secos.        ALMIZCLE  –   MUSC : Sustancia muy olorosa que segregan las glándulas de algunos animales de   caza  o  de  diversas  semillas  cultivada s  en  África  y  en  las  Antillas,  utilizadas  en  la  antigüedad   como especia.      \n   2   Cocina Básica                   AMASAR  –   PÉTRIR : Trabajar harina con uno o varios elementos, con las manos o con la ayuda   de una batidora eléctrica o manual, a fin de mezclar totalmente los ingredientes y obtener u na   masa lisa y homogénea.        APAREJO  –   APPAREIL : Mezcla de varios ingredientes, que sirve para hacer una preparación   en cocina. Pasta o masa en pastelería.        APLASTAR O APLANAR  –   APLATIR : Golpear una pieza de carnicería para reducir su grosor de   forma  uniforme,  lo  que  permite  romper  las  fibras  musculares  haciéndola  más  tierna  y  fácil  de   cocer.         AROMATIZADOR  –   AROMATE : Sustancia olorosa que sirve de condimento, procedente de una   planta,  de la que se pueden emplear distintas partes; hojas, flores, semillas, frutos, raíces, tallos,   bulbos,  algunas  verduras  como:  zanahoria,  apio,  puerro,  cebolla,  atc.  Las  especias  utilizadas   como aromatizantes se prefieren por su perfume.    Nota: especiar sign ifica dar sabor mientras que aromatizar es perfumar.       AROMATIZAR    –     PARFUMER :  Dar  a  un  alimento  o  a  una  preparación  cocinada  un  aroma   suplementario que combine bien con su aroma natural, mediante la adición de un aromatizador.          BEURRE  BLANC     –     MANTEQUILLA    BLANCA:  Reducción  de  vinagre  y  chalotas  a  la  que  se   añade mantequilla. Acompañamiento clásico de pescados.       BEURRE MANIÉ : Harina y mantequilla amasados juntos en crudo, se usa para ligar.       BEURRE MONTÉ   –   MANTEQUILLA MONTADA: En un medio líquido caliente ar omatizado o no,   se emulsiona la mantequilla fría cortada en cubos con al ayuda de un fuete o batidor manual o   eléctrico.        BOUILLON   –   CALDO: Liquido de cocción de las carnes o de las verduras hervidas, utilizadas   para cocer, en lugar del agua.        BOUQUET GA RNI   –   RAMILLETE DE HIERBAS: Selección de plantas aromáticas y especias,   atadas en manojito, que dan sabor y perfume a las preparaciones.       BRIDAR  –   BRIDER : Atar con un cordel de cocina un ave para conservar después de la cocción   su forma o coser con aguja p iezas que se han rellenado, también se amarran carnes dando una   forma cilíndrica pareja.              BRIGADA DE COCINA  –   BRIGADE DE   CUISINE : Grupo de personas en la cocina, que trabaja   en equipo con distintas responsabilidades y un director como jefe o chef. Ta mbién hay brigada   de servicio.        BUFFET : Mesa en la que sobre un mantel se han dispuesto bebidas y platos dulces y salados   destinados a los invitados de una recepción.        CALDO BLANCO  –   BLANC DE CUISSON : Mezcla de agua y harina en la que se añade zumo   de  limón  o  vinagre.  Sirve  para  cocinar  los  c orazones  de  alcachofa.  También  es  utilizado  para    aves y ternera, usando fondo aromatizado.    \n   3   Cocina Básica                      CALDO  CORTO    –     COURT  BOUILLON :  Caldo  de  cocción  ligera  especiada  y  aromatizada,  a   veces con la adición de vinagre o de vino, que se utiliza principalmente para coc er pescados y   crustáceos.  Cuando  este  es  con  base  de  pescados  no  debe  sobre  pasar  los  15  minutos  de   cocción    pues  este  suele  tomar  un  sabor  amargo;  el  caldo  corto  siempre  debe  enfriarse  por   completo.        CARAMELIZAR  -   CARAMELISSER : Dar color en el horno a ci ertos elementos (huesos, verduras   aromáticas), tostándolos sin aportar materia grasa o muy poca cantidad, antes de mojarlos para   elaborar un fondo oscuro. También es caramelizar jugos de carne o frutas y verduras las cuales   tienen un contenido de azúcar co nsiderable. El azúcar al calor se carameliza.        CISELER :  Practicar  unas  incisiones  oblicuas  poco  profundas  en  la  superficie  de  un  pescado   redondo, la operación acelera y permite que penetre la sazón. Mejor fritura. Las verduras y finas   hierbas cinceladas,  se cortan en trozos pequeños o en dados minúsculos.        CLARIFICAR  –   CLARIFIER : Se efectúa para que una sustancia turbia se vuelva límpida y clara.   La clarificación concierne sobre todo a los líquidos pero el término también se emplea para el   azúcar, la mant equilla y los huevos.          COLAR    –     COULER,  PASSER     O  TAMIZAR    -     TAMISER     :  Pasar  por  un  colador  (utensilio  de   cocina,  esférico,  de  maya  fina  metálica  o  de  nylon)  o  un  chino    -     CHINOIS     (colador  de  forma   cónica  con  mango  de  agarre)  para  filtrar  caldos,  salsas,  so pas,  jugos,  o  cualquier  sustancia,   retirando  partículas  sólidas  o  grumos,  dejándolas  mas  lisas.  También  es  escurrir  alimentos   crudos o cocidos para retirar los líquidos de una macerada, el lavado o remojo. Para colar o filtrar,   mucho mas fino, también pued e ser  utilizado un trozo de tela.        CONCENTRADO    –     CONCENTRÉ :  Sustancia  a  la  que  se  le  ha  reducido  su  volumen  para   concentrar su sabor mediante evaporación.       CONFITAR  –   CONFIRE :  Preparar  ciertos  alimentos  para  su  conservación,  cociéndolos   lentamente en su  grasa (confits de pato), cubriéndolos con azúcar o sumergiéndolos en almíbar,   (confitería),  introduciéndolos  en  un  tarro  con  alcohol  o  vinagre,  o  una  preparación  agridulce.   (Chutneys).        CONFITURA    –     CONFITURE :  Preparación  que  se  obtiene  por  cocción  de  frutas  enteras  o  en   trozos en almíbar, y no solo en su jugo.       CORREGIR  –   CORRIGER : Modificar el sabor demasiado intenso de una preparación añadiendo   otra sustancia de sabor contrario.        COULIS :  Salsas  preparadas    con  frutas.  Se  realizan  en  crudo  o  con  unos  pocos  minutos  de   cocción, se suelen servir como acompañamiento de postres. También  ser un líquido de cocción   de verduras o crustáceos utilizado para dar sabor a una salsa o como salsa.          CREMAR  –   CRÉMER:   Añadir   crema de leche líquida a una preparación (puré, sopa, salsa), para   que sea más fácil de ligar y adquiera una textura de velouté, para darle untuosidad y suavizar su   sabor.       \n   4   Cocina Básica                   CROUTON:   Pequeños trozos de pan de formas variadas, asado, dorado en mantequilla,      Frito en aceite o secado en el horno, al natural o frotado con ajo. Los croûtons en dados sirven   para  acompañar  ciertas  preparaciones  (cremas,  sopas,  ensaladas  verdes,  huevos  revueltos,   tortillas)  y  en  formas  mas  grandes  para  salsas  o  purés,  también  como     base  de  pequeños   bocados.       CRUDITÉS:    Verduras  o  frutas  crudas  servidas  como  entremés,  generalmente  cortadas  en   laminas o bastoncitos, y que acompañan a salsas frías.        CUBRIR  O  RECUBRIR    –     ENROBER:    Envolver  en  batido  para  freír  un  alimento  relativamente   rico en agua, para aislarlo durante su c occión en un baño de materia grasa.       También significa recubrir una preparación con salsa, en pastelería cubrir con chocolate.       DECANTAR    –     DÉCANTER:     Trasvasar  un  líquido  turbio  después  de  dejarlo  reposar  el  tiempo   necesario para que las impurezas en susp enso se depositen. Ejemplo la mantequilla clarificada,   un caldo, un fondo, una grasa ya utilizada.        DECOCCIÓN    –     DÉCOCTION :  Extracción  de  los  principios  de  una  sustancia  por  ebullición.  El   producto se sumerge en agua, que hierve más o menos tiempo. De esta   manera se obtienen los   caldos de carne y de verdura, los caldos cortos y los extractos aromáticos.        DECORACIÓN    –     DÉCORATION :  ¿?  Como  se  ha  utilizado  en  las  distintas  épocas  de  la   gastronomía.       DÉPOUILLER   –   DEPURAR O DESOLLAR: Retirar todas las impurezas  que, en el curso de una   ebullición  lenta,  remontan  a  la  superficie  de  un  fondo  o  de  una  salsa,  formando  una  espuma   desagradable. Con la ayuda de una espumadera. También significa retirar la piel de un animal.       DESALAR    –     DESSALER :  Eliminar  de  manera  parcial     o  total  la  sal  que  contienen  ciertos   alimentos conservados en salmuera. El desalado se efectúa mediante inmersión en agua fría.        DESBARBAR  –   ÉBARBER : Cortar con unas tijeras las aletas de un pescado crudo. También se   desbarban los huevos pochados para me jorar su presentación, retirando las partes de clara que   han coagulado de forma irregular.        DESECADO    –     SÉCHAGE :  Uno  de  los  procedimientos  de  conservación  más  antiguos  de  los   alimentos. Antes se hacia al sol y aire libre, para las carnes y pescados, cereal es, bayas y frutas.   El desecado ralentiza la proliferación de microorganismos y el deterioro de este por perdida de   agua, actualmente es llamado deshidratado.       DESECAR    –     DESÉCHER :  Eliminar  el  excedente  de  agua  de  una  preparación  calentándola  a   fuego lento.   Como en el puré de papa antes de añadir leche o mantequilla.       DESGRASAR  –   DÉGRAISSER : Retirar el exceso de grasa de un caldo, un fondo, una salsa o   un recipiente de cocción. Eliminar grasa y tendones a las carnes antes de cocinar. Anteriormente   estas gras as eran utilizada para cocer verduras.         DESGLASAR  –   DÉGLACER : Disolver con la ayuda de un  líquido   (vino, consomé, fondo, crema   de leche liquida, vinagre) los jugos contenidos en un recipiente que ha servido para un dorado,  \n   5   Cocina Básica                   un salteado o una cocción al horno, a fin de obtener un jugo o una salsa. Bajo el efecto del calor,   los jugos caramelizan en el fo ndo del recipiente. Antes se deben desgrasar y luego proceder a   desglasar.       DESHIDRATADOS  –   DÉSHYDRATÉS : Alimentos o preparaciones a los que se les ha extraído   una parte más o menos importante de agua que normalmente contiene.       DESHUESAR  –   DÉSOSSER : Retira r, total o parcialmente, los huesos de una pieza de carne,   ave o res. Désosser también se aplica a retirar las espinas del pescado en crudo para rellenar.         DESMOLDADO  –   DÉMOULER : Operación consistente en retirar una preparación de cocina o de   pastelería, caliente o fría, de un molde.       DESNATAR    –     ÉCRÉMER :  Separar  la  nata  de  la  leche.  Reposando  la  leche  fresca  entera  24   horas. En la industria lechera se efectúa en desnatadoras cent rifugadoras.        DESNERVAR    –     DÉNERVER :  Retirar  la  parte  nerviosa  en  una  pieza  de  carne  cruda,  o  los   tendones de un ave de corral. Esto facilita la cocción y mejora la presentación de las carnes que   se asan, saltean o cuecen a la parrilla.       DESPEPITAR  –   ÉPÉPI NER  -   DENOYAUTER : Retirar las pepitas de ciertas verduras o frutas.   Tomates.        DESPERDICIOS O RESTOS  –   PARURES : Partes de una verdura, de una carne, de un pescado,   de  un  ave,  que  no  se  utilizan  en  una  elaboración  y  que  a  veces  se  reservan  para  su  empleo   po sterior.       DESPIEZAR  –   DÉPECER : Separar con la ayuda de un cuchillo de carnicero, los diferentes trozos   de  una  gran  pieza  de  carnicería  o  un  animal  entero,  ejemplo  una  canal  o  aves  enteras   previamente limpias.       DESPLUMAR  –   PLUMER : Arrancar las plumas de un  ave de corral o de una pieza de caza de   pluma. Siguiendo el procedimiento adecuado.       DESPOJOS  –   ABATS : Elementos comestibles de un animal de matadero, distintos a la carne.   Se dividen en dos despojos blancos y despojos rojos, llamados menudencia.       DESPOJOS   DE AVE  –   ABATTIS : Partes que comprenden: de un lado, la cabeza, el cuello, las   alas y las patas, y del otro, la molleja, el corazón y el hígado, así como los riñones y la cresta de   gallo.       DESTILACIÓN    –     DISTILLATION :  Tratamiento  de  un  líquido  mediante  cal or  para  aislar  sus   constituyentes volátiles y recuperar una parte de ellos por condensación. Operación fundamental   en la fabricación de licores. En alambiques.        DIETÉTICOS  –   DIÉTÉTIQUES : Preparaciones alimentarías  que responden a las necesidades   específi cas de ciertas categorías de consumidores (bebés, mujeres embarazadas, personas de   la  tercera  edad,  deportistas)  o  para  controlar  ciertas  enfermedades  (obesidad,  diabetes,   enfermedades cardiovasculares, estreñimiento, etc.).    \n   6   Cocina Básica                      DIGESTIVO  –   DIGESTIF : Licor o   aguardiente que se consume después de una comida, más por   el  placer  de  la  degustación  que  por  su  eventual  acción  digestiva.  Los  digestivos  de  sirven  en   vaso frío o con un cubito de hielo, en una copa de licor o en una de degustación.       DORAR  –   DORER : Dar c olor hasta una caramelización superficial a una carne, un ave o una   verdura  en  una  fuente,  sartén  o  cacerola,  utilizando  un  cuerpo  graso  a  alta  temperatura.  Su   finalidad en carnes es la concentración o retención de sus jugos como principio de cocción.        DU XELLES : Picadillo de champiñones, cebollas y chalotas rehogado en mantequilla. Se utiliza   como  relleno  (especialmente  en  pescados),  como  guarnición,  complemento  en  salsas,  o   preparaciones llamadas “a la duxelles”.       EDULCORANTE  –   ÉDULCORANT :  Sustancia  química  de  síntesis  que  posee  un  poder   endúlzante  muy  elevado,  pero  sin  valor  nutritivo  ni  aporta  calorías.  Se  destacan  en  el  uso   alimentario: el aspartamo, el acesulfamo, la sacarina y los ciclamatos.        EMINCER :  Cortar  en  lonchas,  láminas  o  ro dajas  mas  o  menos  finas  pero  de  igual  grosor   verduras, frutas o carne.   ÉMINCÉ : Finas lonchas de carne de distintos animales que se asan,   brasean o hierven napadas con una salsa y calentadas de nuevo en el horno.        EMPANAR O REBOSAR    –   PANER : Cubrir con pan    rallado o mezcla de empanar un alimento   antes de freírlo, saltearlo o asarlo. Este procedimiento se hace con el fin de aportar sabor, textura   crujiente e impedir que el alimento absorba grasa.        EMULSIÓN  –   ÉMULSION : Preparación obtenida al dispersar un líq uido en otro con el que no se   mezcla. Este procedimiento requiere de un agente emulsionante para estabilizarla y que no se   separe. Ejemplo la mayonesa (emulsión en frío), salsa holandesa (emulsión en caliente).        EMULSIONANTE    –     ÉMULSIFIANT :  Aditivo  alimentario  empleado  para  que  las  emulsiones   cuajen  y  se  estabilicen  con  mayor  facilidad.  Los  emulsionantes  naturales  comprenden   esencialmente dos grupos. Las lecitinas se extraen de las almendras y semillas como la soya y   de la yema de huevo.        ENFRIAR    –     REFROIDIR :  Bajar  rápidamente  la  temperatura  de  una  preparación  que  debe   consumirse fría o para hacer un principio de pasteurización.         ENGRASAR  –   GRAISSER : Untar con un cuerpo graso una lata de pastelería o el interior de un   molde  para  evitar  qu e  las  preparaciones  se  peguen  durante  la  cocción  y  para  facilitar  el   desmoldado.        ENHARINAR  –   FARINER : Cubrir un alimento con harina, o espolvorear con harina un molde o   una superficie de trabajo.        ENMANTEQUILLAR    –     BEURRER :  Acción  de  untar  con  mantequill a  un  utensilio  o  papel   sulfurizado, o extender mantequilla sobre pan.        ENMOLDAR    –     MOULER :  Introducir  una  sustancia  fluida  o  pastosa  en  un  molde,  cuya  forma   adoptará al cambiar de consistencia mediante cocción, enfriamiento o congelación.   \n   7   Cocina Básica                      ENOLOGÍA  –   OENOL OGIE : Ciencia que estudia la fabricación y conservación de los vinos. El   enólogo es el profesional en la materia.       ENRIQUECER  –   ENRICHIR : Añadir ciertos constituyentes a los productos alimentarios en una   cantidad importante, como nutrientes, vitaminas o mi nerales. Esto con la intención de dieta o por   motivo de pérdida en el proceso de elaboración. Alimentos “enriquecidos con”.         ENSALADA  –   SALADE : Plato de verduras crudas o cocidas, de alimentos fríos, aliñado con una   salsa fría (vinagreta), que se sirve c omo entremés, entrante o antes de comer quesos.       ENTRANTE    –     ENTRÉE :  Primer  plato  de  un  menú.  En  el  orden  clásico  se  degusta  en  tercera   posición, después de los entremeses (o las sopas y cremas).         ENTREMESES    –     HORS - D  CEUVRE :  Primer  plato  de  una  comida.  Los     entremeses  deben   estimular el apetito. A veces se confunden con los snack de aperitivo, y se compone entonces   de un surtido variado. Los hay fríos y calientes.       ESCALDAR    –     BLANQUEAR    -     BLANCHIR :  Sumergir  un  alimento  en  agua  hirviendo  para   endurecer sus tejidos, eliminar las impurezas de la superficie, facilitar el pelado, aflojar sus fibras   o eliminar un sabor acre.        ESCALIVAR: Voz utilizada por la cocina catalana para elaborar hortalizas cocid as al rescoldo o   asadas  al  horno,  servidas  sin piel  ni  semillas  y  simplemente aliñadas  con  sal, aceite,  vinagre,   pimienta y, a veces, un poco de ajo picado. Pimentones escalivados.        ESCALOPA  -   ESCALOPE : Loncha fina, tierna y magra que se obtiene por lo ge neral del solomito   o carnes similares en composición.        ESCALOPAR    -     ESCALOPER :  Cortar  en  lonchas  más  o  menos  finas,  en  sentido  oblicuo,  una   pieza de carne, un filete de pescado, carne de bogavante o ciertas verduras (cabezas de setas,   fondos de alcachofa).       ESCAMAR O DESESCAMAR  –   ÉCAILLER : Retirar las escamas de un pescado.        ESCARLATA  {A  LA}    –     ÉCARLATE :  Nombre  de  las  carnes  de  cerdo  o  res  sumergidas  más  o   menos tiempo en una salmuera con sal nitro, lo cual les da un color rojo vivo; luego se cocinas   en agu a.       ESCURRIR  –   ÉGOUTTER : Dejar que un alimento crudo que se acaba de lavar, o un alimento   cocido o refrescado bajo el agua, suelte el líquido retenido.       ESENCIA  –   ESSENCE : Sustancia aromática concentrada, utilizada para intensificar el sabor de   una prepara ción.       ESPECIA  –   ÉPICE : Es un producto vegetal, de cualquiera de sus partes, que usan deshidratados   y  procesados  para  realzar,  enriquecer  el  gusto  y  el  aroma  de  los  alimentos,  los  hace  más   apetitosos y algunos ayudan a la digestión.    \n   8   Cocina Básica                   Es  difícil  establecer    la  diferencia  entre  especia,  condimento  y  hierba  aromática,  porque  tanto   unos como otros sirven para aromatizar y condimentar.       ESPOLVOREAR  –   SAUPOUDRER : Esparcir sobre la superficie de una preparación o un plato   una sustancia en polvo o un elemento picado, cortado finamente o rallado.       ESPUMAR  –   ÉCUMER : Retirar la espuma que se forma en la superficie de un líquido o de una   preparación  que  se  está  cociend o  (caldo,  confitura,  salsa).  Esta  operación  se  repite  cuantas   veces sea necesario en una cocción prolongada. Se hace con una espumadera.       ESTABILIZANTE  –   STABILISANT : Aditivo alimentario que sirve para mantener una consistencia   determinada  de  un  producto.    Los  estabilizantes  se  suelen  asociar  con  un  emulsionante,  un   espesante o un gelificante.        ESTERILIZACIÓN    –     STÉRILISATION :  Procedimiento  de  larga  conservación,  obtenido  por  la   destrucción de la totalidad de los microorganismos y enzimas susceptibles de alt erar un alimento.   También llamada “APERTIZACIÓN” por su inventor Nicolas Appert.       EVISCERAR  –   ÉVISCÉRER :  Retirar  manual  o  mecánicamente  las  entrañas,  con  las   menudencias, de un animal de carnicería, un ave de corral, un pescado o una pieza de caza.       EXPRIMIR  –   EXPRIMER : Eliminar mediante presión el jugo, el agua o el líquido sobrante de un   alimento.       EXTRACTO    –     EXTRAIT :  Producto  concentrado  procedente  de  una  reducción  más  o  menos   importante de un fondo de carne, o de una cocción de pescado o de verdur as.        FARSA    –     FARCE :  Mezcla  de  alimentos  crudos  o  cocidos,  picados  más  o  menos  finamente  y   sazonados,  que  utiliza  para  rellenar  alimentos.  La  sazón  es  determinante:  especias,   aromatizantes, finas hierbas, licor, fumet, esencia de trufa, sal y pimienta, y a   veces frutos secos.       FILETE    –     FILET :  Pieza  de  corte  largo  y  delgado  en  carnes,  pechuga  de  aves  y pescados  sin   espinas.       FILETEAR  –   EFFILER : Consiste en cortar en láminas finas en sentido longitudinal con un cuchillo   de cocina o un instrumento especial.       F INAS HIERBAS  –   FINES HERBES : Hierbas aromáticas, por lo general verdes, que se utilizan,   recién cortadas o picadas, en ramillete o individual. Perejil, orégano, timillo, estragòn, romero,   laurel, hinojo, eneldo, etc.       FLAMBEAR Y CHAMUSCAR  –   FLAMBER : Flambe ar es rociar una preparación con licor (coñac,   armañac, calvados, ron, whisky) y prender fuego para intensificar su gusto. El termino francés   “Flamber” quiere decir también chamuscar, pasar un ave por la llama para terminar de limpiarla.       FUNDIR  –   FONDRE :  Aplicar calor a un producto (chocolate, azúcar, un cuerpo graso sólido, etc.)   de modo que se vuelva líquido.       \n   9   Cocina Básica                   GASTRIQUE : Reducción de vinagre y azúcar que sirve para elaborar las salsas calientes que   acompañan preparaciones con frutas como el pato a la na ranja.        GELIFICANTE    –     GÉLIFIANT :  Aditivo  alimentario  que da a una  preparación  la  consistencia  de   una gelatina. Los principales gelificantes son las pectinas, el ácido algínico y sus derivados, el   agar - agar, los carragenatos, el almidón, y al harina de alg arrobo.        GLASA    –     GLACE  DE     VIANDE :  Sustancia  con  consistencia  de  jarabe,  obtenida  mediante   reducción de un fondo no ligado de carne, de ave o, más raramente, de caza o pescado.       GLASA DE AZÚCAR  –   GLACE DE SUCRE : Preparación a base de azúcar lustre, utiliza da como   glasa en pastelería y en confitería.       GLASEADO  –   GLACÉ : Gelatina líquida a base de mermelada de albaricoque tamizada o jalea   de grosella, a la que se suele añadir un gelificante. El glaseado da un acabado brillante a varios   postres, también ejerce  una acción protectora, evitando que las frutas se oxiden o sequen.       GLASEAR    –     GLACER :  Obtener  una  capa  brillante  y  lisa  en  la  superficie  de  un  producto  o   elaboración. ABRILLANTAR  –   LUSTRER:        GRANEAR    –     GRAINER :  Carecer  de  cohesión  y  formar  una  multitud  de  granos  pequeños.  La   palabra se aplica a las claras de huevo que se deshacen. Este problema se debe a presencia de   grasa  en  el  material  utilizado.  También  se  aplica  al  azúcar  cocido  que  tiende  a  cristalizar  y  a    volverse turbio o una pasta de fondant  que se ha calentado demasiado.        GRATINAR  –   GRATINER : Cocer o terminar de cocer una preparación, a fin que presente una   superficie  dorada  que  se  puede  realizar  en  el  horno  con  una  cocción  lenta,  o  bajo  el  grill  o   sa lamandra para un acabado rápido, a menudo cubierta de una capa de queso,  pan rallado o   una salsa como la Mornay (bechamel mas queso).       GUARNICIÓN  –   GARNITURE : Acompañamiento simple o compuesto de una preparación o en   el plato el acompañamiento de la carne , ejemplo: papas, arroz, verduras, etc.       HERVIR  –   BOUILLIR : Llevar un líquido (agua, fondo, o caldo corto) a ebullición y mantenerlo en   ella, a fin de cocer los alimentos que se han sumergido en el mismo.       HOMOGENIZACIÓN    –     HOMOGÉNÉISATION :  Técnica  mecánica     baja  un  fuerte  agitado,  que   consiste en repartir e integrar todas las partículas de una mezcla para que su textura sea pareja.        INCORPORAR    –     INCORPORER :  Añadir  un  alimento  a  una  preparación  o  a  un  aparejo  y   mezclarlos.       INFUSIÓN  –   INFUSER : Verter un líqu ido hirviendo sobre una hierba aromática y esperar a que   cargue de los aromas de ésta. También se hace infusión con otros productos alimenticios que   puedan aportar sabor o color.       INSERIR  –   INCISER : Practicar un corte más o menos profundo con la ayuda de u n cuchillo bien   afilado. Como en el vientre del pescado para vaciarlo, en una pieza grande carnica para introducir   ajo. Ciseler en pescado a la parrilla o frito. Incisión.    \n   10   Cocina Básica                      INTENSIFICAR  O  REALZAR    –     REHAUSSER :  Reforzar  el  sabor  y  aroma  de  una  preparación   a ñadiendo  sustancias  concentradas  o  fuertes  y  picantes,  ejemplo  glasa  de  carne.  También   reduciéndola al calor por evaporación de liquido y concentración de sabor.        JARABE    –   SIROP : Líquido que se obtiene a partir de un almíbar aromatizado con esencias o   alc oholes, o el que se añade zumo de fruta o infusión antes de llevarlo a la densidad requerida.        JUGO  –   JUS : Líquido obtenido por lo general presionando un tejido animal o vegetal. Los jugos   o zumos de frutas. El asado o la cocción de las carnes liberan sus   jugos, que se caramelizan en   el fondo del recipiente.        JUGOS DE COCCIÓN  –   JUS DE CUISSON : Líquido más o menos rico en sabores y principios   nutritivos que se forma en el curso de la cocción de una carne o una verdura. Abundante sobre   todo cuando la cocció n se hace tapada.       LEGUMINOSA    –     LÉGUMINEUSE :  Planta  que  lleva  frutas  en  una  vaina  (habas,  alubias,   guisantes, etc.). El término también se aplica en botánica a la soja y al cacahuate.       LIGAR  –   LIAISON ET LIER : Acción destinada a dar consistencia a un líqui do (crema, velouté,   salsa).       LIMPIAR Y PURGAR  –   DÉGORGER : Poner en remojo más o menos tiempo en agua fría (con o   sin  vinagre),  renovándola  varias  veces,  una carne,  un  ave,  un  pescado  o  unos  despojos  para   eliminar sus impurezas y su sangre, o para que desap arezca el sabor a limo de un pez de río.      Se  purgan  ciertas  verduras  (sobre  todo  el pepino  y  al  col)  espolvoreándolas  con  sal para  que   pierdan una parte de su agua natural y sean más digestivas.        LIOFILIZACIÓN  –   LYOPHILISATION :  Procedimiento  de  conservación  basado  en  la   deshidratación  mediante  fr ío,  llamado  también   ̈criodesecación ̈.  El  tratamiento  conlleva  tres   etapas  sucesivas:  ultra  congelación    clásica,  calentamiento  al  vacío  para  conseguir  su   sublimación  (de  estado  solidó  a  gaseoso  sin  pasar  por  líquido)  y  finalmente  un  calentamiento   rápido pa ra eliminar el agua residual. Este producto contiene en su resultado final de 1 al 2% de   su agua inicial, conservando todo su sabor y cualidades nutritivas. Ejemplo el café liofilizado.         LUT : Mezcla de harina y agua que sirve para pegar, inmovilizar o se llar recipientes, como una   olla y su tapa, este con el calor se endurece.        MACERAR    –     MACÉRER :  Sumergir  elementos  crudos,  secos  o  confitados  en  un  líquido   (aguardiente,  licor,  mezcla  agridulce,  jarabe,  vino)  para  que  se  impregne  de  su  perfume.  La   operación   se realiza sobre todo con frutas. También marinar o adobar.        MADURACIÓN    –     MATURATION :  Transformación  lenta  que  experimenta  un  producto  bruto  o   elaborado para que pueda consumirse o dar lugar a una fabricación posterior.        MANCHONNER :  Limpiar,  con  al  ayud a  de  un  cuchillo  de  deshuesar,  el  extremo  de  un  hueso   (chuleta de cordero, de ternera, de res, muslo de ave), para mejorar su presentación.      \n   11   Cocina Básica                   MANIER   –   TRABAJAR: Trabajar uno o varios ingredientes en un recipiente con la ayuda de una   espátula para que queden   homogéneos. Palabra utilizada para trabajar la mantequilla.        MARINADA Y ADOBO  –   MARINADE :  Mezcla  bien   condimentada de aromatizantes o variadas   especias en un medio líquido  en el que se sumergen durante determinado tiempo carnes, caza,   pescado, verduras o frutas. El adobo permite  enriquecer el sabor   y aromatizar. Propicia que las   fibras de ciertas carnes sean más tiernas, y en último lugar, conservar más tiempo los productos   que pueden ser crudos o cocidos,   también se puede cocinar en el adobo.       MARINAR    –     MARINER :  Sumergir  en  un  medio  líquido  aromático  por  determinado  tiempo  un   ingrediente.       MECHAR Y LARDEAR    –   LARDER ET ENTRELARDER : Añadir tocino a una carne para darle   jugosi dad, también aporta sabor, más aun, cuando el tocino es ahumado.     Mechar consiste en hundir en varios lugares o centro de una pieza de carne, con la ayuda de   una  mechadora,  unos  bastoncillos  más  o  menos  gruesos  de  tocino  graso  o  magro,   salpimentados.  Tambi én  se  puede  hacer  con  jamón.  Este  procedimiento  mejora  el  sabor  y  la   presentación al hacer el corte.    Lardear significa cubrir con finas albardillas de tocino las piezas de carne, que luego se suelen   sellar para dorar, de este modo las carnes magra se impre gnas con grasa. La operación también   se realiza con ave, que después hay que bridar.        MEDALLÓN  –   MÉDAILLON : Pieza de forma redonda u ovalada, más o menos gruesa, obtenida   a  partir  de  una  carne (centro  de  chuleta,  filete  de  ave,  turnedós), un  pescado o  en    crustáceo,   incluso foie gras. Esta forma se suele lograr bridando la pieza para que se conserve después de   la cocción.        MENUDENCIAS   –   ABATTIS : Menudos de ave tales como cogote, alas, estomago, etc.       MERMELADA  –   MARMELADE : Preparación de frutas, enteras o  cortadas en trozos, maceradas   durante  24  horas  en  el  azúcar  en  que  se  van  a  preparar,  cocidas  hasta  que  adquiera  la   consistencia  de  puré.  Esta  denominación  de  mermelada  originalmente  se  suele  dar  a  la   preparación  con  cítricos,  aunque  hoy  día  se  hacen  de  cu alquier  fruta  e  incluso  verduras.  No   confundir con gelée o jalea la diferencia esta en la textura final.         MESCLUN : Mezcla de hojas jóvenes de hierbas para ensalada.       MEZCLAR  –   MÉLANGER : Reunir ingredientes sólidos o líquidos en un recipiente de preparación   integrarlos con la ayuda de un utensilio, equipo, o a mano.        MIJOTER : Cocer alimentos a fuego lento, generalmente en salsa, o terminar su cocción.       MIREPOIX : Preparación creada en el   siglo XVIII por el cocinero del duque de Lévis - Mirepoix. La   mirepoix contiene verduras, jamón crudo o tocino magro cuando la preparación es en graso y   una guarnición aromática. Enriquece la cocción de carnes, caza y pescados, los fondos, sopas,   caldos y a lgunas salsas. Cada región y cada país tienen su variante. En la cocina internacional   la  más  conocida  es  la  mirepoix  francesa,  que  lleva  una  mezcla  de  2  partes  de  cebolla,  1  de   zanahoria y 1 parte de apio, los ingredientes se cortan de acuerdo con el tiemp o de cocción, si   es prolongado, a temperatura baja, se cortan más grades, como en el caso de los fondos. Si el  \n   12   Cocina Básica                   tiempo es corto o un proceso rápido, el corte debe ser pequeño. Hay que tener en cuenta que   cuando la mirepoix se va a dorar para aportar color,  el corte de los ingredientes debe ser parejo,   de  lo  contrario  unos  más  pequeños  que  otros  se  doraran  más  rápido  y  se  pueden  quemar   aportando sabor amargo no deseado.       MISE  EN  PLACE :  Conjunto  de  operaciones  que  se  realizan  antes  de  la  preparación  de  cada   se rvicio. Cada función en la brigada tiene una mise en place especifica de acuerdo con el puesto   en  el  que  es  responsable.  El  éxito  en  la  elaboración de  las  recetas  y  el  menú  en  si,  depende   especialmente  de  una  buena  mise  en  place.  Esta,  parte  de  reunir  prim ero  todos  los  insumos   necesarios, los cuales deben ser debidamente lavados, pelados, picados y algunos, previamente   cocidos o precocidos; también se hace una mise en place de los equipos y utensilios necesarios   para cada puesto.        MITONNER : Cocer a fuego l ento y por mucho tiempo rebanadas de pan en una sopa o un caldo,   para que el pan absorba el líquido y la sopa adquiera consistencia. Puede ser un sinónimo de   mijoter.        MOJAR  –   MOUILLER : Añadir un líquido en una preparación para cocinarla o para elaborar u na   salsa,  el  jugo,  etc.  El  líquido  puede  ser  agua,  leche,  caldo,  un  fondo,  vino.  A  esta  operación   también se le llama “bañar”.        MOLDEAR O DAR FORMA  –   FORMER : Dar la forma final a una preparación, a veces antes de   la cocción. Se moldea con utensilios espec iales para cada finalidad (terrinas, patés, productos   de pastelería, piezas enteras, etc.) y con palillos, bridar con piola, en volver con un lienzo o papel   parafinado o aluminio, etc.).       MONDER   –   PELAR O MONDAR: Retirar la piel de una fruta (almendra, mel ocotón, tomate), Esta   operación se realizar con el tomate escaldado.        MONTAR    –   MONTER : Trabajar con el batidor manual o eléctrico claras de huevo y crema de   leche, para incorporar aire a la mezcla, aumentando su volumen y le da una consistencia y un   color   específico. También se montan las emulsiones, en caliente o en frío, se monta igualmente   una salsa con mantequilla en cubos para que quede más lisa o más brillante.        MOSAICO    –     MOSAÏQUE :  Decoración  realizada  en  la  parte  superior  de  una  terrina  o  una   galan tina, con elementos de distintos colores, cortados en forma de círculo, cuadrado, estrella,   triángulo, etc.        NAGE : Caldo corto aromatizado, en el que se cuecen moluscos o crustáceos (vieiras, cangrejo   de río, langostas o bogavantes). Se sirven calientes o   fríos, realzados con un condimento o crema   líquida. Entonces se dice que están “á la nage” `(nadando).       NAPAR  –   NAPPER : Verter una salsa, un coulis, una crema, etc., sobre un alimento, de modo   que lo cubra lo más completo y uniformemente posible. Esta palabra se aplica cuando se quiere   revisar si una salsa está en la consistencia deseada, untando de salsa el reverso de un a cuchara   y esta queda cubierta.       \n   13   Cocina Básica                   NATA  –   CRÉME FRAICHE : Crema de leche fresca, concentrado de materia grasa de la leche   de consistencia untuosa, generalmente es requerida en las preparaciones líquida o espesa, está   ultima es montada un poco para mejorar s u consistencia.       NÉCTAR  –   NECTAR : Jugo o puré de frutas, al que se añade agua y azúcar y, a veces, aditivos   alimentarios. En botánica, el néctar en es líquido dulce segregado por las flores y transformado   en miel por las abejas.        NIEVE  –   À LA NEIGE : Nombre que se da a las claras de huevo batidas hasta una consistencia   firme (a punto de nieve).       OLEAGINOSAS    –     OLÉAGINEUX :  Nombre  genérico  de  las  frutas,  semillas  y  plantas  ricas  en   materias  grasas  y  proteínas  vegetales:  almendras,  maní,  avella nas,  aceitunas,  pistachos,   semillas de sésamo, sola, girasol, etc.       ORGANOLÉPTICO  –   ORGANOLEPTIQUE :  Se  dice  de  la  impresión  que  se  adquiere   directamente a través de los órganos de los sentidos y que determina la apetencia o rechazo por   un alimento.        PANAC HÉ : Mezcla de dos bebidas en cantidades más o menos iguales. La mayoría de las veces   se  trata de  cerveza  y gaseosa,  pero  el término  se  puede aplicar a  otras  bebidas.  En  cocina  y   pastelería, el panaché también es una mezcla de dos o más ingredientes (verdur as, mariscos)   de color, sabor o forma diferente.       PANACHER : Mezclar dos o más ingredientes de color, sabor o forma diferente. Es una técnica   de  preparación  muy  corriente  en  los  helados  y  bombas  heladas,  donde  se  alternan  bolas  de   helados de diferentes colo res y sabores.        PANADE :  Aparejo  a  base  de  harina,  utilizado  para  ligar  las  farsas  de  quenelles,  rica  o  no  en   materia  grasa.  Otros  aparejos  de  panade  se  realizan  empleando  como  base,  además  de  la   harina, yemas de huevo, pan, pulpa de papa o arroz. También    se llama panade a una especie   de sopa o papilla elaborada con pan, caldo, leche o agua y mantequilla.       PAPILLOT  –   PAPILLOTE : Pequeña decoración de papel blanco cortado con la que se cubre el   hueso de una chuleta de cordero o de ternera, muslo de un ave, et c. También se llama papillot a   un alimento cocido y servido en un envoltorio de papel parafinado o de papel de aluminio.        PAPILLOTE  –   MANCHETTE : Adorno de papel blanco, mayor que el papillot, que se coloca, en   el momento del acabado, en el hueso sin carne   de ciertas piezas como el pernil de cerdo.       PAPILLOTE   –   (CARAMELO O BOMBÓN): Golosina envuelta en un papel brillante de color vivo,   con los extremos retorcidos.       PASTEURIZACIÓN  –   PASTEURISATION :  Tratamiento  térmico  de  conservación  de  los   alimentos, en el  que se calientan a 65 - 85 °C, más o menos tiempo y luego se baja la temperatura   rápidamente. Este nombre se debe a su inventor Louis Paster, quimico y biólogo francés.       PELAR  –   PELER : Eliminar la capa superficial de un alimento. Escalfado se llama monder.      \n   14   Cocina Básica                   PELLIZCO    –     PINCÉE :  Cantidad  muy  pequeña  de  un  ingrediente  en  polvo,  en  granos  muy   pequeños o en fragmentos pequeños, que se coge entre los dedos pulgar e índice. Existen otras   palabras con similitud, una punta (de un cuchillo), una gota de aceite, un hilil lo de vinagre, una   pizca de nuez moscada, una brizna de tomillo, etc.       PERSILLADE : Mezcla compuesta por perejil finamente picado y ajo, que se añade al final de la   cocción. Algunas veces agregando miga de pan fresca tamizada o pan rallado.       PICAR  –   HACHER :   Reducir un alimento a trozos muy pequeños con la ayuda de un cuchillo o   de una picadora, para obtener una preparación más o menos fina o para una decoración.       PICNIC  -   PIQUE - NIQUE : Comida que se toma al aire libre, que puede ser más o menos refinada,   rúst ica o abundante. Los platos son por lo general fríos y fáciles de transportar.              PINCHAR  –   PIQUER : Introducir en la carne, sin atravesarlas, bastoncillos de tocino.       PLAQUER : Disponer en una placa de asar, por lo general untada de mantequilla, elementos para   cocer como carne, pescados enteros o en filete, verduras, etc.       PLUCHES :  Puntas  de  las  hierbas  aromáticas,  utilizadas  frescas  (perejil,  estragón,  menta)  o   blanqueadas (ap io en rama, estragón). Se cortan las hojas con unas tijeras en último momento   ya que pierden su aroma que es volátil.        POCHAR O ESCALFAR  –   POCHER : Cocer alimentos en abundante líquido, manteniendo una   ebullición muy ligera e incipiente. El pochado es una  cocción suave.        POUSSE - CAFÉ : Denominación de un aguardiente o un licor que se sirve al final de la comida,   en una copita o en la tasa de café vacía, todavía caliente, lo cual desarrolla el sabor y el aroma   de la bebida alcohólica.        PRECOCCIÓN    –     PRÉCUISSON :  Primera  cocción  muy  rápid a  aplicada  a  un  alimento,  y  que   modifica el aspecto de éste.       PREPARAR  –   PARER : Suprimir las partes no utilizables de una carne (nervios, grasa, huesos,   cartílagos) un ave, un pescado o una verdura en el momento de su preparación. Hace parte de   la mise en  place.       PROBAR  –   GOÜTER : Identificar el sabor de una preparación o alimento desconocido o llevar a   la boca una pequeña cantidad de un líquido o alimento, para comprobar  si la preparación esta   quedando como se desea, en sabor y textura, se prueba con frecu encia para controlar la sal y la   pimienta.        QUADRILLER : Marcar la superficie de un alimento en la parrilla o grill (por lo general una carne   o un pescado) con varias líneas que se cruzan formando rombos.       QUEMAR  –   BRÜLER : Cocer un alimento hasta que se ca ramelice por calor excesivo. No resulta   apto para el consumo cuando se carboniza a mas de 300 c . créeme brulée.    \n   15   Cocina Básica                      RALLAR  –   RAPER : Transformar un alimento sólido en pequeñas partículas, por lo general con   un rallador.        RAYAR  –   RAYER : Trazar con la punta d e un cuchillo o los dientes de un tenedor una decoración   en pastelería o panadería.       REALZAR  –   RELEVER : Reforzar la sazón de una preparación añadiendo un condimento o una   especia.        REBAJAR  –   DÉCUIRE : Disminuir el grado de cocción de un jarabe de azúcar, de una confitura   o de un caramelo añadiéndole, poco a poco y removiendo, la cantidad de agua fría necesaria   para que tenga una consistencia melosa.        RECALENTAR  –   RÉCHAUFFER : Llevar a la temperatura d e degustación un alimento ya cocido,   pero que se enfrió.         RECTIFICAR  –   RECTIFIER : Corregir la sazón de un alimento al finalizar la preparación después   de probarlo, perfeccionar su sabor o hacer resaltar mejor un sabor particular. Sobre todo sal y   pimient a.       REDUCCIÓN  –   RÉDUCTION : Concentración o espesamiento de un líquido, de una salsa o de   una  cocción,  mediante  ebullición  y  evaporación  de  ciertos  elementos.  La  finalidad  en  que  el   líquido sea más sabroso, con más cuerpo o más untuoso.        REDUCIR  –   RÉDUIRE :   Disminuir el volumen de un líquido (fondo, salsa, jugo) por evaporación,   manteniéndolo  al  calor,  lo  cual  aumenta  su sabor mediante  la  concentración  de  los  jugos  con   más untuosidad y consistencia.        REFINAR    –     RAFFINER :  Transformar  un  producto  bruto  o  ya  tr abajado,  en  un  producto   químicamente puro. Permite suprimir las impurezas, los olores, los colorantes o los elementos   indeseables de un producto.       REFRESCAR  –   RAFRAÏCHIR : Verter agua fría (con hielo) sobre un alimento que se acaba de   blanquear o cocer en a gua, para enfriarlo rápido y parar su cocción.       REHOGAR  –   ÉTUVER : Cocer un alimento a fuego lento, tapado, con muy poca materia grasa y   líquido, o solo en sus propios jugos.       RELLENAR  –   FARCIR : Llenar el interior de carne, aves, pescado, mariscos, verduras , panes,   huevos o frutas con una farsa grasa o magra, un salpicón, un puré o cualquier aparejo, por lo   general antes de la cocción, pero también preparaciones frías.        REMOVER  –   REMUER : Mezclar una preparación con una espátula o con un batidor, durante su   elaboración o su cocción,  para que los ingredientes no se aglutinen, no formen grumos, no se   peguen al recipiente, etc.      \n   16   Cocina Básica                   REPOSAR    –   REPOSER : Reservar ingredientes o aparejos por lo general en la nevera más o   menos tiempo ante de su preparación. Se suele de jar en reposo muchas masas en pastelería y   panadería.        RESCOLDO (AL)  –   CENDRE (SOUS LA) : Modo de cocción rústico, donde el producto alimenticio   es envuelto y tirado a las brasas directamente o cenizas prendida, suele practicarse con papar   enteras, plátano s vedes o maduros, yuca, e incluso un ave cubierta con una capa de arcilla.       RESERVAR  O  GUARDAR    –     RÉSERVER :  Apartar  ingredientes,  mezclas  o  preparaciones   destinadas a utilizarse posteriormente, en frío o en caliente. Tapadas o envueltas para evitar que   se resequen o dispersen sus aromas en la nevera.       RESTOS  –   ABATTIS : Conjunto de sobras de carne, de ave, pesc ado o verduras que se pueden   reutilizar.       ROCIAR  –   ARROSER : Mojar ligeramente, una preparación en el curso de su cocción en el horno   o en el asador, utilizando la grasa fundida y el jugo que produce. Esta operación, se repite varias   veces, con el fin de ev itar que la comida se seque en su superficie y aporta melosidad a la carne.       ROUX :  Mezcla  de  harina  y  mantequilla  en  proporciones  iguales,  cocida  más  o  menos  tiempo   según  la  coloración  deseada  (blanco,  dorado  u  oscuro),  utilizada  como  ligazón  en  distintas   salsas.       SABORIZANTE: Aditivo alimentario destinado a realzar el sabor y/o el sab or de los alimentos. El   más conocido es el glutamato, muy utilizado en la cocina asiática.        SAISIR : Comenzar la cocción de un alimento poniéndolo en contacto con una materia grasa muy   caliente  o  un  líquido  hirviendo,  a  fin  de  provocar  la  coagulación  insta ntánea  de  las  partes   superficiales.        SALMUERA  –   SAUMURE : Solución salina en la que se sumergen carnes, pescados o verduras   para conservarlos.       SALTEAR  –   SAUTER : Cocer a fuego vivo, en poca grasa, destapado y sin líquido.       SANGLER :  Rodear  de  hielo  picado  y     sal  gruesa,  bien  apretados,  un  molde  estancado  en  un   recipiente.  Esta  operación  permite  obtener  la  coagulación  de  un  aparejo  de  bomba  y  su   conservación momentanea.       SÁPIDO  –   SAPIDE : Calificativo que designa a lo que tiene sabor, en sentido positivo y agra dable   de razonamiento.        SAZONAR  –   ASSAISONNER : Acción de incorporar ingredientes (especias, sal, pimienta, hierbas   aromáticas,  condimentos,  aceite,  vinagre),  en  cantidades  variables,  para  aportar  un  sabor   particular a una preparación o aumentar la intensi dad gustativa sin desnaturalizar los distintos   alimentos que la componen.        SINGER : Espolvorear con harina elementos salteados en un cuerpo graso antes de añadirles un   líquido claro (vino, caldo, agua) para ligar la salsa.   \n   17   Cocina Básica                      SOBAR  Y  AMASAR    –     MALAXER :  Trabaj ar  sobando  con  la  mano  o  con  una  espátula,  una   sustancia  para  ablandarla  o  para  que  sea  más  flexible.  También  se  soban  los  adobos  para   impregnar la pieza de carne.       SOFREÍR  –   SAUTER : Cocer en un cuerpo graso, lentamente, una o varias verduras, cortadas   muy   pequeñas, para que suelten sus jugos, y concentrarlos en la grasa.       SUAVIZAR  –   ADOUCIR : Atenuar los matices acre, áspero, amargo, agrio, ácido o el exceso de   sazón  de  una  comida  añadiendo  un  poco  de  agua,  leche,  crema  de  leche,  azúcar,  etc.,  o   prolongando   la cocción.       SUCULENTO  –   SUCCULENT : Calificativo que de aplica a un alimento que contiene mucho jugo   o agua. Por extensión, a un manjar que procura una gran sensación de placer. En este sentido,   la palabra se convierte en sinónimo  de sabroso, exquisito o   delicioso.       TIERNA  –   TENDRE : Calificativo que designa una carne que se corta fácil son los dientes, o las   verduras blandas.       TORNEAR    –   TOURNER : Dar forma determinada y regular a un elemento con la ayuda de un   cuchillo de cocina. Técnica con varios significados en francés.       TRABAJAR  –   TRAVAILLER : Mezclar con mayor o menor vigor los elementos de una preparación   pastosa  o  líquido,  ya  sea  para  incor porar  los  ingredientes,  o  incluso  para  darle  cuerpo  o   untuosidad.        TRINCHAR    –     COUPER :  Cortar  carnes,  aves,  piezas  de  caza  o  pescados  para  servirlos  en  la   mesa si están cocidos, o bien para ciertas preparaciones si están crudos.       TRITURAR    – TRITURE :  Aplasta r  o  desmigajar,  con  la mano  o  con  la  ayuda  de  un  procesador   eléctrico, para conseguir una mezcla homogénea.        VACIAR  –   ÉVIDER : Retirar el interior de una fruta, verdura o el pan, entes de cocinarlos, para   rellenarlos.        ZISTE : Pequeña piel blanquecina que se encuentra entre la piel y al pulpa de los cítricos. El ziste   es amargo y debe retirarse siempre con precaución, este tiene un alto contenido de pectina útil   en la elaboración de mermeladas.   \n";
+    const PDF_NAME = "VOCABULARIO DE COCINA BASICA (6).pdf";
+    const CHATBOT_THEME = "VOCABULARIO DE COCINA BASICA (6)";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Qué significa ablandar (attendrir) una carne y qué técnicas permitidas puedes usar?","¿A qué se refiere el “toque final” de acabado: ¿qué es acabar (finir) en cocina?","¿Cómo se realiza acanalado (canneler) y para qué sirve en una preparación?","¿Cuál es la diferencia entre aromatizar (parfumer) y especiar (dar sabor)?","¿Qué es el bourbeillage o desgrasar (dégraisser) y por qué se hace antes de desglasar (déglacer)?","¿Qué es desglasar (déglacer) y qué líquidos puedes usar para obtener una salsa?","¿En qué consiste el desecado/séchage y cómo se relaciona con la conservación y el “deshidratado”?","¿Qué significa “ligar” (liaison et lier) y qué tipos de preparaciones suele aplicarse?","¿Qué es glaseado (glacé) y qué efecto tiene sobre el aspecto y la conservación de frutas y postres?","¿Para qué se usa napar (napper) una preparación y cómo sabes si la salsa está en la consistencia deseada?","¿Qué diferencia hay entre sazonar (assaisonner) e intensificar/realzar (rehaussser) el sabor de un plato?","¿Qué operaciones describen sa saldır/sofreír (sauter/sauteré) y cuáles se parecen, como saltear (sauter) o rociar (arrosser), al momento de cocer?"];
+    const INITIAL_PALETTE = {"primaryColor":"#30e837","secondaryColor":"#59ed5f","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#30e837","chatBubbleUserText":"#111827","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

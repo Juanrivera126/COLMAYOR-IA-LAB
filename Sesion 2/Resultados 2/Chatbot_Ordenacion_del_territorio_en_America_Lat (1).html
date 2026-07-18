@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Ordenacion_del_territorio_en_America_Lat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Ordenacion_del_territorio_en_America_Lat</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "  1   Menú principal   Índice de Scripta Nova    Scripta Nova    REVISTA ELECTRÓNICA DE GEOGRAFÍA Y CIENCIAS SOCIALES   Universidad de Barcelona. ISSN: 1138-9788. Depósito Legal: B. 21.741-98   Vol. VI, núm. 125, 1 de octubre de 2002        ORDENACIÓN DEL TERRITORIO EN AMÉRICA LATINA   Ángel Massiris Cabeza   Departamento de Geografía    Universidad Pedagógica y Tecnológica de Colombia  – UPTC      Ordenación del territorio en América Latina (Resumen)   A partir del análisis de las políticas de ordenación territorial de quince países    latinoamericanos, se llega a la detección de un conjunto de rasgos que caracterizan estas   actuaciones en dichos países. Adicionalmente, se documentan algunos obstáculos que   éstos enfrentan para la implementación de sus políticas que, en su conjunto, conducen a   interrogarnos acerca de los límites de lo posible de las mencionadas políticas.    Palabras clave:  ordenación del territorio, América Latina      Land Management in Latin American (Abstract)   From the analysis of the politics of Land Management of 15 Latin American countries,    it is possible to detect a group of features that characterize the behaviors in said   countries in this political area. Additionally, some obstacles that these countries   confront in implementing their politics were research, which combined, are conducive   to the questioning about the limits of the possibilities of the mentioned politics.    Key-words : land management, Latin America     La ordenación del territorio (OT) en los países latinoamericanos tiene una historia muy    reciente que se remontan a los inicios de la década de los ochenta. Desde su origen ha    sido concebida de manera diversa, asociada a las políticas ambientales, urbanísticas, de    desarrollo económico regional y de descentralización. Hoy predomina la idea de la   ordenación como instrumento o estrategia para lograr el desarrollo sustentable,   entendido en términos de política plurisectorial, horizontal.    En el presente artículo se realiza un examen de esta política con la intención de    determinar sus conceptos, alcances, cualidades y obstáculos. Se parte de una discusión   conceptual con la que se pretende contextualizar la política latinoamericana de OT,    luego se revisan los antecedentes de estas políticas para tener una visión retrospectiva,    en la búsqueda de encadenamientos de procesos que permite comprender e interpretar  \n  2   más adecuadamente las acciones y decisiones actuales y, finalmente, se realiza una    síntesis valorativa de sus cualidades, a partir de las cuales se llega a algunas    conclusiones.    El concepto de ordenación del territorio    Por tratarse de un tema incipiente en el contexto latinoamericano, es casi obligado    iniciar su examen con un intento por escudriñar la esencia del mismo, a partir de la   revisión de distintos conceptos y definiciones que se han dado. En este sentido,   podemos afirmar que la ordenación del territorio ha sido objeto de diversas   interpretaciones en el mundo. Un vistazo al cuadro 1 nos permite confirmar dicha   aseveración. En ella se reúne una muestra de definiciones adoptadas en algunos países   europeos y latinoamericanos, las cuales expresan distintas maneras de entender la   naturaleza y objeto de la ordenación.    En cuanto a la naturaleza, se destaca su comprensión como una disciplina científica,    como una técnica administrativa, un estudio interdisciplinario, una política o conjunto   de políticas, un camino, método o búsqueda; un proceso integral, una estrategia de   desarrollo, un conjunto de acciones político-administrativas, entre otras. Tal situación   evidencia que no existe unidad de criterio frente al tema llegándose, incluso a   planteamientos eclécticos como el de la Carta Europea de Ordenación del Territorio   para la cual dicha ordenación es al mismo tiempo una disciplina científica, una técnica   administrativa y una política.    En cuanto al objeto también se observan en el cuadro 1 diversos planteamientos. Todos    ellos llevan explícita o implícitamente la idea de regular u organizar el uso, ocupación y   transformación del territorio con fines de su aprovechamiento óptimo. Este    aprovechamiento se asocia generalmente con el uso sustentable de los recursos naturales    (planificación física-ambiental), en estrecha correspondencia con patrones adecuados de   distribución de asentamientos y de actividades económicas.    Además de las definiciones del cuadro 1, otros autores han conceptualizado la    ordenación del territorio destacando sus rasgos más sobresaliente. Una revisión de estos   planteamientos nos puede ayudar en la intención de esclarecer dicho concepto y acotarlo   como punto de partida del presente trabajo.   Cuadro 1. Conceptos de ordenación territorial   \n  3     Fuente: Elaboración propia.        Para Méndez (1990:96) la ordenación del territorio es un proceso planificado y una   política del Estado, de naturaleza política, técnica y administrativa, que está al servicio   de la gestión ambiental y del desarrollo. Busca organizar, armonizar y administrar la   ocupación del espacio de manera que se puedan prever los efectos que provocan las   actividades socioeconómicas y precisar los medios y líneas de acción apropiados para   alcanzar los objetivos y prioridades de desarrollo, en un todo conforme con las nociones    de uso sostenido y de viabilidad de uso y con los objetivos superiores del bienestar   social, de la calidad de vida y de la valoración del medio ambiente  \n  4   Para Gómez Orea (1994: 2) se trata de una función pública que responde a la necesidad    de controlar el crecimiento espontáneo de las actividades humanas y los problemas y    desequilibrios que este crecimiento provoca, en la búsqueda de una \"justicia   socioespacial\" y una calidad de vida que trascienda el mero crecimiento económico. Tal   función, la concibe el autor, como de carácter \"horizontal\" que condiciona a la   planificación sectorial, al urbanismo y a la planificación económica. En este sentido, el   proceso de ordenación del territorio regula la distribución de actividades en el espacio   de acuerdo con un conjunto de planes que pueden o no constituir un sistema de   planificación territorial; pero también es el resultado de otras regulaciones sectoriales   con incidencia territorial. Sin embargo, la ordenación territorial procura la consecución   de una estructura espacial adecuada para un desarrollo eficaz y equitativo de la política   sectorial y superar la parcialidad de esta política, así como la reducida escala espacial de   la planificación municipal.    Para Hildenbrand (1996; 29)la ordenación del territorio es una de las políticas públicas    típicas del estado de bienestar que nace en la mayoría de los países industrializados   después de la Segunda Guerra Mundial. Sin embargo, afirma este autor, en países como   Alemania, Suiza y Holanda, sus raíces son más antiguas, especialmente en lo referente a   la planificación territorial de nivel subregional que se separa de la planificación   urbanística municipal.    Para Zoido (1998:3) la OT es una función pública, una política compleja y de reciente y    todavía escasa implantación, que puede y debe apoyarse sobre instrumentos jurídicos   (convenios internacionales, leyes, decretos), sobre prácticas administrativas y principios   consolidados (planificación, participación, etc.) y en diferentes conocimientos   científicos y aportaciones pluridisciplinares. En tanto que función pública o política, la   ordenación del territorio es, sobre todo, un instrumento no un fin en sí mismo, un medio    al servicio de objetivos generales como el uso adecuado de los recursos, el desarrollo, y    el bienestar o calidad de vida de los ciudadanos. Tal ordenación lleva implícita la    voluntad y la acción pública para mejorar la localización y disposición de los hechos en   el espacio; especialmente de aquellos a los que atribuimos un sentido estructurante o un   mayor significado respecto a las necesidades y condiciones de vida de quienes lo   habitan.    Más específicamente este mismo autor señala que cualquier actuación de ordenación, a    la escala que sea, consiste principalmente en establecer, para un espacio dado, la   distribución de los usos del suelo y la localización de las estructuras y los sistemas que   posibilitan la mayor integración funcional de todo el territorio planificado. Este   planteamiento, en su estructura más simple o desarrollada, no debe imponerse   indiferenciadamente a cualquier situación, sino ser tomado como punto de partida junto    a los caracteres propios que singularizan cada espacio geográfico (Zoido, 1998: 5).    Para Estaba (1999)la ordenación del territorio se refiere a acciones del Estado    concertadas y dirigidas a buscar una organización del uso de la tierra, con base en la   redistribución de oportunidades de expansión y la detección de necesidades,   potencialidades, limitaciones y ventajas comparativas y competitivas. Su consecución   supone propiciar un sistema de ciudades \"armónico\" y eficientemente integrado a la   globalización, lo que significa salvar las desventajas de las fuerzas de integración de la    globalización y aprovechar las fuerzas de la fragmentación o diferenciación espacial a    los fines de fortalecer centros con capacidad para competir con los dominantes. Del  \n  5   mismo modo, según la autora en referencia, la ordenación debe estimular el desarrollo    de actividades que permitan reducir o reorientar las migraciones, garantizar la calidad    de la infraestructura requerida, y crear ámbitos dotados de equipamientos y mecanismos   que permitan un género de vida comparable con el de las ciudades dominantes. También   implica la superación de contradicciones como explotación económica y preservación   de la naturaleza, eficacia económica y calidad de la ordenación y exige la consideración   del papel que ha de desempeñar cada nivel o escala territorial de actuación o de   gobierno: nacional, regional y local en el desarrollo    Para van Leeuwen (2001) el origen del concepto de ordenación del territorio responde al    intento de integrar la planificación biofísica con la socioeconómica. Siguiendo a   Baeriswyl, define al OT como una \"expresión física del estilo de desarrollo,   considerando los recursos naturales existentes y procurando el beneficio de la sociedad   en función del uso sustentable de los mismos\" (Baeriswyl, 2001:13; citado por van    Leeuwen, 2001). Para este autor, la ordenación del territorio es un proceso, en el cual no    sólo existe preocupación por el uso sustentable de los recursos naturales, sino que   incluye aspectos institucionales, políticos, socio-culturales y económicos. Es un proceso   de re-organización según los objetivos definidos y acordados.    Podríamos afirmar, en síntesis, que la ordenación del territorio es un proceso y un    instrumento de planificación, de carácter técnico-político-administrativo, con el que se   pretende configurar, en el largo plazo, una organización del uso y ocupación del   territorio, acorde con las potencialidades y limitaciones del mismo, las expectativas y   aspiraciones de la población y los objetivos de desarrollo. Se concreta en planes que   expresan el modelo territorial de largo plazo que la sociedad percibe como deseable y   las estrategias mediante las cuales se actuará sobre la realidad para evolucionar hacia   dicho modelo.    Aguilar (1989:109), sintetiza en cinco los puntos centrales de una acción de ordenación    territorial, las cuales están en consonancia con la definición anterior, estos son:     Se trata de una política de Estado     Está contemplada como política a largo plazo     Su instrumento básico es la planificación     Debe conciliar el proceso de desarrollo económico con distintas formas de    ocupación territorial     Tiene como fin último elevar el nivel de vida de la población.  Al ser una política de Estado, la ordenación del territorio concierne a toda la sociedad,    al conjunto de las actividades económicas (Méndez, 1990:98) y a las actuaciones    públicas y privadas. Como política de largo plazo le concierne el establecimiento de    escenarios de uso y ocupación del territorio a ser alcanzados en un horizonte de tiempo   determinado. Como instrumento de planificación está sujeto a los procedimientos   técnicos de la misma que incluyen actividades de pre-diagnóstico, diagnóstico   territorial, formulación de objetivos y escenarios a alcanzar en distintos horizontes de   tiempo (corto, medio y largo plazo), elaboración de los lineamientos estratégicos y   determinación de las acciones a realizar (Méndez, 1990:98; Massiris, 1991, 1993).    En la conciliación del desarrollo económico con las distintas formas de ocupación    territorial subyace una búsqueda de coherencia entre las relaciones sociales de  \n  6   producción y la articulación del espacio. Es conocido que a cada modo de producción,    como forma básica de sociedad, le corresponde un modelo de articulación espacial    (Bataillon, 1977; Claval, 1978; Sánchez, 1981; citados por Sánchez, 1992: 31). Ello   significa que cualquier cambio en los objetivos socioeconómicos irá acompañado de un   cambio en la estructura espacial que lo hará coherente con los nuevos objetivos   (Sánchez, 1992: 31). De acuerdo con esto, la localización de una unidad productiva   busca el lugar idóneo en el espacio para alcanzar sus objetivos y los organismos   públicos tienden a articular el territorio dándole una forma apta para la localización de   las unidades productivas (Foucault, 1976 y 1978; Castell, 1981; Capel, 1990; citados   por Sánchez, 1992: 31).    La búsqueda de la elevación de las condiciones de vida , constituye el fin último de las  políticas de ordenación del territorio, al menos así se establece en las normas que    regulan sus acciones. Tal objetivo hace que dicha ordenación deba realizarse en estrecha    coordinación con las políticas de desarrollo socioeconómico, con las que también se    pretende lograr este objetivo. La relación entre modelo de desarrollo económico y el   modelo de ordenación territorial presupone una articulación armónica y complementaria   entre ambos. En tal sentido, la OT orientará la espacialidad de las inversiones   socioeconómica en consonancia con el modelo de uso y ocupación al que se aspira.    Lo expuesto, plantea cuestiones fundamentales para la valoración de la ordenación del    territorio, especialmente referidas a la relación entre las actuaciones sectoriales   (económicas, sociales,) y plurisectoriales (ambientales, urbanísticas) y las políticas   territoriales, así como los problemas asociados a conflictos entre el interés privado y el   colectivo y entre los procesos económicos y la ordenación del territorio. Conviene   revisar algunos planteamientos que se han hecho al respecto.    Autores como Delmas (1962, citado por Pujadas y Font, 1998:14), Aguilar (1989),    Méndez (1990), Boisier (1998) y, en general, la corriente de la geografía crítica,   reconocen que todo territorio humanizado presenta un orden resultado de la acción de   los agentes productivos privados: agrícolas, pecuarios, industriales, urbanizadores, etc.,   que, a su vez, refleja el modelo de desarrollo económico imperante. Esto plantea una   cierta complejidad del proceso de ordenación: armonizar la acción del sector público   con el interés de los agentes privados también ordenadores del territorio, así como   armonizar el interés privado con el interés colectivo y conciliar los objetivos   económicos con los de la ordenación del territorio. Al respecto, Pujadas y Font   (1998:15) considera que \"los agentes privados tendrán que aceptar los patrones de   ordenamiento establecidos por el sector público, pero también harán sentir su voz para   que el territorio ordenado responda a sus aspiraciones y demandas y permita desarrollar   eficientemente las diversas actividades\".    Por su parte, Boisier (1998:13) refiriéndose a la necesidad que tienen los países    latinoamericanos de una política regional modernamente concebida, plantea que en   ausencia de dicha política lo primero que ocurrirá es que el territorio nacional asumirá   un orden dictado estrictamente por la lógica del capital en su proceso de penetración y   expansión mundial. Se trata de un orden por omisión, porque a juicio de Boisier, el   capital no opera con criterios territoriales sino de rentabilidad. No por ello, sin embargo,   se dejará de producir un ordenamiento territorial que plantea la cuestión de su    coherencia con los intereses superiores de la sociedad.  \n  7   Del mismo modo, Aguilar (1989:90) encuentra una estrecha relación entre los procesos    económicos y el orden territorial. A su juicio la ordenación del territorio \"debe conciliar    el proceso de desarrollo económico con distintas formas de ocupación territorial\" en una   perspectiva de largo plazo y considerando la concertación entre la acción pública y la   privada. Para este autor, los efectos de la ordenación del territorio no se perciben en el   corto plazo, pues implica actuar sobre los procesos económicos y políticos que han   condicionado, a través del tiempo, la actual organización espacial para lograr el   reordenamiento esperado.    En este contexto, Hildenbrand (1996: 32), considera que existe una cierta    complementariedad entre el interés privado y los objetivos de la ordenación del   territorio. Según este autor, son los propios agentes económicos privados quienes   demandan cada vez más regulaciones elaboradas por la ordenación del territorio para   sus decisiones de localización de sus inversiones. Dichas regulaciones se complementan    con los intereses del inversionista en la medida en que contribuyan a mantener los    factores de localización: eficacia de las infraestructuras de transportes, oferta de suelos   equipados para la acogida de parques tecnológicos y de empresas, atractivos culturales y   de residencia de las ciudades, calidad ambiental general de la región. Algo similar a lo   planteado por Hildenbrand está ocurriendo en el proceso de ordenamiento de la cuenca   de Valle de Bravo (Estado de México) que se realiza en la actualidad, donde existe un   interés común entre los propietarios de viviendas campestres en dicha región, así como   de los inversionistas del sector turístico, las entidades gubernativas, las ONG   ambientales y algunas fuerzas sociales de ejidatarios y comuneros para realizar   esfuerzos conjuntos en pro de un ordenamiento de la cuenca que controle el progresivo   deterioro ambiental de la misma y garantice la calidad ambiental (servicios ambientales)   y productividad de la región en el largo plazo.    Podemos concluir afirmando que la ordenación del territorio es un concepto aún en    construcción, de carácter polisémico, sujeto a diversas interpretaciones sin que exista    una definición universal que satisfaga a todos. Una de las referencias más utilizadas   para definirlo es la dada por Carta Europea de la ordenación del territorio  – CEOT-, sin  embargo, los planteamientos de esta carta no son claros conceptualmente. A juicio de   Zoido (1998), la CEOT confunde los resultados con el instrumento al definir la   ordenación del territorio como \"la expresión espacial de la política económica, social,   cultural y ecológica de toda sociedad\"; y complica más las cosas al añadir que es \"a la   vez una disciplina científica, una técnica administrativa y una política\".    Además,al realizarse la ordenación sobre un espacio geográfico concreto, con    características complejas, sobre el cual históricamente han ocurrido y siguen ocurriendo   otros tipos de actuaciones tanto públicas como privadas; la acción ordenadora se    involucra con diversas situaciones, como las expuestas antes, que hacen muy compleja    su comprensión y aplicación.    Características de la política de ordenación del territorio en los países de América    Latina    A partir del análisis de las políticas y/o actuaciones de ordenación del territorio de   quince países latinoamericanos [1] y de un esfuerzo de generalización, se examinan a   continuación algunos rasgos que caracterizan a dichas políticas, éstos son: el origen y    naturaleza diversa, desarrollo incipiente e intención de globalidad; la intención de  \n  8   articulación entre las actuaciones sectoriales y territoriales en las normas y la    desarticulación y descoordinación institucional en la práctica; la débil visión prospectiva    y la escasa participación social. Tales rasgos se examinan a continuación.    Origen y naturaleza diversa, desarrollo incipiente e intención de globalidad   Antes del surgimiento de las políticas de ordenación del territorio, los países    latinoamericanos experimentaron diversas opciones de planificación tanto sectoriales   como plurisectoriales, mediante las cuales se incidía sobre el territorio. Se destacan, en   este sentido, la planificación regional, el urbanismo, la planificación económica y la   ambiental, las cuales evolucionaron paulatinamente hacia la ordenación del territorio   (figura 1).    La planificación regional consistía básicamente en planes de carácter económico, con    visión plurisectorial, aplicados a ciertas áreas con problemas de retraso en sus    condiciones de desarrollo, basados en estrategias e instrumentos diversos, que no   constituían propiamente una actuación de ordenación del territorio, pues, aunque se   concebían en términos plurisectoriales, carecían de la visión global que caracteriza a la   OT. La primera estrategia utilizada fue la planificación de cuencas hidrográficas,   iniciada desde la década de los años 40, siguiendo el modelo de la Tennessee Valley   Authority  – TVA-. De Mattos (1986: 272, 276-277) destaca, en este sentido, los  proyectos de desarrollo regional realizados por la Corporación del Santa (Perú, 1943), la   Comisión de Papaloapan y la de Tepalcatepec (México, 1947), la Comisión del Valle de   San Francisco (Brasil, 1948), la Comisión Nacional del Río Negro (Uruguay), la   Comisión del Grijalva (México, 1951), la Corporación del Valle del Cauca (Colombia,   1954), la Comisión del Río Balsas (México, 1960) y la Corporación Nacional del Chocó   (Colombia, 1968). Otras estrategias de desarrollo regional utilizadas estuvieron    asociadas a políticas deregionalización, polos de desarrollo o crecimiento y desarrollo    rural integrado, entre otras.    El urbanismo o planificación urbana, por su parte, comenzó a adquirir trascendencia en    nuestros países desde la década de los años cincuenta asociada a la preocupación por el   crecimiento acelerado de las principales ciudades de la región y el reconocimiento del   papel de los sistemas urbanos como vertebradores de los territorios. Hacia los años   setenta ya existían planes y normas reguladoras de uso del suelo urbano en algunos de   los países analizados (Argentina, Colombia, Cuba), mientras que en otros comienzan   también a regularse los sistemas de asentamientos, como en el caso de México, con la   Ley General de Asentamientos Humanos de 1976.     \n  9     Figura 1. Evolución de la planificación sectorial, plurisectorial y territorial en    América Latina.    Fuente: Elaboración propia.         En algunos países de América Latina la ordenación del territorio nació ligado o como   evolución de la planificación urbana. En el caso de Argentina, en la Provincia de   Buenos Aires [2] , desde 1977 se promulgó la ley sobre ordenamiento territorial y usos   del suelo, con fuerte énfasis urbanístico. En Cuba, desde 1978, la OT ha estado asociado    a la planificación física y el urbanismo, lo cual es reforzado y consolidado con el   Anteproyecto de Decreto de Ley de la Planificación Física que se encuentra actualmente   en proceso de aprobación. En Colombia la planificación de los usos del suelo urbano se   adoptó legalmente en 1979, a través de la Ley 9 de ese año (Código Sanitario), ampliada   en 1986 al promulgarse el Decreto 1333 (Código de Régimen Municipal) y mejorada    tres años después mediante la Ley 9 de 1989 (Ley de Reforma Urbana), que constituyó    la base de la actual Ley 388 de 1997 reguladora de la ordenación del territorio   municipal y distrital (Massiris, 1999). En Chile, la ordenación del territorio también ha   estado ligado en sus orígenes al urbanismo y aún hoy no existen normas específicas de   OT, siendo sus principales soportes la Ley General de Urbanismo y Construcciones   (LGUC) y la Ordenanza General de Urbanismo y Construcciones (OUGC).    En cuanto a la planificación ambiental, el interés por regular el uso y aprovechamiento    de los recursos naturales empieza a adquirir importancia en los países de América   Latina desde los años setenta y ochenta [3] , asociado inicialmente al enfoque del   \"ecodesarrollo\", término que fue usado por primera vez en 1973 por Maurice Strong,    para dar a entender una idea de desarrollo económico y social que tomara en cuenta la   variable ambiental (Salinas, 1998).    El enfoque del ecodesarrollo llegó a los países latinoamericanos en los años de la    década de 1980, pero tuvo una vida muy corta, pues rápidamente fue absorbido por el   concepto de desarrollo sustentable impulsado a partir del Informe Brundtland \"Acción   para un Futuro Común\" en 1987. Posterior a este informe y previo a la Cumbre de Río   de 1992, los países latinoamericanos realizaron esfuerzos para elaborar una visión de   conjunto acerca del problema del desarrollo y el medio ambiente. En efecto, con el   auspicio del PNUD y el BID se conformó en 1989 una comisión encargada de elaborar    dicha visión para ser presentada en la Cumbre de Río, conformada por representantes de    distintos países latinoamericanos así:  \n  10   Argentina: Gilberto Gallopín, Aldo Ferrer, Pablo Gutman, Jorge Ardoy, Jorge Morello,  Héctor Sejenovich y Juan Novara.  Bolivia: Fernando Romero.    Brasil: Joao Almino, Eneas Salati y María de Lourdes Davies de Freitas.    Colombia: Mario Calderón (q.e.p.d.) y Margarita Marino de Botero.    Costa Rica: Carlos Quesada y Álvaro Umaña.   Chile: Guillermo Mann y Vicente Sánchez.    Ecuador: Diego Carrión.    México: Alicia Bárcena, Alejandro Toledo y Fernando Ortiz Monasterio.    Perú: Marc Dourojeanni.    Trinidad y Tobago: Winston Rudder.    Venezuela: Arnoldo Gabaldón.   La Comisión recibió contribuciones de Guillermo Archibold (Panamá), Edward Backus    (Conservación Internacional), Nicolo Gligo (CEPAL), Bernard Hermes (Guatemala)   Yolanda Kakabadse (Ecuador), Pedro Malan y Pedro Ramos de Sousa (Brasil), Ives   Renard (Santa Lucía), Seeparsad Ramnarine (Trinidad y Tobago) y Manuel Winograd    (Fundación Bariloche), entre otros.    El documento final de este trabajo se conoció en 1990 bajo el título de Nuestra Propia    Agenda sobre Desarrollo y Medio Ambiente, en el cual se hace un diagnóstico de la   realidad latinoamericana y se proponen las bases para la construcción de la estrategia de   desarrollo sustentable. Dichas bases las constituyen siete grandes líneas maestras: a) la   erradicación de la pobreza, b) el aprovechamiento sustentable de los recursos naturales,   c) la ordenación del territorio, d) el desarrollo tecnológico compatible con la realidad   social y natural, e) Una nueva estrategia económica y social, f) La organización y   movilización social, y g) La reforma del Estado (Comisión de Desarrollo y Medio   Ambiente de América Latina y el Caribe, 1991).    La visión de desarrollo sustentable planteada en el documento en referencia integra a    este concepto la dimensión espacial, al considerar la ordenación del territorio como una    de las líneas maestras para lograr dicho desarrollo, entendiendo la OT como   la\"distribución geográfica de la población y sus actividades de acuerdo con la integridad   y potencialidad de los recursos naturales que conforman el entorno físico-biótico. Todo   ello, en la búsqueda de unas condiciones de vida mejores\"(Comisión de Desarrollo y   Medio Ambiente de América Latina y el Caribe, 1991).    Posterior a la Conferencia de Río, en 1994 se realizó una cumbre de presidentes    centroamericanos (Cumbre Ecológica Centroamericana) en Nicaragua, en la que    participaron los primeros mandatarios de Costa Rica, El Salvador, Guatemala,  \n  11   Honduras, Nicaragua, Panamá y Belice. Uno de los compromisos que asumieron los    mandatarios de estos países fue el de instruir a las autoridades correspondientes para    iniciar las acciones necesarias a efecto de establecer planes de ordenación del territorio.    En la segunda mitad de los noventa, los países latinoamericanos intensificaron sus    políticas ambientales a partir de la aprobación de leyes ambientales y la creación de   ministerios e instituciones encargadas de la gestión ambiental (cuadro 2). En la segunda   mitad de los años noventa, países como Bolivia, Ecuador, El Salvador, Honduras,   Nicaragua y República Dominicana conciben la ordenación del territorio como un   instrumento de gestión ambiental (cuadro 3), especialmente asociadas a zonificaciones   de usos del suelo, considerando las potencialidades del mismo y la necesidad de   preservar, conservar y/o recuperar el patrimonio natural e histórico-cultural.    De este modo, en los años noventa se inicia en los países latinoamericanos la    elaboración de planes de ordenación [4]  (cuadro 4) y a la elaboración de regulaciones   jurídicas [5]  (cuadro 2) las cuales a pesar de que reconocían la transversabilidad e   intersectorialidad de la ordenación del territorio e involucraban elementos de    planificación ambiental y urbano-regional (cuadros 3 y 4), no resolvían la necesidad de   concurrencia de los planes ambientales, socioeconómicos y urbanísticos, según el   ámbito de actuación; presentándose, incluso, situaciones conflictivas, derivadas del   hecho de que cada uno de estos planes estaba soportado por normas legales distintas,   concebidas independientemente. En México, por ejemplo, los actuales programas   estatales de OT carecen de soporte jurídico propio, en tanto que sí lo tienen los planes   de ordenación de asentamientos humanos y los de ordenación ecológica. En Colombia,   se deben elaborar planes de desarrollo socioeconómicos, ambientales y de OT cada uno   soportado en una ley diferente. En Venezuela, actualmente se discute en la Asamblea   Nacional, la integración de la normatividad y de la gestión urbanística, ambiental y    territorial; existe, en este sentido, la tendencia a convertir la Ley Orgánica para la    Ordenación del Territorio en Ley Orgánica de OT, urbanismo y medio ambiente    (Asamblea Nacional, 2001).    Dentro de este contexto, la ordenación del territorio se ha concebido como una política    de planificación que integra objetivos ambientales (planificación física-espacial) y   regionales (planificación territorial), en función de la escala, predominando en las   escalas locales la planificación física-espacial con fuerte contenido urbanístico y en las   escalas regionales la planificación territorial que busca una ocupación sustentable del   territorio y un mayor equilibrio del desarrollo regional.       Cuadro 2. Algunos hitos en la evolución de la política de ordenación del    territorio en los países de América Latina   \n  12     \n  13     Fuente: Elaboración propia.       Cuadro 3. Concepto de ordenación del territorio en algunos países    latinoamericanos   \n  14     \n  15     Fuente: Elaboración propia       Cuadro 4. Instrumentos de ordenación territorial en los países de América    Latina, según ámbitos territoriales   \n  16     \n  17     Fuente: Elaboración propia.        Adicionalmente, en algunos países latinoamericanos se vincula la ordenación del    territorio con la organización política administrativa y las políticas de descentralización,   situación que genera confusión respecto a la naturaleza de esta política. Esto es evidente   en Colombia en donde por un lado la Constitución Política se refiere a la ordenación del   territorio en términos de la organización territorial del país y, por otro, los sectores   políticos y gubernativos lo consideran como un instrumento de descentralización    territorial. La confusión se presenta porque mientras en los ámbitos políticos y    gubernativos de este país la ordenación se concibe en los términos político-  administrativos, en la Ley de Desarrollo Territorial (Ley 388 de 1997) se concibe,   además, en términos de planificación física-espacial y urbanística.    Algo similar está ocurriendo en Argentina, donde el tema comienza a adquirir    importancia con la entrada al Parlamento, en el año 2000, del \"proyecto de Ley de   Ordenamiento y Desarrollo Territorial\". Dicho proyecto declara de \"interés nacional el   ordenamiento territorial\" y se asocia estrechamente con las políticas de   descentralización territorial (Diario El País, 2000). Igual situación ocurre en Honduras,   en donde se discute actualmente un proyecto de ley promovido por la Secretaría de   Recursos Naturales y Ambiente, entidad que también lidera la formulación de una   estrategia y una política nacional de OT orientada a racionalizar el uso de los recursos    naturales y establecer políticas adecuadas para el uso, manejo y ocupación futura del    territorio nacional (Gobierno de Honduras, 1999; Diario La Prensa, 2000). De acuerdo   a lo establecido en el proyecto de ley en referencia, con la ordenación territorial se   pretende establecer, desde la perspectiva del territorio, una base coherente de normas   que apoyen los procesos de descentralización del Estado y de participación ciudadana   en la definición de un proyecto nacional de desarrollo. Todo ello, a través de la   identificación, organización, regulación y determinación de los usos, reservas y destino   de las diferentes zonas del territorio, en función de sus correspondientes potencialidades    y limitaciones (Gobierno de Honduras, 1999).  \n  18   Del mismo modo, en Venezuela, con la llegada al poder del presidente Hugo Chávez la    ordenación del territorio de este país comienza a concebirse como apoyo a la política de    descentralización. En efecto, el nuevo gobierno, a través de la Comisión de Ambiente y   Ordenación del Territorio, elabora un nuevo \"Plan Nacional de Ordenamiento   Territorial\" (PNOT) y lo presenta en el año 2000 al Congreso de ese país. El proyecto   de PNOT fue sustentado en el Senado de la República como una estrategia para   \"localizar a cada actividad en la región más óptima para ello, a fin de propiciar la   descentralización\" (Díaz, 2000).    Los planteamientos expuestos manifiestan, por un lado, el surgimiento paulatino de    políticas y planes regionales, urbanísticos, económicos y ambientales, todos incidiendo   sobre el territorio desde una óptica sectorial, sin dar respuestas a los cada vez más   complejo problemas territoriales. Dentro de este contexto, la ordenación del territorio   surge con una intención manifiesta de dar un tratamiento integral, desde una    aproximación global, a la problemática de los territorios. El énfasis se pone en la    planificación física-espacial y sus finalidades se concentran en el uso sustentable de los   recursos naturales, la localización adecuada de las actividades productivas e   infraestructuras y la búsqueda de equidad en el desarrollo regional, lo que es evidente en   el concepto de ordenación del territorio adoptado por dichos países (cuadro 3).    Intención de articulación entre las actuaciones sectoriales y territoriales en las normas,    desarticulación y descoordinación institucional en la práctica  Tal como se consideró antes, la ordenación del territorio, dado su carácter global y   comprehensivo, plantea la necesidad de articulación con las políticas sectoriales. En los   países latinoamericanos esta articulación aunque subyace en la conceptualización de las   normas ha estado ausente en la práctica, quizás por lo incipiente de las políticas de OT    de estos países y la aún inexistencia de una organización institucional propia. Dicha    organización apenas comienza a vislumbrarse en las normas reguladoras de la   ordenación existentes o en ciernes [6]  y, es allí, donde se observan algunas tendencias de   articulación que de hecho, por ahora constituyen solo una intención. Específicamente    son dos las tendencias que se observan en la normatividad examinada: una que hemos   denominado articulación operativa y la otra, articulación orgánica.    La tendencia de articulación operativa busca mantener la separación entre las políticas    sectoriales y plurisectoriales y las de ordenación del territorio, pero bajo unas relaciones   de interdependencia, de modo que la OT establece un marco de referencia territorial   para los planes sectoriales y plurisectoriales y coordina / armoniza la incidencia   territorial de éstos, pero, a su vez, toma en cuenta las previsiones de los planes   sectoriales y plurisectoriales y procura insertarlas dentro de una concepción territorial    de carácter globalizador y armonizador. Esta intención es evidente en los proyectos de    \"Ley de Ordenamiento Territorial\" de Bolivia y Costa Rica, en la Ley de Desarrollo   Territorial de Colombia y en la Ley Orgánica para la Ordenación del Territorio de   Venezuela (cuadro 5).    La tendencia de articulación orgánica va más allá de las relaciones de    complementariedad entre los planes sectoriales y territoriales para plantear la   integración funcional de éstos, bajo criterios estratégicos y/o ambientales. De este    modo, el plan de ordenación incorporará en sus estrategias y regulaciones los objetivos    urbano-regionales, urbanísticos y ambientales en lo referente a su espacialidad, aunque  \n  19   las políticas sectoriales siguen operando en lo concerniente a sus objetivos estructurales.    Esta intención es evidente en los programas estatales de ordenación del territorio de    México, así como en el \"Anteproyecto de Decreto de Ley de Planificación Física\" de   Cuba y en el \"Proyecto de Ley de Ordenamiento y Desarrollo Territorial de Uruguay\"   (cuadro 5).    La organización institucional demandada por la gestión de la ordenación del territorio,    apenas está en ciernes en países como Bolivia, Colombia, Costa Rica y Uruguay   (cuadro 6), asociado a proyectos de ley que se encuentran en los órganos legislativos de   dichos países. En la actualidad con excepción, quizás de Venezuela [7] , no existe en los   países latinoamericanos una organización propia para la gestión de la ordenación, ni un    marco legal que regule, con visión integral, las actuaciones planificadoras. La gestión de   la ordenación del territorio normalmente es realizada por organismos de carácter   ambiental, de desarrollo social y/o urbanismo como se puede observar en el cuadro 6.    Los países latinoamericanos enfrentan serios obstáculos para hacer posible el trabajo    articulado y coordinado que demanda la visión global de la ordenación del territorio.   Obstáculos que, además de la inexistencia o debilidad de la organización institucional   para la gestión, incluye la inexperiencia en el trabajo interinstitucional y la tendencia a   pensar el territorio desde una perspectiva sectorial; así como la ausencia de una cultura   del trabajo coordinado, interdisciplinario y abierto, que facilite el intercambio fluido de   información entre los distintos organismos que participan en la gestión en un mismo   ámbito territorial y entre los distintos ámbitos, así como la sinergia asociada a la   complementación de acciones y que evite la entropía de información y duplicidad de   esfuerzos, propia de las actuaciones descoordinadas y desarticuladas que han   predominado en la evolución de las distintas formas de planificación indicadas en la   figura 1.    También es evidente los problemas existentes en la comunicación interinstitucional e,    incluso, entre las propias dependencias de un mismo organismo o entidad. Del mismo   modo, son comunes en nuestros países los celos de las instituciones en relación con sus   competencias y son la información que cada entidad produce, obstaculizando la   transferencia de información y la posibilidad de estandarizar indicadores, escalas, etc.,   situación que afecta seriamente la elaboración de productos diagnósticos integrados   requeridos como apoyo a la toma de decisiones para la ordenación del territorio.   Cuadro 5. Cualidades de las políticas latinoamericanas de OT, según las normas    aprobadas y leyes de OT en trámite*   \n  20     \n  21     * Los países no incluidos, carecen de normas nacionales que regulen la ordenación territorial.   Fuente: Elaboración propia.       Cuadro 6. Organismos responsables de la OT existentes y en ciernes en los países    de América Latina, según ámbito territorial   \n  22     \n  23     Fuente: Elabora ción propia.        Es muy ilustrativo de lo planteado, la evaluación realizada por el Instituto de Geografía    de la Universidad Católica de Chile en 1999, en donde se establece que \"es notable la   dispersión de las competencias públicas relativas al ordenamiento territorial en una   multiplicidad de órganos de distinto rango y naturaleza que operan de manera   inorgánica, descoordinada, con paralelismo y ambigüedad de funciones y de   responsabilidades\", debido, en gran medida, al hecho de que, \"por una parte, la    ordenación del territorio es un tema de carácter horizontal que demanda esfuerzos    transversales, intersectoriales, interdisciplinarios, sistemáticos e integrales, y por otro,  \n  24   en muchos casos los instrumentos de planificación territorial disponibles son de carácter    sectorial... y, por lo tanto, no fueron concebidos con fines de ordenación territorial,    aunque en la práctica algunos han derivado en eso\". La evaluación establece, además, la   existencia de una \"gran dispersión, incoherencia y falta de estructuración de la   legislación sectorial vigente, lo que provoca un gran desconocimiento de sus alcances   normativos y un alto grado de incumplimiento de dicha legislación\". (CONAMA e   Instituto de Geografía de la Universidad Católica de Chile, 1999).    Débil visión prospectiva    La débil visión prospectiva es otro de los rasgos comunes de las políticas    latinoamericanas de ordenación del territorio. Su análisis se realiza a partir de dos   indicadores: la formulación de objetivos a largo plazo y la incorporación en el proceso   de toma de decisiones de criterios y métodos provenientes de la prospectiva,    especialmente visiones alternativas de futuros deseados, escenarios alternativos de    futuros posibles y métodos para lograr transformar los deseos, expectativas y   conocimientos en imágenes objetivo que sirvan de Norte para las actuaciones de   ordenación del territorio (Gabiña, 1998; Massiris 2000, 2001).    Los objetivos de largo plazo se encuentran explícitos en la gestión del OT, existente o    en ciernes, de Bolivia, Colombia, Costa Rica, El Salvador, México y Uruguay. En   Bolivia los planes se conciben a 10 años, en tanto que en Colombia la \"Ley de   Desarrollo Territorial\" lo establece a 9 años, en México es de 20 a 25 años y en   Uruguay el \"Proyecto de Ley de Ordenamiento Territorial\" concibe los planes de OT   para ser formulados sin plazo de vencimiento formal, pero con revisión cada 7 años   (cuadro 5). En el caso de Costa Rica, como resultado de unos talleres de reflexión   prospectivas realizados en 1997, se ha propuesto un horizonte de tiempo de 25 años    para los objetivos de largo plazo del OT (SINADES, 1997). En El Salvador,    recientemente se iniciaron estudios para la formulación de un \"Plan Nacional de   Ordenamiento y Desarrollo Territorial\"  – PNDT-, con un horizonte de tiempo de 5 años  en el corto plazo, de 10 a 15 años en el mediano plazo y de 25 años en el largo plazo   (Viceministerio de Vivienda y Desarrollo y Urbano, 2002).    Como se observa no todos estos horizontes de tiempo coinciden con una visión    prospectiva, la cual generalmente es superior a los 15 años. Es necesario considerar,   además, que no es suficiente formular objetivos de largo plazo, sino que éste se   convierta en una guía efectiva para las acciones del presente, aspecto que implica una   continuidad en los planes en el tiempo, la cual presenta serias limitaciones en nuestros   países, por la inexistencia de una cultura político-administrativa que valore los objetivos   de largo plazo. Por lo general se actúa y planifica el futuro en función de los períodos de    gobierno, como se planteará más adelante.    El otro indicador de la visión prospectiva es la utilización de criterios y métodos    prospectivos en el proceso de formulación de los planes. En este sentido, se destacan   países como Bolivia, Colombia, Costa Rica y México.    En Bolivia, la metodología que guía el proceso de formulación de los planes de OT    establece la elaboración de una imagen objetivo, entendida como una visión territorial  de largo plazo, como una síntesis de la situación ideal, deseable, pero al mismo tiempo   posible a ser alcanzada en el mediano y largo plazo. La elaboración de dicha imagen  \n  25   debe realizarse con participación de los actores sociales y será el resultado de un    escenario deseado que se confronta con los escenarios tendenciales para obtener un    escenario óptimo o propuesta de uso (Ministerio de Desarrollo Sostenible y   Planificación, 1999b).    En Colombia, las guías metodológicas para la formulación de planes de OT elaborada    por el Instituto Geográfico Agustín Codazzi, proponen la prospectiva como un proceso   necesario y aportan un marco conceptual y metodológico para su incorporación en la   formulación de los planes urbanos, municipales y departamentales de ordenación   territorial (Instituto Geográfico Agustín Codazzi, 1996, 1997a, 1997b).    En Costa Rica, para garantizar una buena documentación de apoyo a la definición del    marco jurídico y la gestión de la ordenación, el Gobierno de este país estableció un   convenio con el Banco Interamericano de Desarrollo para financiar el \"Proyecto de    Apoyo al Sistema Nacional para el Desarrollo Sostenible\" (SINADES). En desarrollo de    este proyecto, en 1997 se creó la Comisión Técnica Consultiva de OT encargada de la   realización de estudios y consultas conducentes a la elaboración de un proyecto de \"Ley   Orgánica de Ordenamiento Territorial\". A finales de 1997, la Comisión mencionada    organizó la realización de unos talleres de reflexión prospectiva para vislumbrar los    escenarios posibles del desarrollo costarricense y determinar una estrategia de OT para   el 2025 y se realizaron los estudios \"Base conceptual y metodología para los escenarios   de ordenamiento territorial\" (Lüke 1998) y el estudio sobre \"Escenarios de uso del   territorio para Costa Rica en el año 2025\" (Dengo et al, 1998). Todas estas actividades    han establecidos las bases para la incorporación de la visión prospectiva en la política    costarricense de OT.    En México, tanto los términos de referencia elaborados por el Grupo Interinstitucional    de OT [8]  en el año 2000, como las guías metodológicas elaboradas por el Instituto de   Geografía de la UNAM [9]  en el año 2001, ambos orientados a apoyar la elaboración de   programas estatales de ordenación territorial; coinciden en plantear la elaboración de    distintas imágenes de futuro (escenarios) como apoyo a la formulación de los modelos   de ocupación de los territorios estatales. Básicamente se considera un escenario   deseado, escenarios tendenciales y escenarios alternativos. Las guías metodológicas   para la formulación de planes de ordenamiento ecológico elaboradas por el Instituto   Nacional de Ecología (INE) también incluyen la elaboración de escenarios tendenciales   y alternativos para la elaboración de los modelos de ordenación ecológica.    Estas intenciones constituyen, en cierto modo, los gérmenes de la visión prospectiva de    la ordenación del territorio en los países latinoamericanos. En la práctica dicha visión   sólo tendrá un desarrollo notable en la medida en que se desarrolle también la política    de ordenación y se gane experiencia en el uso de los métodos prospectivos, tema que en    la actualidad es de dominio de un reducido grupo de expertos. Asimismo, se requieren   cambios importantes en la actitud tradicional de los gobernantes y en la cultura de la   planificación pública, pues se hace necesario garantizar la continuidad de los planes en   el tiempo, de modo que en el decurso de varios períodos de gobierno se pueda ir   construyendo el escenario adoptado. Lograrlo no es fácil, dada la cultura política y   administrativa prevalente en nuestros países, caracterizada por el desconocimiento que   hacen los nuevos gobernantes de los objetivos y proyectos de sus antecesores, lo cual es    dramático cuando la sucesión corresponde a partidos políticos contrarios o distintos. A  \n  26   esto se suma la inexistencia de una apuesta concertada de futuro, un proyecto político de    Nación que indique el rumbo hacia el cual se dirige los países.    Escasa participación social    La participación social es otro de los rasgos presentes en la conceptualización y  normativización de la ordenación del territorio en los países latinoamericanos. No    obstante, en la práctica ésta se da en grado y formas diferentes. En Venezuela es casi   nula, aunque la Ley Orgánica de OT de dicho país admite esta participación en la   formulación de los planes urbanísticos, a través de audiencias. En países como Bolivia,   Costa Rica y Uruguay, sus proyectos de ley de OT establecen la participación   ciudadana, mediante comités de vigilancia, cabildos, audiencias públicas, plebiscitos y   el envío de observaciones (cuadro 5). En la mayoría de los casos, la participación social   sólo tiene un carácter consultivo y, por tanto, no incide significativamente en las    decisiones finales. Normalmente consiste en usar a unos pocos ciudadanos para tratar de    mostrar un plan consensuado y, por lo tanto, legítimo socialmente, contrario a la   naturaleza de un verdadero proceso participante, consistente en una negociación social y   política del poder sobre el espacio, una construcción colectiva del modelo de uso y    ocupación del territorio que se propone como imagen objetivo (Massiris, 2001).  Colombia es, quizás, el país donde la normatividad establece unas condiciones   favorables para una participación ciudadana más proactiva. Según la Ley de Desarrollo   Territorial los planes municipales y distritales deben ser el resultado de un proceso de   discusión y concertación con los actores sociales del municipio, en todas sus etapas:   preliminar, diagnóstico, formulación, aprobación y ejecución. Dicha Ley y normas   reglamentarias posteriores establecen distintos mecanismos de participación para cada   etapa. Se destacan las audiencias públicas y cabildos abiertos, así como las mesas de    concertación y los comités de seguimiento (Congreso de la República de Colombia,    1997). Del mismo modo, la Constitución Política (CP) de 1991 ha puesto a disposición   de la comunidad instrumentos tales como el Derecho de Petición [10 ], la Revocatoria del   Mandato [11] , la Acción de Grupo [12] , las veedurías ciudadanas [13] , la Acción de   tutela [14 ] y la Acción de Cumplimiento [15] , mediante los cuales, los ciudadanos podrán   exigir el cumplimiento de los planes o el respeto a sus derechos, si considera que las    autoridades están haciendo caso omiso del mismo o si se está violando alguno de sus   derechos. Además de la concertación con los actores sociales, los planes municipales de   OT de Colombia deben ser aprobados por las corporaciones regionales de desarrollo   (autoridad ambiental), por el consejo de planificación, por el concejo municipal y por la   junta metropolitana [16]  (figura 2).     \n  27     Figura 2. Instancias de concertación y aprobación de los planes de ordenación    municipales y distritales colombianos.   Fuente: Elaboración propia, a partir de la Ley 388 de 1997.        A pesar de lo anterior, la aplicación que se ha hecho de estos instrumentos en Colombia    dista mucho aún de una participación activa y decisiva de la ciudadanía, debido a la    incredulidad frente al proceso y de cierto temor de los ciudadanos para dicha   participación. La incredulidad es alimentada por cien años de centralismo exacerbado y   de menosprecio por la participación de la ciudadanía, aún en los asuntos locales. El   temor está asociado al conflicto armado que azota a este país y que ha sacrificado la   libertad de expresar libremente las ideas, ante el temor a ser eliminado físicamente por   algunas de las fuerzas en conflicto. Adicionalmente, ha existido en muchas    administraciones municipales cierto desinterés por promover la participación social.    En general, es notable en los países latinoamericanos, la ausencia de una cultura de la    planificación participante y el escaso dominio de metodologías de consensos y de   resolución de conflictos en los procesos de concertación, que permitan, por ejemplo,   evitar que los actores poderosos impongan sus intereses individuales por encima del   interés colectivo. El carácter integrador de la ordenación del territorio implica un mayor   impulso de la participación social y de la concertación como requerimientos necesarios   para dar legitimidad a los planes de ordenación y, como lo plantea Benabent (2001),   para un mayor entendimiento del proceso de planificación como procedimiento de   coordinación de actuaciones.    Conclusiones   De todo lo expuesto se puede concluir que:    1. Prevalece en la normatividad existente y en ciernes, la concepción de la ordenación    del territorio como una práctica planificada, complementaria de la planificación   sectorial, mediante la cual es posible dar un tratamiento integral a la problemática de los   territorios; utilizando como estrategia la planificación física espacial dentro de un   contexto ambiental (desarrollo sustentable). No obstante, en su instrumentación, no    existe claridad sobre los mecanismos de articulación necesarios para armonizar las    acciones sectoriales y territoriales, ni sobre sus diferencias y complementariedades, lo  \n  28   que lleva a que a menudo la ordenación del territorio se confunda con la planificación    ambiental y el urbanismo. Aún se está lejos de concebir el plan de ordenación como un    marco orientador de las políticas sectoriales en la búsqueda de una ordenación integral   del territorio.    2. Con excepción de Venezuela y Colombia, predomina en los países estudiados la    práctica de la ordenación territorial sin respaldo legal propio (normas específicas   reguladoras), situación que manifiesta una debilidad normativa de esta practica en los   países latinoamericanos y, en consecuencia, serios obstáculos para la articulación con   las otras prácticas de planificación. Es diciente el caso mexicano donde la ordenación   territorial carece de soporte jurídico, en tanto que sí lo tienen los planes de ordenación   de asentamientos y los programas de ordenación ecológica. A lo anterior se suma el   hecho de que, con excepción de Bolivia y Venezuela, es común que la práctica   ordenadora no abarque la totalidad de las distintas instancias territoriales de los países:    nacional, regional, departamental (estatal, provincial) y municipal, según cada caso. En    Uruguay, por ejemplo, solo algunos departamentos como Montevideo están elaborando   planes de ordenación, algo similar ocurre en México, donde solo se realizan programas   de ordenación territorial en las entidades federativas. En Argentina y Nicaragua se   realizan planes en los ámbitos departamentales y municipales, pero no existe política   nacional. En Colombia se realizan planes municipales que incluyen la ordenación   urbana y se dan directrices departamentales, sin que exista una política nacional. En   Costa Rica se realizan planes reguladores cantonales con fuerte énfasis urbanístico y no   existen lineamientos departamentales ni nacionales. Todo esto conduce a una práctica   espacialmente fragmentada de la ordenación, que en nada contribuye al manejo   coherente del territorio.    3. No existe una organización administrativa que favorezca la gestión integral de la    ordenación del territorio, la cual se realiza a partir de sistemas institucionales    sectoriales, muy alejados del carácter global y horizontal que es connatural a la    ordenación. En este sentido es necesaria la implementación de un sistema jerarquizado   de planificación en el que la planificación urbanística, ambiental y de desarrollo   socioeconómico se vincule con la planificación territorial tanto en sentido horizontal   como vertical, garantizando de este modo, la prevalencia de la gestión integral y el   entendimiento del proceso de planificación como procedimiento de coordinación de   actuaciones. Esta integridad se hace aún más necesaria en las escalas regionales, donde   la planificación del desarrollo regional y la ordenación territorial constituyen   instrumentos complementarios, a partir de cuya confluencia es posible establecer el   modelo económico-territorial.    4. La participación social en los procesos de ordenación es débil. Prevalece en los    planes la visión de territorio y objetivos de las instituciones de Gobierno responsables    de los planes y de los grupos empresariales y corporativos poderosos que imponen, en   última instancia, su voluntad e intereses y condicionan la acción ordenadora del Estado.   A esto se suma que los agentes planificadores no se circunscriben a su papel técnico y   con frecuencia se comprometen con algunas fuerzas sociales, lo que sesga su labor. En   este sentido, es común en los países latinoamericanos, que los actores poderosos   presionen sobre los agentes planificadores para inducir cambios en los usos del suelo en   una dirección favorable a sus intereses individuales. También es común que los agentes    planificadores sean proclives aactuar en función dichas presiones. El carácter integrador    de la ordenación del territorio exige un compromiso con el apoyo a la participación  \n  29   social y a la concertación como forma de hacer de la ordenación un proceso de    construcción colectiva del uso y ocupación deseado del territorio.    5. En relación con la capacidad técnica no hay duda que aquí existe otra dificultad,    especialmente ligada a la calidad de la información que demandan los estudios   diagnósticos y prospectivos para la elaboración de planes de ordenación del territorio y   a las tendencias existentes respecto al manejo de dicha información. La mayoría de los   países latinoamericanos carecen de sistemas nacionales de producción de información   territorial que articulen a las diversas instituciones, que desde perspectivas sectoriales,   generan dicha información. A menudo es imposible integrar información de distintas   instituciones, por no corresponder en sus formatos, escalas, fechas, etc. Del mismo   modo existe una tendencia en los diagnósticos a dar mayor importancia a las   características cuantificables y medibles, llegando a veces a extremos de condicionar los   análisis y evaluaciones territoriales a los formatos, indicadores y posibilidades que    establecen los sistemas de información geográfica, sacrificando cualidades no medibles    (estructurales, relacionales, culturales) muy significativas en la comprensión e   interpretación adecuada de la problemática territorial.    Notas    [1] Argentina, Bolivia, Brasil, Colombia, Costa Rica, Cuba, Chile, Ecuador, El Salvador, Honduras,  México, Nicaragua,República Dominicana, Uruguay y Venezuela.    [2] En Argentina, por su carácter federal, la ordenación territorial es manejado por las entidades  federativas.    [3] En 1974 en Colombia, se promulgó uno de las primeras normas de preservación de recursos naturales  y protección el media ambiente en Latinoamérica, el \"Código Nacional de Recursos Naturales  Renovables y de Protección del Medio Ambiente\" que tuvo pocos efectos prácticos. En 1988, México  aprobó la Ley General de Equilibrio Ecológico y la Protección del Ambiente e inicia la implementación  de programas de ordenamiento ecológico.    [4] Con excepción de Venezuela que los viene realizando desde los años ochenta.    [5] Con excepción de Venezuela que desde 1983 ya tenía una \"Ley Orgánica para la Ordenación del  Territorio\".    [6] Básicamente las leyes aprobadas o proyectos de ley oficiales.    [7] La organización institucional para la gestión de la ordenación territorial en Venezuela fue establecida  por la Ley Orgánica para la Ordenación del Territorio en 1983. No obstante, en 1999 se promulga en este  país una nueva constitución política como resultado del ascenso al poder del presidente Hugo Chávez. En  dicha constitución se establece, en su Artículo 128, la obligación del Estado de desarrollar \"una política  de ordenación del territorio atendiendo a las realidades ecológicas, geográficas, poblacionales, sociales,  culturales, económicas, políticas, de acuerdo con las premisas del desarrollo sustentable, que incluya la  información, consulta y participación ciudadana. Una ley orgánica desarrollará los principios y criterios  para este ordenamiento\" (Asamblea Nacional Constituyente, 1999). En cumplimiento de este mandato  constitucional se ha elaborado en Venezuela un nuevo proyecto de Ley Orgánica de OT que mantiene  prácticamente la misma organización institucional.    [8] Conformado por la Secretaría de Desarrollo Social (SEDESOL), el Instituto Nacional de Estadística,  Geografía e Informática (INEGI), la Secretaría de Medio Ambiente y Recursos Naturales (SEMARNAT)  y el Consejo Nacional de Población (CONAPO).    [9] Guías elaboradas para SEDESOL, mediante convenio interinstitucional.   \n  30   [10] Toda persona tiene derecho a presentar peticiones respetuosas a las autoridades por motivos de  interés general o particular y a obtener pronta resolución. Este mandato constitucional ha sido  reglamentado para su uso por parte de los ciudadanos (Constitución Política, Artículo 23).    [11] Las normas han establecido el llamado \"voto programático\". Los electores eligen no a una persona  sino a un programa. Si el gobernante no cumple el programa de gobierno por el cual se votó, los  ciudadanos pueden revocarle el mandato según las reglamentaciones establecidas.    [12] La ley establecerá los recursos, las acciones, y los procedimientos necesarios para la protección de  los derechos individuales, de grupo o colectivos, frente a la acción u omisión de las autoridades públicas.  Dicho mandato ha sido reglamentado, a través de la llamada Acción de Grupo (Constitución Política de  Colombia, Artículo 89).    [13] Organizaciones cívicas debidamente reconocidas de agrupaciones o barrios, que garantizarán el  respeto y acatamiento de las disposiciones de ordenamiento territorial que rigen en su sector.    [14] Toda persona tendrá acción de tutela para reclamar ante los jueces, en todo momento y lugar,  mediante un procedimiento preferente y sumario, por sí misma o por quien actúe a su nombre, la  protección inmediata de sus derechos constitucionales fundamentales, cuando quiera que éstos resulten  vulnerados o amenazados por la acción o la omisión de cualquier autoridad pública. La protección  consistirá en una orden para que aquel respecto de quien se solicita la tutela, actúe o se abstenga de  hacerlo. El fallo, que será de inmediato cumplimiento, podrá impugnarse ante el juez competente... En  ningún caso podrán transcurrir más de diez días entre la solicitud de tutela y su resolución (Constitución  Política de Colombia, Artículo 86).    [15] Toda persona podrá acudir ante la autoridad judicial para hacer efectivo el cumplimiento de una ley o  un acto administrativo. En caso de prosperar la acción, la sentencia ordenará a la autoridad renuente el  cumplimiento del deber omitido. Este mandato se ha reglamentado mediante la \"Acción de  Cumplimiento\" (Constitución Política de Colombia, Artículo 87).    [16] Cuando el municipio o distrito haga parte de un área metropolitana.       Bibliografía   AGUILAR, Adrian. Las bases del ordenamiento territorial. Algunas evidencias de la    experiencia cubana. Revista Geográfica, 1989, núm. 109, p. 87-111.    ASAMBLEA Legislativa (San Salvador). Ley de medio ambiente. 1998.    ASAMBLEA Nacional (Venezuela). Informe de impacto económico y presupuestario,    proyectos de reforma a las leyes orgánicas de ordenamiento territorial y de   ordenamiento urbanístico. Caracas, Oficina de Asesoría Económica y Financiera, 2001.    ASAMBLEA Nacional Constituyente. Constitución de la República Bolivariana de    Venezuela , Caracas, 1999.  BENABENT, Manuel, La ordenación del territorio en el estado de las autonomías.   Algunas conclusiones provisionales. III Congreso Internacional de Ordenación del   Territorio (3-6 julio), Sevilla (España), 2001.    BOISIER, Sergio. Teoría y metáforas sobre el desarrollo territorial. In Universidad    Distrital Francisco José de Caldas, Ordenamiento territorial: Acciones para repensar el  \n  31   espacio, Revista Misión Local, Instituto de desarrollo del Distrito Capital y la    Participación ciudadana y comunitaria  – IDCAP-, año 7, núm. 10, 1998, abril, p.3-19.  CÁMARA Legislativa Do Distrito Federal (Brasil). Lei nº 353. Aprova o Plano Diretor    de Ordenamento Territorial do Distrito Federal, e dá outras providências. Divisão de   Documentação e Biblioteca, Seção de Legislação, Jurisprudência e Consolidação. 1992.    CEMAT. Carta Europea de Ordenación del Territorio, Conferencia de Ministros    Responsables de Política Regional y Ordenación del Territorio. Consejo de Europa,   1983.    COMISIÓN de Desarrollo y Medio Ambiente de América Latina y el Caribe. Nuestra    propia agenda sobre desarrollo y medio ambiente, México: BID/PNUD, Fondo de   Cultura Económica. México. 1991.    CONAMA (Chile). Una política ambiental para el desarrollo sustentable:    Ordenamiento territorial o regulación del comportamiento espacial. Comisión   Nacional de Medio Ambiente, Departamento de Recursos Naturales. Documento de   discusión, no oficial. Santiago, 1998.    CONAMA e Instituto de Geografía de la Universidad Católica de Chile. Identificación    de instrumentos y normativas de ordenamiento territorial ambiental y definición de    situaciones críticas .  Comisión Nacional de Medio Ambiente, Contrato núm. 16-0023- 03/98.Santiago, 1999.    CONGRESO de la República de Colombia. Ley de Desarrollo Territorial, Bogotá,    1997.    CONGRESO de la República de Venezuela. Ley Orgánica para la ordenación del    territorio, Caracas, 1983.    CONGRESO Nacional de Ecuador. Ley de gestión ambiental , Quito, 1999.  DE MATTOS. Paradigmas, modelos y estrategias en la práctica latinoamericana de    planificación regional. In Pensamiento Iberoamericano. Desarrollo regional, nuevos   desafíos. Revista de Economía Política, núm. 10 julio-diciembre, 1986,    DENGO, Jorge et al. Escenarios de uso del territorio para Costa Rica en el año 2025.    Proyecto de Apoyo al Sistema Nacional para el Desarrollo Sostenible  – SINADES- ,(1998)    DÍAZ, Geraldine. Plan Nacional de Ordenación Territorial debe garantizar un verdadero    desarrollo sostenible. In Turismo y ambiente: opinión y actualidad, Universidad Central   de Venezuela (UCV), enero, 2000.    La Prensa (Honduras). BID financiará con 80 millones de dólares ordenamiento   territorial. Tegucigalpa, 3 de marzo de 2000.  El País (Argentina). Proyecto de ley de ordenamiento territorial. Buenos Aires, 30 de   marzo de 2000.  \n  32   ESTABA, Rosa. La descentralización y la ordenación del territorio en Venezuela:    Estrategias hacia la modernidad. In Scripta Nova. Revista Electrónica de Geografía y    Ciencias Sociales. Universidad de Barcelona, Nº 54, 15 de diciembre de 1999.    ESTÉBANEZ, José. Tendencias y problemática actual de la geografía, Madrid: décima    reimpresión, Editorial Cincel, Cuadernos de Estudios, Serie Geografía, núm. 1, 1990.    GABIÑA, Juanjo. Prospectiva y ordenación del territorio: hacia un proyecto de futuro.    Barcelona: Marcombo, S.A, 1998.    GOBIERNO de Honduras Ordenamiento territorial. Informe presentado en la Octava    Sesión de la Comisión de Naciones Unidas para el Desarrollo Sostenible. 1999.    GOBIERNO de República Dominicana. Ordenamiento territorial. Informe presentado    ante la Octava Sesión Comisión de Desarrollo Sostenible de Naciones Unidas, 2000.    GÓMEZ OREA, Domingo. Ordenación del Territorio: una aproximación desde el    medio físico, Madrid: Instituto Tecnológico Minero de España, Editorial Agrícola   Española, S.A. 1994.    GRENIER, Philippe. Problemas de la ordenación del territorio en América Latina.    Revista Geográfica, núm. 104, Instituto Panamericano de Geografía e Historia,1986.    HILDENBRAND, Andreas. Política de ordenación del territorio en    Europa,Universidad de Sevilla, Consejería de Obras Públicas y Transportes de la Junta   de Andalucía. Colección Kora. 1996.    INETER. Productos disponibles al público ,  Managua (Nicaragua): Instituto  Nicaragüense de Estudios Territoriales, 2000.    INSTITUTO Geográfico Agustín Codazzi, Subdirección de Geografía (Colombia).    Guía Metodológica para la formulación del plan de ordenamiento territorial urbano,   aplicable a ciudades. Bogotá:Editorial Linotipia Bolívar, 1996.    INSTITUTO Geográfico Agustín Codazzi, Subdirección de Geografía (Colombia).    Guía Metodológica para la formulación del plan de ordenamiento territorial municipal,   Bogotá: Editorial Linotipia Bolívar, 1997a .    INSTITUTO Geográfico Agustín Codazzi, Subdirección de Geografía (Colombia).    Bases conceptuales y guía metodológica para la formulación del plan de ordenamiento    territorial departamental. Bogotá: Editorial Linotipia Bolívar. 1997b.    INSTITUTO de Planificación Física (Cuba).Anteproyecto de Decreto-Ley de    planificación física. La Habana, 2001.    LÜKE, Oscar. Base conceptual y metodología para los escenarios de ordenamiento    territorial. Proyecto de Apoyo al Sistema Nacional para el Desarrollo Sostenible  –  SINADES-, Ministerio de Planificación Nacional, Convenio de Cooperación Técnica    entre el Gobierno de Costa Rica y el Banco Interamericano de Desarrollo, Comisión    Técnica Consultiva de Ordenamiento Territorial, San José (Costa Rica),1998.  \n  33   MASSIRIS, Angel. Reflexión sobre una política de ordenación territorial en los países    latinoamericanos. In Trimestre Geográfico, Asociación Colombiana de Geógrafos, núm.    15, junio, Bogotá, 1991, p. 3-23.    MASSIRIS, Ángel. Bases Teórico-metodológicas para estudios de ordenamiento    territorial. In Misión Local, Instituto de Desarrollo del Distrito Capital y la Participación   Ciudadana y Comunitaria IDCAP, año 2, núm. 2, enero/marzo, Universidad Distrital,   Santa Fe de Bogotá, 1993, p. 43-87.    MASSIRIS, Ángel. Experiencias internacionales y desarrollos conceptuales y legales    realizados en Colombia. In Perspectiva Geográfica, Revista del Programa de Estudios   de Postgrado en Geografía (EPG), convenio Universidad Pedagógica y Tecnológica de   Colombia (UPTC)-Instituto Geográfico Agustín Codazzi (IGAC), Tunja, Editorial   UPTC, núm. 4 ( Primer y segundo semestre), 1999, p. 7-75.    MASSIRIS, Ángel. Decálogo para el fortalecimiento del ordenamiento territorial en    Colombia. In Asociación Colombiana de Geógrafos et al. Territorio, sociedad y   conflicto en Colombia. Memorias del XVI Congreso Colombiano de Geografía,   Santiago de Cali 17 al 20 de agosto de 2000, p. 56-60.    MASSIRIS, Ángel. Cualidades y desafíos de las políticas latinoamericanas de    ordenamiento territorial. In Coloquio Geográfico sobre América Latina, Facultad de   Geografía de la Universidad Autónoma del Estado de México. Toluca 27 al 29 de junio   de 2001.    MÉNDEZ, Elías. Gestión ambiental y ordenación del Territorio. Mérida    (Venezuela):Universidad de los Andes, Facultad de Ciencias Forestales, Instituto de    Geografía y Conservación de Recursos naturales, 1990.    MINISTERIO de Desarrollo Sostenible y Planificación (Bolivia). Anteproyecto de ley    de ordenamiento territorial, Viceministerio de Planificación Estratégica y Participación   Popular, Dirección General de Ordenamiento Territorial y Planificación. Ministerio de   la Presidencia, Viceministerio de Coordinación Gubernamental, Dirección General de   Coordinación Gubernamental. Senado Nacional, Comisión de Participación Popular,   Gobiernos Locales y descentralización. La Paz, 1999a.    MINISTERIO de Desarrollo Sostenible y Planificación (Bolivia). Guía metodológica    para la formulación de los planes de ordenamiento territorial departamental y   municipal, Viceministerio de Planificación Estratégica y Participación Popular,   Dirección General de Ordenamiento Territorial y Planificación. Ministerio de la    Presidencia, Viceministerio de Coordinación Gubernamental, Dirección General de    Coordinación Gubernamental. Honorable Senado Nacional, Comisión de Participación   Popular, Gobiernos Locales y descentralización. La Paz, 1999b.    MINISTERIO de Planificación Nacional (Costa Rica). Propuesta de Ley de    Ordenamiento Territorial. Proyecto de Apoyo al Sistema Nacional para el Desarrollo   Sostenible, Ministerio de Planificación Nacional, Convenio de Cooperación Técnica   entre el Gobierno de Costa Rica y el Banco Interamericano de Desarrollo, Comisión    Técnica Consultiva de Ordenamiento Territorial. San José. 1998.  \n  34   PRESIDENCIA de la República de Costa Rica. Proyecto de Ley de ordenamiento y    desarrollo territorial, San José, 2000.    PRESIDENCIA de la República de Uruguay. Proyecto de ley de ordenamiento y    desarrollo territorial, 2000.    PROVINCIA de Buenos Aires (Argentina). Decreto-Ley 8912, de ordenamiento    territorial y uso del suelo . Buenos Aires, 1977.  PUJADAS, Romá y Font, Jaume. Ordenación y planificación territorial, Madrid:   Editorial Síntesis, colección Espacios y Sociedades, núm. 8, 1998.    SALINAS, Eduardo (1998), El desarrollo sustentable desde la ecología del paisaje.    Facultad de Geografía, Universidad de la Habana, Cuba, 1998.    SÁNCHEZ, Joan-Eugeni. Geografia política, Madrid: Editorial Síntesis, S.A., 1992.    SEDESOL y otros (México). Términos de referencia generales para la elaboración del    programa estatal de ordenamiento territorial. Versión interinstitucional, Secretaría de   Desarrollo Social (SEDESOL), Secretaría de Medio Ambiente Recursos Naturales y   Pesca (SEMARNAP), Consejo Nacional de Población (CONAPO) e Instituto Nacional   de Estadística, Geografía e Informática(INEGI), julio de 2000. México, D.F    SENADO Nacional (Bolivia). Proyecto de la ley de ordenamiento territorial, La    Paz,2001.    SINADES (Costa Rica). Ordenamiento para el uso estratégico del territorio nacional    en el 2025. Proyecto de Apoyo al Sistema Nacional para el Desarrollo Sostenible,    Convenio de Cooperación Técnica Gobierno de Costa Rica- Banco Interamericano de   Desarrollo, Comisión Técnica Consultiva de Ordenamiento Territorial. San José, 1997.    VAN LEEUWEN, Arthur.Ordenamiento Territorial: Un proceso participativo,    sostenible y de democratización. Proyecto \"Información sobre Tierras y Aguas para un   Desarrollo Agrícola Sostenible\", GCP/RLA/126/JPN, 2001.    VICEMINISTERIO de Desarrollo Urbano (2002). Plan nacional de ordenamiento y    desarrollo territorial. El San Salvador.    ZOIDO, Florencio. Geografía y ordenación del territorio. Scripta Vetera, Universidad    de Barcelona, núm. 77 < http://www.ub.es/geocrit/sv-77.htm > Reproducido de: Íber,   Didáctica de las ciencias sociales. Geografía e Historia, Barcelona: núm. 16, abril    1998, p. 19-31.       © Copyright Ángel Massiris Cabeza, 2002   © Copyright Scripta Nova, 2002    Ficha bibliográfica:    MASSIRIS CABEZA, A. Ordenación del territorio en América Latina. Scripta Nova.    Revista electrónica de geografía y ciencias sociales, Universidad de Barcelona, vol. VI,  \n  35   núm. 125, 1 de octubre de 2002.  http://www.ub.es/geocrit/sn/sn-125.htm  [ISSN: 1138-  9788]     \n";
+    const PDF_NAME = "Ordenacion_del_territorio_en_America_Lat.pdf";
+    const CHATBOT_THEME = "Ordenacion_del_territorio_en_America_Lat";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Por qué la ordenación del territorio en América Latina se considera una política de historia reciente desde los años ochenta?","¿Qué significa que la ordenación del territorio busque el desarrollo sustentable como estrategia plurisectorial y horizontal?","¿Cómo se entiende la ordenación del territorio según la diversidad de interpretaciones (disciplina científica, técnica administrativa, política, proceso, etc.)?","¿Qué rasgos tienen en común las definiciones sobre el objeto de la ordenación del territorio respecto al uso y transformación del territorio?","¿Qué críticas señala Zoido (1998) sobre la Carta Europea de Ordenación del Territorio (CEOT) al confundir resultados e instrumento?","¿Qué evidencia el argumento de “concepto aún en construcción” respecto a la ausencia de definición universal de la ordenación del territorio?","¿Cuáles son algunos rasgos generales de las políticas de ordenación del territorio en América Latina según el análisis de quince países (origen diverso, desarrollo incipiente, intención de globalidad)?","¿Cómo se relacionan y coordinan las políticas sectoriales y plurisectoriales con la ordenación del territorio en la idea de un marco territorial global?","¿Qué ejemplos de articulación orgánica se mencionan (leyes o proyectos) para integrar objetivos urbano-regionales, urbanísticos y ambientales en la espacialidad?","¿Qué problemas aparecen cuando no existe organización administrativa propia para la gestión integral (gestión sectorial vs carácter global/horizontal)?","¿Por qué se considera débil la participación social en los procesos de ordenación y cómo influyen presiones de actores poderosos?","¿Qué obstáculos técnicos se describen para elaborar diagnósticos y prospectivas integrados (información, formatos, escalas, integración interinstitucional)?"];
+    const INITIAL_PALETTE = {"primaryColor":"#1779cf","secondaryColor":"#1261a6","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#1779cf","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>

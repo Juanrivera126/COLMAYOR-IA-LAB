@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot: Tema 1 Lec 1 CocinaSustentable_y_ConsumoResponsable</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';</script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { processHtmlClass: "tex2jax_process", ignoreHtmlClass: "tex2jax_ignore" }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        :root{--primary:#007bff;--secondary:#6c757d;--light:#f8f9fa;--dark:#343a40;--success:#28a745;--danger:#dc3545;--warning:orange;--radius:8px;--font:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;--bg:var(--light);--text:var(--dark);--card:#fff;--border:#ddd;--input:#fff;--iborder:#ccc;--bot-bg:#e9ecef;--bot-text:var(--dark);--user-bg:var(--primary);--user-text:#fff;--sys-bg:#fff3cd;--sys-text:#856404;}
+        body.dark-mode{--bg:#212529;--text:#f8f9fa;--card:#343a40;--border:#495057;--input:#495057;--iborder:#6c757d;--bot-bg:#495057;--bot-text:#f8f9fa;--sys-bg:#332701;--sys-text:#ffeb8f;}
+        body{font-family:var(--font);margin:0;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s;}
+        .container{width:90%;max-width:800px;margin:20px auto;padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:0 4px 12px rgba(0,0,0,.1);flex-grow:1;display:flex;flex-direction:column;gap:15px;}
+        header{text-align:center;border-bottom:1px solid var(--border);padding-bottom:15px;}
+        header h1{color:var(--primary);margin:0;font-size:1.6em;}
+        header p{margin:5px 0 0;font-size:.9em;color:var(--secondary);}
+        .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;}
+        button{background:var(--primary);color:#fff;border:none;padding:8px 15px;border-radius:var(--radius);cursor:pointer;font-size:.9em;transition:background .2s;}
+        button:hover{background:#0056b3;}
+        button:disabled{background:var(--secondary)!important;opacity:.65;cursor:not-allowed;}
+        #theme-btn{background:var(--secondary);}
+        #palette-btn{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .btn-export{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);cursor:pointer;font-size:.85em;transition:background .2s;}
+        .btn-export:hover{background:#0056b3;}
+        .pdf2-section{padding:10px;border:1px dashed var(--border);border-radius:var(--radius);}
+        .pdf2-section label.title{font-size:.85em;font-weight:bold;display:block;margin-bottom:6px;color:var(--secondary);}
+        .file-row{display:flex;align-items:center;gap:10px;}
+        .file-row input[type=file]{display:none;}
+        .file-label{background:var(--secondary);color:#fff;padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:.85em;}
+        .file-label:hover{background:#545b62;}
+        #pdf2-name{font-style:italic;color:var(--secondary);font-size:.85em;}
+        #pdf2-status{font-size:.85em;margin-top:4px;font-weight:bold;}
+        .suggested-questions-row{display:flex;flex-direction:column;gap:6px;}
+        .sq-label{font-size:.85em;font-weight:600;color:var(--secondary);}
+        .questions-select{width:100%;padding:8px;border:1px solid var(--iborder);border-radius:var(--radius);background:var(--input);color:var(--text);font-size:.9em;}
+        .chat-display{height:360px;overflow-y:auto;border:1px solid var(--iborder);border-radius:var(--radius);padding:10px;background:var(--bg);line-height:1.6;}
+        .chat-display .user-message,.chat-display .bot-message,.chat-display .system-message{margin-bottom:10px;word-wrap:break-word;}
+        .chat-display .user-message,.chat-display .bot-message{background:transparent;color:inherit;padding:0;border-radius:0;max-width:100%;text-align:inherit;margin-left:0;}
+        .message{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;max-width:100%;}
+        .message.user-message{flex-direction:row-reverse;justify-content:flex-start;}
+        .avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #eee;background-color:#f0f0f0;}
+        body.dark-mode .avatar-img{border-color:#444;background-color:#555;}
+        .message-bubble{padding:10px 15px;border-radius:18px;max-width:85%;word-wrap:break-word;line-height:1.5;display:flex;flex-direction:column;}
+        .user-message .message-bubble.user-bubble{background:var(--user-bg);color:var(--user-text);border-bottom-right-radius:5px;margin-left:auto;}
+        .bot-message .message-bubble.bot-bubble{background:var(--bot-bg);color:var(--bot-text);border-bottom-left-radius:5px;margin-right:auto;}
+        .chat-display .message-bubble strong{color:var(--primary);font-size:.9em;}
+        .chat-display .bot-message .message-bubble p{margin:0 0 8px;}.chat-display .bot-message .message-bubble p:last-child{margin:0;}
+        .chat-display .bot-message .message-bubble pre{background:var(--dark);color:var(--light);padding:10px;border-radius:5px;overflow-x:auto;}
+        .chat-display .bot-message .message-bubble code{background:rgba(0,0,0,.1);padding:2px 4px;border-radius:3px;}
+        body.dark-mode .chat-display .bot-message .message-bubble code{background:rgba(255,255,255,.1);}
+        .chat-display .system-message{background:var(--sys-bg);color:var(--sys-text);text-align:center;font-style:italic;font-size:.9em;padding:8px 12px;border-radius:var(--radius);}
+        .chat-display .system-message.error{background:#f8d7da;color:#721c24;}
+        .thinking-animation{opacity:.75;animation:pulseThink 1s ease-in-out infinite;}
+        @keyframes pulseThink{50%{opacity:1}}
+        .input-area{display:flex;gap:10px;}
+        #question-input{flex-grow:1;padding:10px;border:1px solid var(--iborder);border-radius:var(--radius);font-size:1em;resize:none;background:var(--input);color:var(--text);}
+        #send-button{background:var(--success);padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;}
+        #send-button:hover{background:#1e7e34;}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid var(--primary);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        footer{text-align:center;padding:12px;background:var(--dark);color:var(--light);font-size:.8em;margin-top:20px;}
+        @media(max-width:600px){.input-area{flex-direction:column;}#send-button{width:100%;padding:12px;}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Chatbot PDF Interactivo</h1>
+        <p>Tema 1 Lec 1 CocinaSustentable_y_ConsumoResponsable</p>
+    </header>
+    <div class="toolbar">
+        <div class="toolbar-actions">
+            <button type="button" id="download-html-session-btn" class="btn-export">📥 Descargar HTML</button>
+            <button type="button" id="download-word-session-btn" class="btn-export">📥 Descargar Word</button>
+            <button type="button" id="theme-btn">🌓 Tema</button>
+            <button type="button" id="palette-btn">🎨 Paleta de colores</button>
+        </div>
+    </div>
+    <div class="pdf2-section">
+        <label class="title">📎 Segundo PDF (opcional)</label>
+        <div class="file-row">
+            <label for="pdf2-upload" class="file-label">+ Seleccionar PDF</label>
+            <input type="file" id="pdf2-upload" accept=".pdf">
+            <span id="pdf2-name">Ningún archivo seleccionado</span>
+        </div>
+        <div id="pdf2-status"></div>
+    </div>
+    <div class="suggested-questions-row">
+        <label for="questions-selector" class="sq-label">Preguntas sugeridas</label>
+        <select id="questions-selector" class="questions-select" title="Elegir una pregunta propuesta">
+            <option value="">— Elige una pregunta —</option>
+        </select>
+    </div>
+    <div id="chat-display" class="chat-display"></div>
+    <div class="input-area">
+        <textarea id="question-input" rows="2" placeholder="Escribe tu pregunta aquí..."></textarea>
+        <button id="send-button">
+            <span id="send-button-text">Enviar</span>
+            <div class="loader" id="loading-spinner"></div>
+        </button>
+    </div>
+</div>
+<footer><p>Diseñado por Juan Guillermo Rivera Berrío con tecnología Gemini 3.1 Pro y la IA agéntica Antigravity</p></footer>
+<script>
+    const PDF_TEXT = "\n\nCOCINA SUSTENTABLE Y   CONSUMO RESPONSABLE \nTítulo:   “Cocina Sustentable y Consumo Responsable”  Autores:  Pamela Poo Cifuentes  Fernanda Salinas Urzúa  Francisca Amenábar Chimenti  Juan Cavieres Silva   Rodrigo Pérez Aravena  Edición:   Patricio Segura Ortíz  Ilustraciones:   Catalina Tapia Acevedo  Diagramación:  Sergio Poo Dalidet  Fotografías:   Francisca Amenábar Chimenti  Primera Edición Digital, 2021.  Este libro fue elaborado por la Asociación Ciudadana de Consumi -  dores Informados y Organizados - ACCION Consumidores, y contó   con el financiamiento del Fondo Concursable para Asociaciones de   Consumidores del Servicio Nacional del Consumidor, Chile.  Acción Consumidores,  Santiago de Chile. \nINDICE  INTRODUCCIÓN  �����������������������������������������������������������������������������   7  CAPÍTULO 1: CAMBIO CLIMÁTICO, HUELLA HÍDRICA Y DE CARBONO   DE LOS ALIMENTOS  �����������������������������������������������������������������������   9  CAPÍTULO 2: CADENA DE VALOR, RESIDUOS Y ECONOMÍA CIRCU -  LAR  ����������������������������������������������������������������������������������������������   19  CAPITULO 3: ¿POR QUÉ CULTIVAR NUESTRO PROPIO ALIMENTO?   27  CAPÍTULO 4: COCINA SUSTENTABLE  ���������������������������������������������   43  RECETARIO  ����������������������������������������������������������������������������������   47 \n\nCocina Sustentable   |   7   INTRODUCCIÓN  La crisis climática y ecológica es una realidad que avanza a pa -  sos agigantados.  Cada día se aleja más la posibilidad de que po -  damos,  como  humanidad,  resolver  este  predicamento,  siendo    muy probable que el escenario del cual seremos testigos será   de un cambio climático intensificado, donde la incertidumbre y   el riesgo serán ya parte de nuestras vidas.   Ante este escenario, que ya se comienza a configurar, como so -  ciedad y ciudadanía debemos hacer todo lo posible por dismi -  nuir los riesgos.  Tomar conciencia de que podemos jugar un rol   importante en la toma de decisiones y a la vez prepararnos para   enfrentar el desafío que se avecina.    Y uno de ellos es el de la alimentación.  El cambio climático reducirá la disponibilidad de alimentos. Eso   es un dato de la causa. Esto, debido a la intensificación de las   olas de calor, la disminución de la provisión de agua y la calidad   de tierras cultivables.  Por ello, cada vez se hará más complejo   acceder a alimentos que combinen precios bajos y buena cali -  dad, y aumentará la dificultad para su importación.  Esto será   más complejo aún para aquellos países que han disminuido su   producción de alimentos para suplir el mercado interno.    Esta realidad es la que ha llevado a ACCION Consumidores,   asociación con un fuerte compromiso ambiental, a elaborar el   presente libro. El objetivo es contribuir con información primor - \n8 |  Cocina Sustentable  dial sobre una cocina sustentable, ya que, a diario, como con -  sumidores  y  consumidoras,  tomamos  decisiones  sobre  como    alimentarnos.   “Cocina  Sustentable  y  Consumo  Responsable”  se  divide  en  4    capítulos.    En el primero veremos cómo se relacionan alimentación y cam -  bio climático, la huella hídrica y de carbono que éstos poseen, y   cómo siendo conscientes de estos aspectos podemos desarro -  llar un consumo responsable.   En  el  segundo  conoceremos  cómo  se  generan  las  cadenas  de    valor de los alimentos, por qué es importante aprovechar to -  dos los componentes cuando los preparamos y cómo hacernos   cargo de la generación de residuos que generamos a través del   consumo cotidiano.   En el tercero seremos testigos de la importancia de los alimen -  tos y por qué debemos tratar de producirlos en nuestros pro -  pios espacios privados o comunitarios. Esto es muy importante,   ya que mientras más consumidores y consumidoras estén pre -  parados y sean capaces de producirlos podremos prepararnos   y adaptarnos mejor ante un escenario climático complejo y una   inminente inseguridad alimentaria a nivel planetario, aquello   representa un proceso de adaptación.    Finalmente, en el cuarto y último capítulo aportamos consejos   para ser consumidores y consumidoras más conscientes y res -  ponsables,  así  como  recetas  inéditas  para  no  desperdiciar  ali -  mentos y aprovechar al máximo lo que tenemos en nuestras   cocinas, lo que permitirá tener una alimentación más sana y   consciente.   La crisis climática tiene origen y efectos globales y sistémicos.   Este libro intenta ser un aporte más en la tarea colectiva de mi -  tigar nuestro impacto en la crisis climática, así como colaborar   a la adaptación y resiliencia, en un ámbito tan esencial como el   de la alimentación.  ¡Buen Provecho! \nCocina Sustentable   |   9   CAPÍTULO 1: CAMBIO CLIMÁTICO, HUELLA HÍDRICA   Y DE CARBONO DE LOS ALIMENTOS  a) Cambio Climático y su relación con los alimentos  El cambio climático es un fenómeno que se viene abordando   desde  hace  varios  años.  Hoy  existe  un  exceso  de  información    sobre éste, lo que dificulta un acercamiento a todas las conse -  cuencias que genera, desde lo cotidiano de nuestras vidas.   Si  bien  el  efecto  invernadero  en  el  planeta  es  un  proceso  na -  tural, las actividades que hemos venido desplegando desde la   revolución  industrial  han  tenido  como  consecuencia  saturar    la  atmósfera  de  gases  como  el  CO2,  metano,  vapor  de  agua  y    otros, lo que ha conllevado al aceleramiento del cambio climá -  tico. Este estilo de vida se ha acrecentado en las últimas déca -  das, producto del excesivo consumo de bienes y servicios, y en   la intensiva extracción y utilización de combustibles fósiles (Del   Río, 2019) como el carbón, el gas y el petróleo.  El resultado es   la intensificación del calentamiento global y con consecuencias   peligrosas, dado que aumentan los riesgos y desastres, las olas   de calor, sequías, lluvias intensas y falta de agua, si no limita -  mos el alza de la temperatura a 1.5°C.   Lo anterior se describe en el último informe del Panel Intergu -  bernamental de Expertos sobre el Cambio Climático (IPCC, por   sus siglas en inglés) donde se proyectan las severas consecuen -  cias de este fenómeno en todas las regiones del mundo, si no  \n10 |  Cocina Sustentable  se reducen las emisiones de gases de efecto invernadero (GEI),  “El informe proporciona nuevas estimaciones de las posibilida -  des de cruzar el nivel de calentamiento global de 1,5° C en las   próximas décadas y encuentra que, a menos que haya reduc -  ciones inmediatas, rápidas y a gran escala en las emisiones de   gases  de  efecto  invernadero,  limitar  el  calentamiento  a  cerca    de 1,5° C o incluso 2° C estarán fuera de su alcance.” (IPCC,   2021)  Lo anterior ratifica las dificultades que existen para que se limi -  te el alza de temperatura global del planeta, dado que los cam -  bios que se requieren como sociedad debieran ser radicales con   relación a cómo nos hemos venido desarrollando hasta ahora.   Si bien el cambio climático no se puede revertir, aún quedan   posibilidades de limitarlo para que éste no tenga consecuencias   tan severas.   Este escenario no es prometedor, por cierto, ya que las emisio -  nes de GEI siguen aumentando, por lo que ya estamos siendo   testigos de sus graves consecuencias.  Y una de ellas, esencial   para nuestras vidas en la cotidianeidad, será la falta de alimen -  tos, lo que ha sido consignado por el IPCC en uno de   sus informes, señalando claramente que los alimen -  tos van a escasear,   “La seguridad alimentaria se verá cada vez más afecta -  da por el cambio climático futuro a través de la dismi -  nución  del  rendimiento  agrícola,  especialmente  en  los    trópicos, con el aumento de los precios, la reducción de   la  calidad  de  los  nutrientes  y  las  interrupciones  de  la    cadena  de  suministro.  Veremos  diferentes  consecuen -  cias  en  diferentes  países,  pero  habrá  un  impacto  más    drástico en los países de bajos recursos en África, Asia,   América Latina y el Caribe.” (IPCC, 2019)  El panel intergubernamental plantea que se están afectando los   cuatro pilares de la seguridad alimentaria que son la disponibi -  lidad, acceso, utilización y estabilidad, lo que coloca en tensión   un  elemento  vital  para  el  desarrollo  de  la  vida.  Señala  especí -  ficamente que se afectará el pastoreo, los cultivos de frutas y  \nCocina Sustentable   |   11   hortalizas, indicando también que, si generamos dietas más sa -  nas, aportaríamos a la adaptabilidad y disminución de los gases   de efecto invernadero.   A su vez Vandana Shiva plantea que la agroindustria también   es un problema, debido a que ésta se basa en la utilización de   combustibles fósiles de forma extendida, por lo que nuestra es -  peranza se encuentra también en las y los pequeños agriculto -  res,   “...la realidad es que sólo un 30 % del alimento que consume   la gente procede de grandes explotaciones agrícolas industria -  lizadas. El 70% restante procede de pequeñas explotaciones   en las que el granjero cultiva una pequeña porción de tierra. Y,   sin embargo, la agricultura industrializada es la causante de un   75% del daño ecológico que se inflige al planeta” (Shiva, 2016)  Agrega la ganadora del Premio Right Livelihood que la agroin -  dustria también es responsable del aumento de los GEI ya que  “Un 40% de las emisiones de gas con efecto invernadero res -  ponsables de dicho cambio climático procede de un sistema   agrícola global que se basa en el empleo de estos combustibles   fósiles. Los combustibles fósiles que se emplean para fabricar   fertilizantes, mover la maquinaria agrícola y trasladar, sin la   menor  sensatez,  los  alimentos,  recorriendo  miles  de  kilóme -  tros por todo el globo terráqueo, contribuyen a aumentar las   emisiones de dióxido de carbono. Los fertilizantes químicos con   nitrógeno emiten óxido de nitrógeno que resulta un 300% más   desestabilizador para el clima que el dióxido de carbono. Ade -  más, la explotación agrícola a escala industrial es una enorme   fuente  de  metano,  otra  toxina  responsable  del  calentamiento    global” (Shiva, 2016).  Lo anterior implica que debemos, de forma profunda, generar   transiciones (Del Río, 2019) que permitan adecuar a la ciudada -  nía a un modelo de menor escala (Max-Neef, Elizalde, & Hopen -  hayn, 2021) y que nos acerque nuevamente a la conexión con   lo que comemos.   Si bien el cambio climático nos afectará a todos y todas, el im -  pacto  será  diferenciado,  siendo  las  personas  más  vulnerables   \n12 |  Cocina Sustentable  las más expuestas y azotadas por un proceso intenso y peligro -  so. Es por ello que se requiere generar conciencia sobre el con -  sumo responsable y la relación que éste tiene con los alimentos   que cocinamos, con el fin de entregar a la población herramien -  tas que posibiliten grados de autonomía en torno a la cocina   y los productos que empleamos en nuestro día a día.  La idea   es avanzar hacia una cocina sustentable que reduzca nuestro   consumo  hídrico,  huella  de  carbono,  el  derroche,  entre  otros    aspectos, para así ser consumidores y consumidoras conscien -  tes, con mejor alimentación y los numerosos impactos positivos   de ésta.   En muchas partes del mundo ha ido cambiando la relación con   lo que comemos.  El eco chef Tom Hunt indica que es importan -  te comer por placer, ingerir alimentos integrales y alimentarse   de la mejor forma posible. Lo anterior es posible si miramos de -  tenidamente nuestra relación con los alimentos.  Para Hunt un   ejemplo lo representa el movimiento Slow Food (Comida Lenta)   que plantea lo siguiente:  “...defiende un sistema de alimentación sostenible. Su objetivo   principal es luchar por la seguridad y la soberanía alimentarias.   En otras palabras, por el derecho a criar, cultivar y almacenar   alimentos desde el seno de una cultura, de modo que los países   puedan ser autosuficientes en lo que a los alimentos se refiere.   Su mensaje es tan sencillo como profundo: la comida debe ser   buena, limpia, justa y para todos y todas” (Hunt, 2020)  La Organización de las Naciones Unidas describe que la alimen -  tación sostenible involucra los siguientes aspectos:  “Genera un impacto ambiental bajo; contribuye a que las gene -  raciones actuales y futuras lleven una vida saludable; protege   y respeta la biodiversidad y los ecosistemas; es culturalmen -  te aceptable; es accesible, económicamente justa y asequible,   además de nutricionalmente adecuada; y optimizan los recur -  sos naturales y humanos” (Hunt, 2020)  Lo anterior son algunos lineamientos de una alimentación sos -  tenible, con el fin de que éstos sean incorporados en nuestro  \nCocina Sustentable   |   13   actuar cotidiano, para que cada consumidor y consumidora   sea  un  factor  de  cambio  a  través  del  consumo  responsable,    así como también para que tenga a la mano los conocimientos   al momento de producir sus propios alimentos.  Hoy más que   nunca debiéramos apuntar a aquello, con el fin de preparar a la   ciudadanía a enfrentar un cambio climático intensificado, en -  tregar las herramientas necesarias para hacerle frente y gene -  rar adaptación y resiliencia ante lo que se viene.   b) Huella Hídrica de los alimentos  La huella hídrica es un indicador para medir la cantidad de agua   utilizada directa o indirectamente en el proceso de fabricación   de algún bien.  En y en nuestro caso, para contabilizar el volu -  men de agua utilizado para producir nuestros alimentos. Cono -  cer la huella hídrica de lo que ingerimos es clave para la toma   de decisiones con relación a nuestra dieta y el impacto que ge -  nera en la naturaleza.   Según la Organización de Naciones Unidas para la Alimentación   y la Agricultura (FAO), la   comida se lleva el 70% del agua que   se consume a nivel mundial.  Tal es su huella hídrica.  Pero no   todos los alimentos poseen el mismo gasto o incorporación de   agua, por lo que hay dietas que imprimen una menor presión   hídrica que otras, es por ello que nuestras decisiones como con -  sumidores y consumidoras, pueden generar un cambio.   Algunos tips que nos entrega el portal Food Unfolded (Bingham,   2021), con respecto a una dieta que involucre menos agua son   los siguientes:   “Comer menos carne. Dietas como la vegetariana o lo semi-ve -  getariana utilizan hasta un 55% menos de agua que una dieta   omnívora. Si renunciar a la carne es demasiado difícil, simple -  mente reducir el tamaño de la porción o la cantidad de comidas   a base de carne puede ser de gran ayuda;   Escoge  la  carne  teniendo  en  cuenta  su  origen.  Si  vas  a  comer    carne,  intenta  tener  en  cuenta  cómo  se  crio  ese  animal.  Aun - \n14 |  Cocina Sustentable  que las carnes criadas en pastos y las carnes “de granja” utilizan   cantidades relativamente comparables de agua en términos de   volumen, el impacto que tiene su uso difiere drásticamente.   Los pastos dependen principalmente de la lluvia, mientras que   los  animales  de  granja  industrial  suelen  consumir  maíz  de  re -  gadío, que se nutre de los limitados recursos de agua super -  ficial y subterránea de la tierra. Además de eso, los desechos   generalmente se concentran en balsas de estiércol que pueden   filtrarse y contaminar las aguas cercanas.  Opta por orgánicos. Mientras los fertilizantes aumentan los   rendimientos de los cultivos, los suelos orgánicos generalmen -  te mantienen una estructura que permite una mayor infiltra -  ción y retención de agua y, por lo tanto, menos riego. Así que,   a pesar de que se requiere más tiempo en producir la misma   cantidad de productos, en general el volumen total de agua   consumida es a menudo equivalente, o incluso menor. Ade -  más, sin los pesticidas y fertilizantes añadidos, la escorrentía de   las granjas orgánicas es mucho menos dañina para el entorno   natural circundante.  Come menos alimentos procesados. Mientras los alimentos   como las frutas y verduras requieren agua para crecer, los ali -  mentos procesados utilizan más agua adicional debido a pro -  cesos como la limpieza de la maquinaria y la precocción de in -  gredientes, así como en la producción de combustible para la   entrega  y  el  envasado,  etc.  Para  empeorar  las  cosas,  este  uso    adicional de agua generalmente viene en la forma de lo que   llamamos agua “azul” y “gris”, que es significativamente más   perjudicial para el medio ambiente que el agua “verde”, utili -  zada prioritariamente para cultivar los alimentos. En línea con   lo  anterior,  genera  menos  desperdicios  y  opta  por  comercios    locales”  Con la incorporación de estos criterios ya estaremos marcando   una diferencia en torno a nuestro consumo de agua vinculado   a los alimentos que consumimos. En específico, la organización   Water  Footprint  Network 1 ,  calcula  la  huella  hídrica.    En  el  si -  guiente cuadro presentamos la huella hídrica de algunos de los   alimentos que ingerimos a diario:  \nCocina Sustentable   |   15   1   https://waterfootprint.org/en/resources/interactive-tools/product-gallery/ \n16 |  Cocina Sustentable  Dentro de los alimentos con más alta huella hídrica se encuen -  tran las carnes y el chocolate, por lo que una dieta basada en   cereales, fruta y verduras contribuyen a disminuir nuestro con -  sumo de agua.  c) Huella de Carbono de los alimentos   La huella de carbono de los alimentos corresponde a los GEI   que emite lo que consumimos para nutrirnos.  Entre los más   comunes son el dióxido de carbono y el metano, este último   asociado en general a la ganadería, y en especial a bovina y ovi -  na. La huella de carbono involucra todo el ciclo de un alimento:   desde las emisiones que genera cuando se cultiva o cría, las de   su  transporte  y  traslado  a  los  centros  de  consumo,  y  los  resi -  duos deja.   Según la FAO, el 26% de las emisiones de gases de efecto inver -  nadero  proviene  de  los  alimentos...  y  tan  solo  la  ganadería  es    responsable del 14,5% de las emisiones (Reyes, 2021). Como   consejos  para  disminuir  nuestra  huella  de  carbono  se  sugiere    dejar de consumir carnes y lácteos.  De no poder hacerlo de for -  ma total, disminuir el número de días a la semana o el tamaño   de las porciones. A tal dieta se le ha llamado flexitariana, debi -  do a que las personas se asumen vegetarianas por varios días a   la semana, consumiendo carnes solo 1 o 2 días semanalmente.    Así lo expresa el siguiente cita:   “Si no quieres abandonar por completo la carne, los expertos   plantean una dieta alternativa: la flexitariana. ¿Qué implica?   Mantener cantidades pequeñas de carne roja y de aves de co -  rral, pescado, leche y huevos, apostando además a comer mu -  chas frutas, verduras y proteínas de origen vegetal. Una dieta   de este tipo podría ahorrarle al planeta el equivalente a 5,13   gigatoneladas de dióxido de carbono al año, según un análisis   de Carbon Brief Wcon datos del Panel Intergubernamental de   Expertos sobre el Cambio Climático (IPCC)” (Reyes, 2021).   Por lo tanto, con sólo dejar unos días de comer carne ya esta -  mos contribuyendo a que haya menos emisiones de gases de  \nCocina Sustentable   |   17   efecto invernadero.  Y esto ya es una importante contribución   para la naturaleza y sus ecosistemas. “Peter Scarborough, pro -  fesor asociado de la Universidad de Oxford afirma que ‘si un   carnívoro típico adoptase la dieta vegana, su huella de carbono   quedaría reducida a la mitad. Al reducir al 50% el consumo de   carne, las emisiones anuales se reducen en una cantidad equi -  valente  a  la  generada  por  un  vuelo  comercial  entre  Londres  y    Nueva York’, concluye” (Flores, 2021).   De lo anterior se puede inferir que si tenemos un consumo   responsable podemos generar impactos positivos tanto para   nuestra salud como para bajar la emisiones del planeta.  Esto se   muestra en el siguiente gráfico:   Otra  forma  de  reducir  la  huella  de  carbono  es  consumiendo    todo lo que hemos comprado o preparado, tratando de no   desperdiciar alimentos.  Esto porque cuando éstos cuando se   transforman en residuos son responsables del 8% de las emisio -  nes de gases de efecto invernadero. También se puede aportar   consumiendo alimentos que provienen de un radio no lejano   del centro de consumo, por ello se recomienda adquirir en los   alrededores de la ciudad o que se transportaron vía terrestre y   no aérea.   Asimismo, debemos fijarnos en el empaque, evitando ante   todo productos sobre envasados, principalmente en vegetales,  \n18 |  Cocina Sustentable  ya que el material plástico con el que muchas veces los envuel -  ven, son derivados del petróleo.   Por ello es preferible comprar   a granel o con la menor cantidad de envoltorios.  Referencias  Bingham, L. (5 de diciembre de 2021). Food Unfolded. Obtenido de 6 Consejos   para reducir la huella hídrica en tu alimentación:  https://www.foodunfolded.com/  es/articulo/6-consejos-para-reducir-la-huella-hidrica-en-tu-alimentacion  Del Río, J. (2019). Guía del Movimiento de Transición. Madrid: Catarata.  Flores, J. (9 de julio de 2021). National Geographic. Obtenido de La enorme huella   ecológica del consumo de carne:  https://www.nationalgeographic.com.es/cien -  cia/consumo-de-carne-y-huella-ecologica_8975  Hunt, T. (2020). Alimentación Sostenible: comprar, cocinar y comer para preservar   el planeta . Barcelona: Cincotintas  IPCC (2021), Cambio climático generalizado, rápido e intensificado – IPCC, ex -  traído el 4 de septiembre de 2021.  https://www.ipcc.ch/2021/08/09/ar6-wg1-  20210809-pr/  IPCC (2019), Informe Especial, Cambio Climático y Tierra, Capítulo 5: Seguridad   alimentaria, extraído el 4 de septiembre de 2021,  https://www.ipcc.ch/srccl/  La Vanguardia (2019), Los tres alimentos que contribuyen más al cambio climático   y los tres que menos, extraído el 4 de septiembre de 2021,  https://www.lavan -  guardia.com/natural/cambio-climatico/20190602/462580546591/cambio-clima -  tico-alimentos-emisiones-dieta.html  Max-Neef, M., Elizalde, A., & Hopenhayn, M. (2021). Desarrollo a escala humana .   Buenos Aires: Econautas.  National Geographic, 2018, ¿Hamburguesa o verduras?, extraído el 4 de sep -  tiembre  de  2021,    https://www.nationalgeographic.com.es/ciencia/actualidad/  asi-afecta-alimentacion-cambio-climatico_11271  Naciones Unidas, Día de la Gastronomía Sostenible 18 de junio, extraído el 4 de   septiembre  de  2021.    https://www.un.org/es/observances/sustainable-gastro -  nomy-day  Reyes, A. (3 de Mayo de 2021). CNN Español . Obtenido de 5 consejos para reducir   la huella de carbono de tu alimentación (sin tener que dejar los asados):  https://  cnnespanol.cnn.com/2021/05/31/alimentos-huella-de-carbono-carne-conse -  jos-orix/  Shiva, V. (2016). ¿Quién alimenta realmente al mundo? Madrid : Capitan Swing. \nCocina Sustentable   |   19   CAPÍTULO 2: CADENA DE VALOR, RESIDUOS Y   ECONOMÍA CIRCULAR  En  el  presente  capítulo  abordaremos  una  serie  de  conceptos.     La idea, entregar una visión transversal sobre cómo abordar el   consumo  responsable  de  los  alimentos  frente  a  un  escenario    de cambio climático, de manera de propender a un sistema de   alimentación sostenible.  En primer lugar, abordaremos lo que es la cadena valor alimen -  tario (o CV) y de qué modo formamos parte de ella. Luego ex -  plicaremos  algunos  elementos  fundamentales  con  relación  al    tratamiento de los residuos alimentarios y cómo a partir de ello   podemos hacer más sostenible el ciclo de producción, consumo   y descarte. Finalmente, nos abocaremos en analizar cómo pro -  pender a una economía circular alimentaria.  a) La cadena de valor alimentario  Según la Comisión de las Naciones Unidas para la Alimentación   y Agricultura (FAO, por sus siglas en inglés), la cadena de valor   alimentario se define como   “todas aquellas explotaciones agrícolas y empresas, así como   las posteriores actividades que de forma coordinada añaden   valor, que producen determinadas materias primas agrícolas   y las transforman en productos alimentarios concretos que   se venden a los consumidores finales y se desechan después  \n20 |  Cocina Sustentable  de su uso, de forma que resulte rentable en todo momento,   proporcione amplios beneficios para la sociedad y no consuma   permanentemente los recursos naturales”.   Este concepto da gran importancia a tres elementos.   En primer lugar, reconoce que las cadenas de valor son siste -  mas dinámicos impulsados por el mercado cuya relevancia es la   coordinación de sus gestores. En segundo lugar, es un concepto   que se aplica de modo general, de forma que sea aplicable a un   subsector de productos completo de un país (por ejemplo, la   carne de vacuno, el maíz, el salmón, etc.).  En  tercer  lugar,  el  valor  añadido  y  la  sostenibilidad  son  medi -  ciones verificables en términos no sólo de su rentabilidad, sino   que por los beneficios que entregan a la sociedad y al medio   ambiente.  Precisamente las CV pueden agregar valor que se verifican a   través de estos 5 elementos fundamentales: a) salarios de los y   las trabajadores; b) rentabilidad para las empresas y/o inversio -  nistas; c) recaudación tributaria para los gobiernos; d) un mejor   suministro de alimentos para las y los consumidores; e) una re -  percusión neta en el medio ambiente, positiva o negativa.  Ahora bien, el funcionamiento de la cadena de valor incide en   tres ámbitos o circuitos cuyo crecimiento está relacionado con   la  sostenibilidad  económica,  social  y  medioambiental.    Incide,    además, directamente en la pobreza y el hambre.   Los tres circuitos de crecimiento son los siguientes: 1) de inver -  sión, impulsado por la reinversión de ganancias y ahorros; 2)   multiplicador, impulsado por el gasto derivado del aumento de   los ingresos de los y las trabajadores; 3) de progreso, impulsado   por el gasto público en los entornos social y natural.  Lo que parece desprenderse de las características de la cadena   de valor alimentario es que todas y todos formamos parte de   este  proceso,  pues  todos  somos  consumidores  cuyo  bienestar    depende directamente de los alimentos que comemos. La for -  ma en que los alimentos, a través de su valor nutricional y su  \nCocina Sustentable   |   21   capacidad para contener patógenos, afectan a nuestra salud o   si en el proceso productivo se atentó contra el medio ambiente,   constituye una preocupación social que requiere una supervi -  sión rigurosa por parte del sector público. La ubicación de la re -  sidencia del consumidor, así como sus preocupaciones, hábitos   y preferencias con relación a los alimentos repercuten amplia -  mente en la naturaleza de la cadena de valor alimentario.  Una segunda idea elemental es que las cadenas de valor ali -  mentario  revisten  especial  importancia  para  la  pobreza  y  ge -  neran  consecuencias  directas  en  la  seguridad  alimentaria.  Por    ello, son de importancia estratégica en la política nacional (y   mundial), afectando directamente al entorno empresarial en el   que operan los actores del sistema.  Relacionado con lo anterior, la producción de alimentos está es -  trechamente relacionada con el entorno natural (suelos, masas   de aguas, aire, genética, etc.) y con el ciclo biológico de los ani -  males y las plantas, por lo que podemos señalar que la cadena   de valor alimentario debe funcionar en armonía con los ciclos   naturales para mantener su sostenibilidad.   b) Gestión de residuos  Seguramente en varias ocasiones nos hemos pre -  guntado cuanto de los residuos que generamos   en nuestros hogares corresponde a aquellos que   son generados por nuestros alimentos.  Al  respecto,  un  informe  publicado  por  la  FAO    analiza  el  desperdicio  alimentario  y  su  impacto    medioambiental en función del origen de los ali -  mentos (vegetal o animal).  Según el reporte, la producción mundial de alimentos de origen   vegetal es de unos 4.800 millones de toneladas, principalmente   cereales, seguidos de verduras, hortalizas y tubérculos. En com -  paración,  la  producción  de  alimentos  de  origen  animal  ronda    los 1.000 millones de toneladas, que suponen entre el 17 y el 18  \n22 |  Cocina Sustentable  % de la producción total de alimentos en el mundo.  El estudio de FAO pone de manifiesto que en el mundo se des -  perdician  1.100  millones  de  toneladas  de  alimentos  vegetales    (un 19 % del total). La mayor parte de este desperdicio ocurre   durante la producción y en los hogares a partes iguales.  Así las cosas, el desperdicio desperdicio mundial de alimentos   de origen animal es de 175 millones de toneladas (un 3 % del   total).  Otro tema importante es la huella que genera el desperdicio.   Al respecto señala el informe que el descarte implica un uso   poco eficiente de los recursos alimentarios, lo cual conlleva a   acrecentar la huella hídrica, un aumento de la tierra cultivable y   una emisión de gases de efecto invernadero.  Por ejemplo, en el caso de los cereales tene -  mos que es una actividad que genera la ma -  yor huella hídrica, con un 51 % de la huella   de aguas útiles o aguas azules en agricultura   y ganadería, seguido de las frutas. En el caso   de  la  carne  el  índice  es  de  menos  de  un  10    % del total de la huella de aguas azules de la   agricultura.  Los  desperdicios  vegetales  también  generan    un impacto. Así es como el 16 % del total de   gases de efecto invernadero provenientes de   la  agricultura  son  residuos  vegetales,  mien -  tras que los productos de origen animal suponen el 7 %. Entre   los desperdicios que más contribuyen a aumentar las emisiones   de gases de efecto invernadero están las verduras y hortalizas   (7 %), la carne (6 %) y los cereales (5 %).  Asimismo, los cereales, la carne y la leche son los que mayores   superficies cultivables ocupan. El informe de la FAO estima que   una reducción total del desperdicio de los alimentos supondría   reducir un 23 % las emisiones totales de gases de efecto inver -  nadero provenientes de la agricultura y la ganadería. \nCocina Sustentable   |   23   En el caso de Chile, el Ministerio del Medio Ambiente ha seña -  lado que “[E]l 58% de los residuos que generamos en nuestras   casas corresponden a orgánicos como son los restos de comida   o cáscaras de fruta, sin embargo, se aprovecha menos del 1%   de ellos”.   Al respecto, la FAO recomienda lo siguiente:  • Servir porciones pequeñas en los hogares y los restaurantes.   Es mejor repetir que desperdiciar lo sobrante.  • Compartir raciones grandes en restaurantes.  • Ir al supermercado con una lista de compras.  • No adquirir con la vista. Las frutas y verduras “feas” o irregu -  lares son igual de buenas, pero un poco diferentes.  •  Preocuparse  por  las  fechas  de  caducidad  y  consumo  prefe -  rente.  •  Donar  los  excedentes,  principalmente  los  de  restaurantes  y    supermercados (es necesaria una legislación).  • Compostar.  Efectivamente, al desechar los residuos orgánicos se pierden los   nutrientes contenidos en ellos, los que pueden servir como fer -  tilizantes. También, en plantas especializadas se puede generar   biogás a partir de estos desechos. Por eso alternativas como las   composteras  o  vermicomposteras  en  los  domicilios,  barrios  o    a  nivel  comunal  e  intercomunal  pueden  contribuir  ambiental -  mente en lo que respecta a la disposición de los residuos ali -  mentarios.  Precisamente  evitando  el  desperdicio  de  alimentos  como  una    correcta gestión del descarte se pueden disminuir algunos de   los impactos negativos a nivel ambiental y social de las comuni -  dades aledañas a rellenos sanitarios y botaderos, como son la   proliferación de plagas, la generación de lixiviados, olores mo -  lestos  y  gases  de  efecto  invernadero,  principalmente  metano.    Aplicando estas acciones se contribuye positivamente a la ca -  dena de valor alimentario. \n24 |  Cocina Sustentable  c) Economía circular  Actualmente  el  modelo  imperante  en    el sistema productivo es el de econo -  mía lineal, es decir basado en la extrac -  ción  de  recursos,  su  transformación  a    través de la industria, su puesta a dis -  posición  en  el  mercado  para  las  y  los    consumidores,  para  finalmente  des -  echarlos cuando pierden su utilidad.  Dicho modelo ha sido altamente cuestionado sobre todo por -  que no es viable dentro de un contexto de cambio climático, en   el cual la sociedad debe tomar medidas vinculadas al consumo   responsable tales como la reducción de residuos, huella de car -  bono, huella hídrica o de gases de efecto invernadero.  En ese sentido, la alternativa que creemos es la más cercana a   un  consumo  responsable  se  vincula  a  elementos  relacionados    con la economía circular pues ésta se hace cargo del agotamien -  to inexorable de los recursos y el aumento de la contaminación.  Pero ¿qué es la economía circular?   La  economía  circular  es  un  modelo  de  producción  y  consumo    que implica compartir, alquilar, reutilizar, reparar, renovar y re -  ciclar materiales, además de productos existentes todas las ve -  ces que sea posible para crear un valor añadido.  Así, se ha dicho que “la economía circular propone que los sis -  temas productivos tienen que asemejarse a ecosistemas, don -  de la salida de un proceso es la entrada de otro. De acuerdo con   la economía circular no es tolerable que un sistema productivo   genere artículos de un solo uso, porque es desperdiciar su va -  lor: por un lado, el que es inherente a los materiales de los que   se compone y, por el otro lado, el del propio del trabajo emplea -  do en transformarlo” 2 .  2  Ruiz, Irene (2018). La industria alimentaria y la economía circular, extraído el 5 de   diciembre  de  2021.  Disponible  en   https://alimentandolainocuidad.com/la-indus -  tria-alimentaria-y-la-economia-circular/ \nCocina Sustentable   |   25   De este modo, podemos decir que, en el caso de los alimentos,   la  economía  circular  plantea  el  respeto  al  ciclo  biológico  de  la    producción alimentaria, de modo de consumir o adaptar las ne -  cesidades de forma que el proceso sea sostenible en el tiempo.   En vista de eso, explotaciones agroalimentarias deberían mejo -  rar en tanto se asemejen a los ciclos naturales, implementando   medidas que permitan, entre otros aspectos:  • Devolver al suelo parte de la materia orgánica retirada, con -  virtiendo en fertilizantes algunos tipos de residuos agroindus -  triales, por ejemplo.  • Velar por la conservación de la biodiversidad para aumentar   la resiliencia (capacidad de adaptarse al cambio).  • Evitar introducir substancias que acaben contaminando sue -  los y acuíferos.  • Proteger el mantenimiento de la estructura y la calidad de los   suelos.  Según la FAO, la economía circular en materia alimentaria es ca -  paz de vincular productor y consumidor de un modo que priori -  ce los mercados locales, promoviendo el desarrollo económico   local  creando  círculos  virtuosos.  Así, la  economía  circular  bus -  ca  soluciones  justas  basadas  en  las  necesidades,  los  recursos    y las capacidades locales y se crean mercados más equitativos   y  sostenibles.  Fortalecer  los  circuitos  alimentarios  cortos  pue -  de incrementar los ingresos de los productores de alimentos al   tiempo que mantiene un precio justo para los consumidores.   También fomenta las innovaciones sociales e institucionales,   desempeñando un papel fundamental en el proceso de produc -  ción o distribución alimentaria. Ejemplo de ello hay en los sis -  temas participativos de garantía, los mercados de productores   locales, el etiquetado con denominación de origen, la agricultu -  ra sostenida por la comunidad, entre otros.   Por ello, reformular los sistemas alimentarios sobre la base de   los  principios  de  la  economía  circular  puede  ayudar  a  hacer    frente al desafío del desperdicio mundial de alimentos al acor - \n26 |  Cocina Sustentable  tar las cadenas de valor de los productos de ingerimos y aumen -  tar la eficiencia en el uso de los recursos. Según la FAO, actual -  mente, una tercera parte de todos los alimentos producidos se   pierde o desperdicia, con lo que no se contribuye a la seguridad   alimentaria y la nutrición, y se agravan las presiones sobre los   recursos naturales. Es por ello que la aplicación de criterios de   economía circular se hace necesario dentro de un contexto de   cambio climático.  Referencias:  Economía circular y solidaria: las economías circulares y solidarias que reconectan   a productores y consumidores ofrecen soluciones innovadoras para vivir dentro de   los límites de nuestro planeta y, al mismo tiempo, afianzan las bases sociales para   el,  disponible  en   https://www.fao.org/agroecology/knowledge/10-elements/  circular-economy/es/?page=50&ipp=5&tx_dynalist_pi1%5Bpar%5D=YToxOntzO -  jE6IkwiO3M6MToiMCI7fQ%3D%3D  Ésta es la huella ambiental de la comida que tiramos a la basura, disponible en   https://theconversation.com/esta-es-la-huella-ambiental-de-la-comida-que-tira -  mos-a-la-basura-128797  Informe “Food Wastage Imprint, Impacts on Natural Resources”, Organización de   las  Naciones  Unidas  para  la  Alimentación  y  la  Agricultura,  disponible  en   https://  www.fao.org/3/i3347e/i3347e.pdf \nCocina Sustentable   |   27   CAPITULO 3: ¿POR QUÉ CULTIVAR NUESTRO PROPIO   ALIMENTO?  Las razones para cultivar nuestro propio alimento son diversas.   Desde una perspectiva ecológica, el sistema alimentario global   es responsable de un 37 % de los gases de efecto invernade -  ro. La vegetación nativa alrededor del mundo desaparece bajo   incendios, talas o maquinaria pesada para ceder espacio a los   monocultivos y a la ganadería, mientras los humedales son dre -  nados para ampliar las superficies cultivadas, son destinados a   la ganadería o se secan debido a la sobreexplotación hídrica a la   que son sometidos para el riego de la agroindustria.   Los monocultivos agrícolas son más susceptibles a enfermeda -  des y plagas. Por ello requieren la aplicación permanente de   fungicidas, pesticidas, bactericidas, plaguicidas y otros produc -  tos sintéticos, que también afectan negativamente a la biodi -  versidad nativa. Sus procesos también requieren fertilizantes   sintéticos para aportar nutrientes a las plantas, los cuales sue -  len aplicarse en exceso, contaminando el suelo, el aire y el agua.    Además, los fertilizantes se infiltran en el suelo llegando a los   cursos y cuerpos de agua, pudiendo generar procesos de eutro -  fización en el sistema terrestre y en el ecosistema marino.   Los monocultivos, asimismo, son manejados para que sólo crez -  ca la planta que se busca producir. Y con el fin de eliminar las   “malezas”, se aplican herbicidas tóxicos para las personas y los   ecosistemas. \n28 |  Cocina Sustentable  Los  alimentos  producidos  por  la  industria  alimentaria  viajan    largas distancias, desde el lugar en que son producidos hasta   donde son comercializados y consumidos. Todo este transporte   genera emisiones de gases de efecto invernadero y contamina -  ción. Además, mantener alimentos frescos por tiempos exten -  sos requiere muchas veces que éstos se conserven en ambien -  tes refrigerados, para lo que se utilizan gases refrigerantes con   elevado potencial de calentamiento global.   Muchas veces los productos se embalan en envases de plásti -  co  de  un  solo  uso  o  en  contenedores  de  cartón  desechables.     Estos envoltorios requieren materia, energía y agua para ser   elaborados y luego transportados al lugar don -  de serán utilizados. El plástico que se usa para   el embalaje suele no ser reciclable y aunque   a veces se puede reutilizar, termina siendo un   residuo que va a parar a algún vertedero. El   cartón puede ser reciclado, pero nuevamente   requerirá energía, agua y materia para volver a   fabricar un producto utilizable.  El  agronegocio  transforma  a  los  alimentos  en    productos, y exige ciertas características específicas para ingre -  sar al mercado. Es por esto que millones de toneladas de ali -  mentos  se  pierden  en  los  campos,  en  los  contenedores,  en  la    cadena de transporte o en el comercio.  Este desperdicio ocurre   por decisiones de descarte, porque los alimentos no cumplen   con criterios exclusivamente estéticos, que pueden ser formas,   tamaños, cicatrices, color, o puntos de maduración, a pesar de   que todavía son perfectamente comestibles.   El alimento también se descarta cuando no cumple con los ópti -  mos preestablecidos en los lugares donde se comercializa. Otras   veces se elimina luego de haber sido adquirido por quienes lo   compran  para  consumirlo,  pudiendo  ser  nuestros  propios  ho -  gares, casinos, cafeterías, restaurantes o similares. A nivel glo -  bal, cerca de un tercio de todos los alimentos que se producen   se pierden, desperdiciando también agua, nutrientes, semillas,  \nCocina Sustentable   |   29   energía y trabajo, y generando contaminación, deforestación y   profundizando el calentamiento del planeta en vano.  Desde una perspectiva social, el intenso sistema alimentario   global genera diversos impactos.   En muchos casos, quienes se desempeñan en el agronegocio   cuentan con condiciones precarizadas, teniendo que dormir en   campamentos que en ocasiones requieren horas de viaje en   bus  o  furgón  para  llegar  al  lugar  donde  se  realizan  labores  de    temporada. Una gran parte de los temporeros en Chile hoy son   migrantes, con contratos trimestrales, transformándose en una   mano de obra que luego regresa a su países de origen, como   Perú y Bolivia. Muchas mujeres migran para mantener a sus hi -  jos o a sus padres, con 16 o 18 años. La mitad de los sueldos   de la agricultura, silvicultura y pesca no superan los $ 300.000   líquido.   Muchos de los productos aplicados en los cultivos agrícolas in -  dustrializados son dañinos para la salud. Entre ellos, son espe -  cialmente peligrosos los herbicidas, insecticidas, fumigantes,   fertilizantes, pesticidas, además de la exposición a polvo orgá -  nico e inorgánico, junto con alergenos, que están asociados a   ciertos tipos de enfermedades de la piel, cáncer, enfermedades   respiratorias, cardiovasculares y accidentes.   A su vez, las actividades físicas repetidas, que requieren fuer -  za,  posturas  forzadas,  o  la  vibración  del  cuerpo  entero  por  la    conducción o utilización de maquinarias, pueden generar en el   tiempo cambios degenerativos, dolor lumbar, hernia de disco   y lesiones en el sistema nervioso periférico.  Y como se aplican   fertilizantes o herbicidas en exceso, en muchos casos se genera   contaminación de los cursos y cuerpos de agua de los campos,   tanto aguas abajo como del entorno cuando se aplican produc -  tos que se dispersan con el viento, afectando la salud de las   personas.   En zonas con sequía, la agroindustria asegura su propia pro -  visión hídrica para mantener la productividad de sus cultivos,  \n30 |  Cocina Sustentable  afectando la disponibilidad para todos los otros usos que se   requieren en la cuenca. Esto lo logra a través de la construc -  ción de pozos profundos, bombeando el agua de los acuíferos   y,  por  ende,  disminuyendo  los  niveles  de  la  napa  y  afectando    la vitalidad de los ecosistemas. En otros casos, desvían los cur -  sos de agua para su almacenamiento en tranques.  Todo esto   profundiza la escasez hídrica, se pierden los medios de vida de   las personas que dependen de los ecosistemas para subsistir y   los paisajes se transforman ante el avance de la desertificación.   Ríos que no hace muchos años corrían libres por los cauces, hu -  medales y lagunas que eran hogar de muchas especies, se han   transformado en paisajes deshidratados.  El agronegocio permanentemente está bus -  cando  formas  para  expandir  las  fronteras    de sus mercados, para lo que requiere a su   vez incrementar las superficies cultivadas.   En  consecuencia,  zonas  rurales  cubiertas    con vegetación nativa, muchas veces des -  tinadas al pastoreo de animales de crian -  ceros, son transformadas de forma radical,   eliminando la vegetación existente e instalando monocultivos   de viñas o frutales para la exportación a lo largo de todo el país.   De  esta  manera,  a  través  de  la  sobreexplotación  del  agua,  la    pérdida de la vegetación o la contaminación, quienes habitan   en zonas rurales ven afectados los medios que les permiten vi -  vir y realizar sus actividades productivas tradicionales y de sub -  sistencia.   Cultivando nuestro propio alimento nos vamos haciendo cons -  cientes del tiempo y el trabajo que están asociados a su produc -  ción, vamos aprendiendo que dependiendo de dónde vivamos   podremos tener disponibles algunos alimentos en algunas tem -  poradas y otros en otras, y sabremos que, para tener disponibi -  lidad de todo durante el año, los productos deben provenir de   otras partes del país o del mundo, al menos en algunas tempo -  radas, o recurrir a tecnologías costosas y/o contaminantes.  \nCocina Sustentable   |   31   Cuando cultivamos nuestros propios alimentos nos vamos ha -  ciendo conscientes de los ciclos de la naturaleza: las estaciones   del año, los ciclos de la luna, los eventos de heladas o las olas   de calor.  La nieve, las lluvias y las sequías empiezan a ser un   factor que interactúa con las plantas que cuidamos, generando   efectos en ellas, y frente a los que tenemos que estar atentos   para aprender sus consecuencias.   LO QUE NECESITAMOS SABER PARA CULTIVAR   NUESTRO PROPIO ALIMENTO  a) Requerimientos de las plantas y reciclaje de nutrientes y   materia  Para comenzar a cultivar nuestro propio alimento hay algunas   cosas que debemos saber.   Lo primero, que las plantas requieren agua, luz solar y un sustra -  to, como el suelo, para crecer. Dependiendo de la planta será la   cantidad de agua, las horas e intensidad de la luz solar y el tipo   de sustrato que requerirá. Las plantas de las que generalmente   nos rodeamos tienen tres órganos: raíz, tallo y hojas, y dos tipos   de estructuras reproductivas: flores y frutos, y es en estos últi -  mos donde se desarrollan las semillas. Las semillas son plantas   en estado embrionario, en un estado de latencia, listas para ac -  tivarse cuando se hidratan y para transformarse en una planta   verde, desarrollando sus órganos y estructuras reproductivas.   Podemos diferenciar a las plantas según su longevidad, es decir,   por cuánto tiempo viven. Hay plantas que viven algunos meses,   mientras otras viven un año o dos, y otras pueden vivir muchos   años.   Por ejemplo, cereales como el trigo, el maíz y la cebada,   o algunas hortalizas como las lechugas, las zanahorias y el cilan -  tro, típicamente viven solo algunos meses. La semilla germina,   la planta crece, florece, fructifica y se seca, y con las semillas,   que son los hijos en estado embrionario, continúan su perma - \n32 |  Cocina Sustentable  nencia en este mundo. Otras plantas pueden vivir un año o dos,   como las tomateras y las acelgas, que una vez que florecen y   fructifican, tienden a secarse, aunque a veces rebrotan desde   la base del tallo. Hay plantas, a las que llamamos geófitas, que   desarrollan la parte vegetativa y reproductiva en algunos meses   del año, para después secarse sobre la superficie de la tierra,   pero mantienen estructuras de reserva bajo tierra, como las pa -  pas, los ajos y las cebollas.  Existen también las que pueden vivir   por varios años, incluso más de 3.500, como el alerce milenario   en Llanquihue, y los pinos de California y Nevada, de más de   5.000.  También podemos diferenciar a las plantas por   sus formas de vida.  Los árboles desarrollan un   tronco leñoso en el tallo principal, raíces, hojas,   ramas, flores y frutos. Los arbustos desarrollan   tallos leñosos que se ramifican desde la base,   y también cuentan con ramas, hojas, flores y   frutos. Las lianas son plantas leñosas que re -  quieren el soporte de una estructura o de otra   planta para crecer en altura. Las hierbas tienen   tallos que nunca desarrollan tejido leñoso.   Entonces, dependiendo de la cantidad de luz solar, del espacio,   de la posibilidad de aportar agua, de la disponibilidad de tiem -  po para cuidar nuestros cultivos, y de nuestros propios gustos   para comer y cocinar, vamos a poder ir definiendo qué es lo que   podemos cultivar. Y lo que podemos cultivar seguramente irá   cambiando y aumentando en el tiempo, a medida que vamos   aprendiendo más y vamos integrando el cultivo, cosecha, pre -  paración y conservación de alimentos como parte de una rutina   habitual en nuestras vidas.   b) Dónde podemos cultivar alimentos  Si  vivimos  en  un  departamento  con  un  balcón,  una  terraza  o    una baranda que recibe luz directa del sol durante al menos   cuatro horas al día, tanto en invierno como en verano, podemos  \nCocina Sustentable   |   33   comenzar cultivando hierbas aromáticas en macetas o en una o   varias jardineras, como el ciboulette, el orégano, el romero, el   cilantro y el perejil.  Nuestras preparaciones quedarán mucho más ricas, y disfruta -  remos  poder  contar  con  estas  hierbas  frescas  de  manera  per -  manente  al  alcance  de  nuestras  manos.  Cuando  nos  sintamos    tristes o nerviosos, o no podamos dormir, podremos tomar una   infusión de melissa, menta o poleo después de comer, o usar la   hierbabuena  para  saborizar  la  limonada  o  el  agua  fría.    Todas    hierbas aromáticas fácilmente cultivables en este espacio.  Si tenemos una terraza donde uno de los muros recibe luz solar   directa por varias horas, podemos aprovechar ese espacio para   instalar un huerto vertical. Así, vamos a poder tener acceso a   una mayor diversidad de hierbas frescas y hortalizas al alcance   de la mano. Existen muchas alternativas de huertos verticales   en  el  mercado,  pero  también  podemos  hacerlo  nosotros  mis -  mos.  Para hacer un huerto vertical podemos reutilizar un pallet,   agregando tablas que funcionen de base de jardineras que con -  tengan la tierra, y que deben ser lo suficientemente profundas   como para que las raíces se desarrollen y el volumen de suelo   tenga  la  capacidad  de  retener  la  humedad.  Es  necesario  dejar    suficiente espacio entre cada jardinera, para que las plantas   puedan crecer en altura y así podamos acceder a este espacio   para regar con comodidad. Dependiendo de la terminación que   le queramos dar podemos lijar la madera para que quede suave   al tacto, o puede quedar rústica, y tendremos que ser cuidado -  sos para no astillarnos.   Lo que sí es recomendable es impregnar la madera con dos ma -  nos de aceite de linaza aplicada con una brocha, que permitirá   que la estructura nos dure más tiempo sin que se pudra. No   debemos olvidar que la madera estará en contacto permanente   con la humedad, y aunque nos recomienden otros impregnan -  tes por ser tal vez más efectivos, debemos elegir uno que no sea   tóxico, ya que estaremos cultivando ahí nuestro alimento. \n34 |  Cocina Sustentable  Si vivimos en un lugar con un pequeño jardín, que recibe más de   cuatro horas diarias de luz solar directa a lo largo del año, po -  demos cultivar, además de las hierbas aromáticas, hortalizas de   hojas, como lechugas, acelgas, rúcula, mizuna, apio y achicoria.   Si  tenemos seis o más horas de luz  solar directa a lo largo del   año, podemos probar cultivar tomates, albahaca, aguaymanto   y betarragas.   Ahora, si tenemos acceso aún a más espacio y más de seis ho -  ras diarias de sol directo y ganas de dedicar tiempo de manera   regular al cultivo de alimentos, podemos cultivar todo lo an -  terior,  además  de  zanahorias,  cebollas,  porotos,  habas,  cho -  clo, zapallo, pepino, pimentón, papas y lo que se nos ocurra,   como quinoa, trigo, linaza.  Al contrario, si no queremos dedicar   mucho tiempo al cultivo de alimento, pero tenemos más espa -  cio, podemos elegir nuestras frutas favoritas y cultivarlas en el   jardín  de  casa  por  un  período  cada  año.  El    damasco, el níspero, el limón, la naranja, la   mandarina, el durazno, la almendra, la nuez,   las uvas, los higos y las brevas, la ciruela, la   palta no requieren más que agua, un sue -  lo fértil y sol. Cada una de esas frutas tiene   muchas variedades, y podemos elegir la que   más nos gusta, y tener tantas como espacio   dispongamos.  Y si no contamos con espacio ni luz para cultivar alimentos,   pero tenemos la inquietud de hacerlo, podemos usar espacios   públicos, transformando el entorno que habitamos.  Es posi -  ble cultivar alimentos en el espacio público que está bajo nues -  tro cuidado, como el antejardín o la platabanda, o en espacios   como plazas o parques o bandejones.  Los alimentos que se   cultivan en los espacios públicos son de todos por definición,   pero su cuidado dependerá de nosotros, transformándonos en   creadores de espacios llenos de vida y abundancia para todos.   Antes de iniciar el proyecto, tanto en los lugares en los que vi -  vimos como en espacios públicos, detengámonos con tranquili - \nCocina Sustentable   |   35   dad para observar y elegir el lugar más adecuado. Veamos cómo   cambia la iluminación a lo largo del día y de las estaciones.  Si   queremos intervenir un espacio público, es clave conversar y   explicar nuestra idea a quienes son los encargados de mante -  ner el área y a todos quienes se nos acercan a preguntar qué   estamos haciendo, ya que será toda la comunidad la que tendrá   contacto permanente con nuestra iniciativa. En definitiva, los   espacios que habitamos los hacemos entre todos, y mientras   más nos vinculamos con transformarlos en lo que queremos,   más bienestar traeremos a nuestras vidas y a las de los demás.   No nos desanimemos si en un principio no somos nosotros los   que cosechamos todos los productos de nuestro trabajo. Pen -  semos que estamos creando la oportunidad para que otras per -  sonas aprendan, disfruten de cosechar y de comer un alimento   sano que se produce al alcance de la mano, y que podemos   extender y replicar en otros lugares.  Podemos crear un proyecto colectivo de transformación gra -  dual de un espacio. La clave siempre es comenzar pequeño,   pero pensar en grande. Se puede trasplantar unos pocos árbo -  les y arbustos, y a medida que seamos capaces de mantenerlos   y de ir generando conciencia con quienes usan también el espa -  cio, podremos ir creciendo con el tiempo, no solo en superficie   sino también en colaboración con un proyecto colectivo.  c) Cómo cultivamos nuestros alimentos  Siempre comienza de a poco.   Si no tienes experiencia cultivando tu alimento es mejor empe -  zar con un proyecto pequeño, con plantas aromáticas, y hortali -  zas sin grandes requerimientos, como las acelgas y las lechugas.   Podemos comprar las plantas aromáticas y los almácigos en fe -  rias libres. Si tenemos que cultivarlas en macetas, generalmen -  te quienes venden las plantas también comercializan los re -  ceptáculos.  Y al vendedor le podemos consultar sobre los más   adecuados para las plantas que queremos cultivar. En términos   generales, necesitamos maceteros al menos dos o tres veces el  \n36 |  Cocina Sustentable  volumen de la bolsa donde se comercializa la planta, para poder   tener un buen desarrollo de las raíces. También necesitaremos   más tierra para rellenar el espacio del macetero.   Deberemos  conseguir  o  comprar  compost.  Evitemos  comprar    tierra de hojas.  Este preciado sustrato es la capa de suelo su -  perficial que es removida de los bosques nativos, promoviendo   la erosión del suelo y evitando que dicho ecosistema se pue -  da regenerar, ya que contiene las semillas y protege de la de -  secación  las  primeras  etapas  de  desarrollo  de  las  plantas.  Los    nutrientes y la capacidad de evitar la pérdida de humedad del   suelo son removidas con la tierra de hojas, promoviendo la de -  gradación del bosque y la desertificación.  Cuando tengamos nuestras plantas, macetas y compost, relle -  namos la base de nuestra maceta con compost hasta que logra -  mos cubrir la diferencia de profundidad entre la superficie de   la tierra en la bolsa y la altura de la maceta. Cuidadosamente   removemos la bolsa que cubre las raíces y la   tierra, instalamos la planta dentro y rellena -  mos los espacios libres con compost. Regamos   lenta y abundantemente, hasta que el suelo   quede completamente saturado de agua. Esto   ocurrirá cuando el agua escurra por los aguje -  ros  del  macetero  o  cuando  se  acumule  en  la    superficie de la tierra.   Si tenemos un jardín o queremos intervenir un espacio público,   tendremos que asegurarnos de que el suelo no esté compacta -  do.  Para eso usaremos un chuzo o una picota para soltar la tie -  rra y hacer un hoyo lo suficientemente ancho y profundo como   para que entre cómodamente la bolsa o el contenedor con la   tierra y las raíces.  Una vez listo el hoyo, removemos con cuida -  do la bolsa o maceta, intentando no romper las raíces ni la es -  tructura del suelo, instalamos las raíces de la planta en el hoyo   y rellenamos los espacios con la tierra que sacamos. Regamos   inmediatamente, asegurándonos de que el agua se infiltra a las   raíces de la planta, y que el suelo queda saturado de agua. Esto  \nCocina Sustentable   |   37   ocurrirá cuando el agua se acumule en la superficie de la tierra.   Si compramos almácigos tenemos que sacar cuidadosamente   la bolsa y separar cada planta, evitando romper las raíces, que   suelen estar enredadas. Para lograrlo, tomamos con ambas ma -  nos toda la tierra que contiene las raíces. Con movimientos cor -  tos, con una mano hacia adelante y otra hacia atrás, y viceversa,   de manera reiterada, separamos la tierra y raíces en porciones   cada vez más pequeñas, así vamos separando las plantas en -  tre sí, a medida que las vamos trasplantando en la tierra, en   la jardinera o en la maceta. Tendremos que hacer un hoyo lo   suficientemente profundo como para que las raíces más largas   queden estiradas, y la base del tallo quede justo en la superficie   del  suelo.  Sujetando  la  base  del  tallo  rellenamos  el  hoyo  con    tierra y apisonamos suavemente. Las plántulas las podemos   trasplantar a una distancia suficiente para que tengan espacio   y puedan alcanzar su tamaño máximo cuando estén completa -  mente desarrolladas, o las ponemos menos distanciadas si las   vamos a ir cosechando a medida que crecen y van quedando   muy juntas. Cuando terminemos de trasplantar todas las plán -  tulas, regamos cuidadosamente hasta que el suelo esté com -  pletamente saturado.  También  podemos  hacer  nuestras  propias  siembras,  para  lo    cual necesitamos tener las semillas. Lo ideal es que consiga -  mos semillas tradicionales, que han sido cultivadas por miles   de años por nuestros ancestros y que son custodiadas por guar -  dianas de semillas, asegurando así su mantención en el tiempo   y propagación en las manos y en la tierra. Son comunes varie -  dades de porotos, maíz, habas y arvejas que no suelen ser co -  mercializadas en los supermercados. Estas semillas están libres   de modificación transgénica y no se les aplican agroquímicos,   como la gran mayoría de las semillas que se comercializan en   el  mercado.  También  nosotros  mismos  podemos  sacar  las  se -  millas de un tomate o de un zapallo, lavarlas en un colador, con   una servilleta de género remover la membrana gelatinosa que   las  envuelve,  y  dejarlas  secando  en  otra  servilleta  de  género   \n38 |  Cocina Sustentable  limpia y seca, en un lugar fresco y seco para guardarlas cuando   estén completamente secas. O podemos sembrar semillas que   comemos, como linaza, kinua, porotos, maíz curagua y girasol.   Por  regla  general,  las  semillas  se  siembran  a  una  profundidad    dos o tres veces su largo. Hacemos un hoyo en la tierra, pone -  mos la semilla, las tapamos con tierra y apisonamos suavemen -  te. Tenemos que sembrarlas a una distancia que considere el   espacio que necesita la planta para desarrollarse de manera óp -  tima. Una vez que terminamos de sembrar, regamos de manera   lenta  y  abundante,  hasta  saturar  el  suelo.  Es  muy  importante    mantener la humedad desde la siembra hasta que las plantas   están bien desarrolladas, con al menos cuatro hojitas bien de -  sarrolladas, ya que en el período previo estarán en la fase de su   ciclo de vida en que son más vulnerables. Las semillas grandes   las sembramos directamente en el lugar definitivo donde cre -  cerá la planta, mientras que las semillas pequeñas las podemos   sembrar en almácigos, para trasplantarlas al lugar definitivo   cuando tengan unas cuatro hojas bien desarrolladas.   d) Mantención y uso  La observación regular y atenta nos permitirá detectar las nece -  sidades de nuestras plantas a tiempo para mantenerlas sanas y   vigorosas. El riego debe ser suficiente como para que la planta   no se seque, pero no puede ser demasiado, porque las raíces   se pueden pudrir. Si tenemos macetas con perforaciones en la   base para permitir el drenaje y usamos una bandeja para evi -  tar que el agua caiga al suelo, una forma de regar es mantener   permanentemente una capa de agua en la base de la bandeja   o  plato  bajo  la  maceta.  De  esta  manera,  el  agua  asciende  por    capilaridad a través de los agujeros de la maceta, hacia la tierra   y las raíces de la planta. Si no tenemos esa bandeja o plato, o   tenemos nuestras plantas directamente en la tierra, tendremos   que regar en la superficie de la tierra, alrededor de la base del   tallo de la planta. Regamos cuando vemos que parte superior   del suelo se empieza a secar. \nCocina Sustentable   |   39   Hierbas aromáticas como el ciboulette, el poleo, la melissa, la   menta, el perejil, el orégano, el romero y el cedrón reaccionan   muy bien a la poda. Con una tijera, podemos ir cosechando la   parte  más  externa  de  los  tallos  con  las  hojas  de  las  plantas,  o    manojos de hojitas en el caso del ciboulette, perejil y cilantro.   Para cosechar otras plantas aromáticas, como el boldo y el lau -  rel, podemos cortar solamente las hojitas. Todas las hierbas las   podemos usar frescas. Sin embargo, la deshidratación nos per -  mite almacenar y tener a mano en la misma cocina las hierbas   disponibles para usar, para llevar a nuestros viajes, donde nues -  tras amistades o regalar. Hay hierbas, como el orégano, que son   más sabrosas cuando las deshidratamos. Para esto, amarramos   manojos  de  ramitas  con  sus  hojas  y  los  colgamos  en  un  lugar    fresco y ventilado hasta que las hojas se transforman en polvo   cuando las frotamos entre los dedos. Una vez que estén com -  pletamente  secas,  con  cuidado,  desamarramos  el  manojo,  y    separamos  las  hojas  de  los  tallos.  Conservamos  las  hojitas  en    frascos limpios y secos, bien tapados, que debemos mantener   en un lugar fresco, seco y oscuro.  Aprender cuándo es el momento de cosechar hortalizas es par -  te importante del proceso. Si cultivamos hojas, como acelgas,   lechugas, mizuna y rúcula, podemos comenzar a cosechar des -  de que las plantas son pequeñas. Podremos ir cortando con ti -  jeras las hojas externas desde la base, manteniendo al menos   un tercio de la planta para que continúe desarrollándose. Para   las lechugas, podemos esperar que tengan un mayor desarrollo   y cortar en la base de la planta con un cuchillo. Las zanahorias,   betarragas,  rabanitos  y  cebollas  estarán  listos  para  cosechar    cuando la raíz comestible se asome sobre la superficie de la tie -  rra. Podemos dejar que las hortalizas “se suban” para que flo -  rezcan, fructifiquen y cuando estén secos los frutos, podamos   cosechar  las  semillas  y  guardarlas  en  bolsitas  de  papel  con  el    nombre de la planta y fecha, para cultivar en la siguiente tem -  porada. Así conoceremos todas las estructuras y el ciclo de vida   de las plantas que cultivamos.   Las semillas, al igual que las hojas secas, las almacenamos bien  \n40 |  Cocina Sustentable  secas  en  un  lugar  fresco,  seco  y  oscuro.  Si  tenemos  hortalizas    de fruto, como tomates, pimentones o ajíes, podemos esperar   que maduren para cosechar, pero no esperar demasiado, para   evitar que se descompongan. Si tenemos zapallos italianos, de -  bemos revisarlos a diario para que no crezcan demasiado y la   piel y la semilla se pongan duras. Los zapallos de pulpa naranja   los cosechamos cuando se seca completamente el tallo que une   el fruto a la planta. Además, a los zapallos los dejamos secar al   sol para guardarlos por meses en un lugar fresco, seco y oscuro.  Si tenemos árboles frutales tenemos que organizar la cosecha   de  tal  manera  de  evitar  el  desperdicio  de  los  frutos.  Para  eso,    podemos comenzar a cosechar gradualmente antes de que la   fruta esté completamente madura. Y es muy importante pensar   con anticipación qué haremos con la cosecha, ya que un solo ár -  bol puede producir decenas de kilos de fruta en una sola tempo -  rada. Podemos comerla fresca, hacer mermeladas, dulces, jugo   de fruta fresca o cocida, fruta en almíbar o en conserva, néctar,   bebidas fermentadas como sidras o vinos, frutas deshidratadas   o preparar kuchen, queques, tartaletas o galletas. Las posibili -  dades son tantas como nuestra creatividad y nuestra capacidad   de investigar. Además, siempre está la posibilidad de compartir   las frutas con nuestras familias, amigos, compañeros y vecinos,   o vender, tanto la fruta como los productos que preparemos.  e) Qué hacer con los restos de las plantas  Una de las partes más hermosas de cultivar alimentos en casa   es que podemos contribuir a cerrar el ciclo de nutrientes y de   materia  orgánica  en  nuestros  propios  hogares.  Absolutamen -  te  todos  los  restos  de  las  plantas  pueden  volver  a  integrarse    al ciclo de nutrientes del suelo, alimentando a las plantas que   luego nos alimentarán a nosotros. Para eso, podemos compos -  tar los residuos en una compostera, que deberemos mantener   húmeda y aireada, para que ocurra la descomposición aeróbica,   o podemos tener una vermicompostera, con lombrices que se   alimenten de nuestros residuos orgánicos. \nCocina Sustentable   |   41   Si  compostamos  todos  nuestros  residuos  orgánicos,  reducire -  mos nuestros desechos al menos a la mitad, y estaremos trans -  formando en nuestro propio hogar los residuos en un material   valioso para nutrir nuestras plantas y mejorar las características   de fertilidad y capacidad de almacenar agua del suelo.  Para compostar existen muchos métodos.   Se puede hacer en tambores que giran, o en contenedores con   perforaciones y tapa que se instalan sobre la tierra.  Para eso   necesitaremos una pala con mango largo y de cabeza pequeña.   Podemos  comenzar  nuestra  compostera  con  materia  orgánica    fresca, como las hojas, cáscaras o tallos que no comemos, hojas   de  té  o  mate  y  borra  de  café.  Y  mate -  ria  orgánica  seca,  como  palitos,  pasto    seco y hojas secas. Una vez que agre -  gamos nuestros materiales, humedece -  mos  y  mezclamos  para  homogenizar,  y    ponemos la tapa. Podemos continuar   agregando residuos orgánicos, siempre   mezclando  para  mantener  la  aireación    y cuidando que la mezcla se mantenga   húmeda,  pero  no  saturada  en  agua.  Si    tiene exceso de humedad, tendremos   que agregar más materia seca, que también se puede comple -  mentar con trozos de cartón no plastificado y papel sin satinar,   como  servilletas  o  bolsas  de  papel.  Si  jardineando  nos  encon -  tramos lombrices, podemos ir agregándolas a nuestra compos -  tera, y veremos cómo se reproducen, acelerando el proceso del   compostaje.   Una vez que la compostera está casi llena, dejamos de agre -  gar residuos orgánicos, pero mantenemos el cuidado de airear,   mezclar y mantener la humedad sin saturar de manera perma -  nente. Es muy probable que a nuestra compostera lleguen tam -  bién escarabajos, milpiés y cienpiés, arañas, chanchitos de tie -  rra,  nemátodos,  hormigas,  larvas,  moscas,  caracoles,  babosas    y que se desarrollen hongos y germinen semillas. Mientras las  \n42 |  Cocina Sustentable  hormigas suelen desarrollarse por la falta de humedad y movi -  miento, las larvas de moscas se suelen reproducir por un exceso   de materia fresca sin homogenizar adecuadamente con el resto   del  contenido  de  la  compostera.  Con  una  observación  atenta,    lograremos  ajustar  las  proporciones  de  materia  orgánica  fres -  ca  y  seca,  humedad  y  movimiento,  para  obtener  un  producto    precioso.  Es  recomendable  contar  con  dos  composteras  en  casa,  para    ir  turnando  la  compostera  en  uso  mientras  la  otra  termina  de    transformar  la  materia  orgánica  en  compost.  Si  todo  funciona    adecuadamente,  todos  los  residuos  se  van  a  ir  transformando    en una materia de color café oscuro y con un aroma agradable,   como el olor del suelo del bosque. Es parte del proceso que   el compost incremente su temperatura y que se libere vapor   cuando lo mezclamos.   Una vez que nuestro compost esté listo, podemos enterrar   en  él  una  malla  con  residuos  frescos  y  dejar,  sin  remover,  por    dos  o  tres  días.  De  esta  manera,  atraeremos  a  las  lombrices  a    los  residuos  frescos  y  podremos  rescatarlas  para  ponerlas  en    la compostera en la que iniciamos el uso. Podemos repetir el   procedimiento para rescatar lombrices antes de cosechar nues -  tro compost. Y si al cosechar el compost encontramos núcleos   de lombrices, los retiramos para agregarlos a la compostera en   uso. También es recomendable usar una parte del compost listo   para inocular la nueva compostera con la biodiversidad de mi -  croorganismos y organismos detritívoros y descomponedores.   Después de cosechar, podemos usar directamente nuestro com -  post  en  nuestras  plantas  o  almacenarlo  en  sacos  a  la  sombra    para  cuando  lo  necesitemos.  De  esta  manera  vamos  avanzan -  do en la autosuficiencia. Dejamos de depender de la recolec -  ción  de  residuos  orgánicos,  dejamos  de  depender de  comprar    o conseguir tierra o compost para mantener nues -  tras plantas, y dejamos de necesitar salir para tener   alimentos, reduciendo la necesidad de dinero para   comprar las plantas que cultivamos. \nCocina Sustentable   |   43   CAPÍTULO 4: COCINA SUSTENTABLE  Sentarse un día de lluvia a disfrutar de una cazuela bien calien -  te  o  en  pleno  verano  refrescarse  con  una  jugosa  ensalada  de    tomates limachinos, cebolla pluma y un toque de ají verde, es   más que sentarse frente a un plato. El acto de comer nos habla   de una cultura, llama a compartir con otras personas, a disfrutar   de los recuerdos que traen aromas, a regocijarse con sabores y   texturas.  Los alimentos nos aportan mucho más que los nu -  trientes que necesita nuestro cuerpo para seguir funcionando.  Quizás de perogrullo es mencionar la importancia de una dieta   saludable.  Pero lo que no es obvio es que, en medio de la actual   crisis socioambiental, se debe considerar el impacto ambiental,   social y económico que tiene la elección de los alimentos, así   como los hábitos en torno a la alimentación.  En internet exis -  ten calculadoras que permiten visibilizar el impacto de lo que   comemos 3 . Los datos son alarmantes.    Se calcula que el 70 % del agua potable disponible en el mundo   se destina a la agricultura 4 , mientras que una de las principales   causas de la deforestación en América Latina es destinar dichos   terrenos  a  pastoreo  extensivo  para  la  producción  de  carnes  y    lácteos 5 .  Este sistema industrializado también es una amenaza   para la fauna y flora nativa a causa del uso excesivo de pestici -   3   https://planetbaseddiets.panda.org/impacts-action-calculator   4   https://www.fao.org/fao-stories/article/es/c/1185408/    5   https://www.fao.org/americas/noticias/ver/es/c/425614/ \n44 |  Cocina Sustentable  das e, incluso, la eutrofización de los ecosistemas marinos por   efecto de los fertilizantes que llegan a través del agua. Desde la   perspectiva social, en la industria alimentaria se han visto ca -  sos de trabajo infantil, malas prácticas laborales, comunidades   sin acceso al agua potable porque fue contaminada o usada en   plantaciones.   Al  tomar  un  choclo  entre  tus  manos  debes  considerar  todo  lo    que fue necesario para que éste llegará hasta ti. Probablemente   se deforestó el terreno donde se cultivó, se utilizaron agroquí -  micos para fertilizar la tierra y pesticidas que degradaron la bio -  diversidad y contaminaron las aguas que abastecen a las comu -  nidades aledañas. Diariamente se regó, usando unos 450 litros   de agua en total por choclo.  Y detrás de este proceso también   hay trabajo humano para su cultivo, cosecha, empaque y dis -  tribución, junto a la energía y recursos usados en todo el ciclo   hasta su puesta en venta.  Aun así, ese choclo puede terminar desperdiciado porque para   las y los consumidores puede no tener el tamaño ideal ni el co -  lor  perfecto.  Le  podrían  haber  faltado  granos,  tener  una  larva    o estar seco. Estos criterios de compra, junto a otras acciones   como falta de tecnología, dan por resultado que un 40% de los   alimentos que se producen en el mundo se desperdicien: algu -  nos  en  los  campos,  otros  en  el  transporte  o  puntos  de  venta.     Y un 17% de éstos son descartados por las y los consumidores   que no los prefieren por no cumplir con estándares estéticos,   de tamaño, textura, punto de maduración, mal almacenamien -  to o simplemente porque se quedó olvidado en la cocina o no   fue consumido a tiempo. Sintetizando, como humanidad esta -  mos tirando un poco menos de la mitad de lo que producimos,   con todo lo que implicó su producción.  Mientras 1 de cada 9   personas padece de desnutrición.  Por todo lo anterior, llevar una alimentación sustentable o una   dieta  basada  en  el  cuidado  del  planeta,  se  transforma  en  una    acción  poderosa.    Es  hacerse  corresponsables  para  detener  la    pérdida  de  biodiversidad,  reducir  las  emisiones  de  gases  de   \nCocina Sustentable   |   45   6    https://www.wwf.cl/?364903/WWF-lanza-Dietas-basadas-en-el-planeta-por-la-sa -  lud-humana-y-el-futuro-de-la-Tierra  efecto invernadero, disminuir el uso y contaminación del agua,   y asegurar la seguridad alimentaria proporcionando alimentos   saludables y nutritivos para todas las personas del mundo 6 .   Acá, un listado de algunas acciones para transitar hacia hábitos   más sustentables en torno a la alimentación:   • En caso de comprar, que en lo posible los productos sean de   origen regenerativo, libres de jaulas y/o naturales.  • Reducir el consumo de productos de origen animal como car -  nes, lácteos y huevos.  •  Preferir frutas, verduras y legumbres de temporada.  • Comprar a pequeños productores locales.  • Escoger frutas y verduras menos estéticas, pequeñas o muy   maduras en mercados o ferias.  • Llevar bolsas reutilizables y mallas para evitar empaques y   bolsas plásticas desechables e innecesarias.  • Guardar frutas y verduras de inmediato, especialmente en ve -  rano, para evitar que el calor las madure antes de tiempo.  • Mantener la despensa ordenada, preferiblemente en frascos   bien cerrados para evitar que entren polillas o gorgojos.  • Limpiar la despensa periódicamente para revisar lo que hay,   usar lo que esté hace tiempo y evitar la propagación de insectos   como polillas u hongos que puedan afectar los alimentos.  •  Ordenar  y  limpiar  el  refrigerador  con  frecuencia,  revisando    aquellos productos que puedan estar por vencer o muy madu -  ros para consumir a corto plazo.  • Planificar un menú semanal en base a la cantidad de personas   y sus gustos, para evitar desperdicios.  • Hacer una lista de compras en base al menú semanal.  • Animar a los integrantes de la familia, especialmente a niñas   y niños, a participar en el momento de cocinar.  Les ayudará  \n46 |  Cocina Sustentable  entender lo que hay detrás de cada plato y a valorar más la   comida.  • Aprovechar el momento de sentarse a la mesa para conversar   sobre  los  impactos  de  la  alimentación  para  sensibilizar  a  más    personas y que también se animen a comenzar una alimenta -  ción más sustentable.  •  Dedicar  al  menos  un  día  a  la  semana  para  comer  las  sobras    que hayan quedado, incluso reinventándolas en una nueva pre -  paración o “Lumami” 7 .  • Si es posible, preferir alimentos orgánicos o agroecológicos.  • Cultivar frutas, verduras o hierbas aromáticas si se tiene lugar,   incluso en maceteros o espacios pequeños. Aunque no evite   comprar la mayoría de los alimentos, será una forma de conec -  tar con los ritmos de la naturaleza y valorar más la comida.  • Aprovechar al máximo las frutas y verduras, incluso sus hojas   o tallos comestibles.  • Innovar en preparaciones y compartir recetas con tus familia -  res, colegas y amistades.  • Evitar alimentos ultra procesados, que tienen mayor huella   ambiental y, generalmente, vienen en envases desechables.  • Compostar los residuos orgánicos generados, evitando que   liberen gas metano si fuesen a relleno sanitario. Por otro lado,   se obtendrá abono para usar en jardín, huerto o plantas orna -  mentales.  Aplicar  éstas  y  otras  acciones  son  una  forma  de  cuidar  el  pla -  neta y toda la vida que lo habita. También es una manera de   aportar a la economía familiar al gastar menos dinero en comi -  da cuando se aprovechan mejor los alimentos, mejorar la salud   por el aumento del consumo de vegetales al usar tallos y hojas,   y  establecer  nuevas  redes  o  fortalecer  vínculos  con  personas    con intereses en común al compartir recetas para evitar el des -  perdicio de alimentos.  7  Término usado en Chile para referirse a las sobras de comida que han quedado de   los días lunes, martes y miércoles. No obstante, puede ser de otros días de la semana   también. \nCocina Sustentable   |   47   RECETARIO \n48 |  Cocina Sustentable \nCocina Sustentable   |   49   PASTEL DE PAPAS CON TALLOS DE ACELGA  5 porciones  Esta receta es una alternativa al clásico pastel de papas chileno,   en la que se reemplaza la carne por tallos de acelga y otras verdu -  ras.  Idealmente usar aquéllas que han ido quedando olvidadas   como un pimentón arrugado, medio zapallito italiano algo viejo o   un zapallo camote que está empezando a echarse a perder. Si se   quiere incorporar más proteína, se puede usar soya texturizada   hidratada o alguna legumbre ya cocida como lentejas o porotos.  Ingredientes para el pino:  2 tazas de cebolla picada en cuadritos  1 diente de ajo machacado  1 cuchara de hojas de apio picadas  1 cucharita de tallos de perejil picado  1 cucharitas de orégano seco  2 tazas de tallos de acelga picados  1 taza de verdura a elección picada (zanahorias, pimentones,   berenjenas, etc.)  4 callampas secas  1 cuchara de aceite de oliva  2 cucharitas de aliño completo  ½ taza de pimentón en cubitos  ⅓ tazas de pasas  6 aceitunas  Aceite de oliva  Sal y pimienta  Ingredientes para el puré:  8 papas medianas peladas   1 taza de leche o bebida vegetal a gusto  ⅓ taza de aceite de oliva  Sal \n50 |  Cocina Sustentable  Preparación del puré:  • Opcionalmente pelar las papas, ya que igual se pueden hacer   con la cáscara para obtener un resultado más rústico. En caso   de pelarlas, aprovechar la piel horneándolas o fritas para obte -  ner crocantes chips.  • Partir las papas a la mitad y disponerlas en una olla, cubrir   con agua y agregar 1 cucharada de sal.  • Hervir a fuego suave por 15 a 20 minutos o hasta que al ente -  rrar un tenedor se sientan cocidas.  • Aplastar con un prensa para puré.  Agregar la leche o bebida   vegetal, aceite de oliva y sal. Mezclar bien y reservar.  Preparación del pino:   • Hidratar en agua caliente las callampas secas por 10 minutos,   colar y picar.  • En una olla o sartén agregar un chorrito de aceite de oliva y   sofreír la cebolla y el ajo por 5 a 7 minutos, a fuego medio-fuer -  te.  •  Agregar  el  resto  de  los  condimentos,  verduras  y  callampas    hidratadas, coladas y picadas.  • Saltear por unos 10 minutos a fuego medio-bajo.  •  Incorporar  las  pasas,  revolver  y  disponer  en  la  base  de  una    budinera para horno.  • Distribuir las aceitunas y cubrir con el puré de papas. Pincelar   la superficie con un poco de aceite de oliva.  • Llevar a horno precalentado a 180ºC por 25 minutos o hasta   dorar.   • Servir de inmediato. \nCocina Sustentable   |   51  \n52 |  Cocina Sustentable  SALSA DE TOMATES EXTRA-MADUROS  2 frascos de 500 ml  En el verano los tomates están en plena temporada, pero con el   calor tienden a echarse a perder más rápido. En ferias y verdu -  lerías se pueden encontrar cajones con tomates algo pasados, a   precios más convenientes o incluso que son regalados ya que no   podrán ser comercializados. Sin embargo, aunque tengan algunas   partes con piquetes o comenzando a fermentar, se pueden retirar   esos pedazos y compostar, mientras el resto del tomate estará en   el punto perfecto para hacer una salsa sumamente sabrosa.  Ingredientes:  4 a 5 kilos de tomates maduros  ½ taza de aceite de oliva  1 ½ cucharita de sal  2 frascos 500ml  Preparación:  • Esterilizar 2 frascos de 500ml sumergiéndolos en una olla con   agua caliente. Se puede colocar un paño de cocina en el fondo   para evitar que se golpeen. Hervir los frascos y tapas por 10   minutos. Retirar de la olla y dejar secar boca abajo, evitando   manipular mucho con las manos. Este paso no es necesario en   caso de congelar la salsa, sin embargo, esterilizar bien los fras -  cos permitirá conservar la salsa a temperatura ambiente por   12 meses.  • Lavar los tomates, cortar en gajos, retirando el centro y los   trozos que estén machucados.  • Disponer en una fuente para horno, agregar el aceite de oliva   y espolvorear la sal.   • Hornear a 180ºC por 30 minutos o hasta que se vea que el   jugo de los tomates está hirviendo y se ha intensificado su color   rojo a uno más burdeos.  • Sacar del horno y dejar enfriar para evitar quemaduras.  • Colocar en una juguera y moler. \nCocina Sustentable   |   53   • Disponer la salsa en una olla y cocinar a fuego bajo revolvien -  do constantemente hasta que comience a hervir, cocinar por   10 minutos o hasta que esté con consistencia de salsa (puede   variar el tiempo según el tipo de tomate, los perita son los más   recomendados porque tienen menos agua y más pulpa).   • Rellenar los frascos, dejando libre al menos 1 cm. Tapar.  • En caso de querer hacerlos como conserva para el año es   necesario  volver  a  hervir,  para  esto  disponer  nuevamente  los    frascos de salsa tapados en una olla y agregar agua hasta que   llegue  al  cuello  de  los  frascos.  Hervir  por  al  menos  20  minu -  tos, dejar enfriar en la misma olla y verificar que se haya hecho   vacío en las tapas, puede que se escuche un click al presionar   o se vea la tapa con una forma cóncava, de lo contrario no se   logró el vacío y la salsa debe ser refrigerada y consumida en los   próximos días.  Nota:  Es importante que los frascos estén bien limpios, si son reutili -  zados, se debe tener especial precaución en esterilizar bien las   tapas,  incluso  limpiar  con  un  poco  de  alcohol  si  tuviese  man -  chas o resto de algún alimento para evitar que se contamine. La   salsa enfrascada al vacío puede durar 12 meses a temperatura   ambiente, guardada en una despensa fresca y sin luz. Por ello,   recordar rotular con un lápiz la fecha de elaboración.  Si al abrir un frasco se sintiese un olor a vinagre o diferente al   de  una  salsa  de  tomates,  debe  ser  descartada  en  el  compost.    También  se  debe  desechar  en  caso  de  presentar  hongos  o    moho en la superficie.  Esta salsa se puede usar para cocinar fideos, preparar salsas,   saborizar preparaciones. También se puede sofreír una cebolla,   agregar agua, la salsa, un poco de leche o bebida vegetal, y mo -  ler para hacer una rica sopa de tomates. \n54 |  Cocina Sustentable \nCocina Sustentable   |   55   TOSTADAS FRANCESAS EN BASE A PLANTAS  6 unidades  Para  producir  un  litro  de  leche  se  necesitan  mil  litros  de  agua.      Además, la ganadería es de las principales responsables de la de -  forestación. Por ello, reducir el consumo de productos de origen   animal  como la leche de vaca disminuye considerablemente los   impactos  socioambientales  de  nuestra  alimentación.  Este  pro -  ducto se puede comprar envasado o se puede hacer en casa con   ingredientes sencillos como frutos secos o avena.  Ingredientes para la leche vegetal:  1 taza de agua  ⅓ taza de frutos secos (puede ser almendras, nueces o avella -  nas) o bien, puede ser ⅓ taza de avena integral  Ingredientes para las tostadas:  6 rebanadas de pan viejo (molde, marraqueta, baguette, etc.)  1 taza de leche o bebida vegetal  1 cuchara de linaza o chía molida  1 cucharita de esencia de vainilla  1 cuchara de azúcar o endulzante a elección  Aceite de oliva   Ingredientes para servir:  ½ taza de yogur en base a plantas  1 taza de fruta picada a elección (frutillas, manzana, peras, etc.)  Bagazo de leche vegetal.  Preparación de la leche o bebida vegetal:   •  En  el  caso  de  elegir  preparar  la  bebida  vegetal  con  frutos    secos, se deben hidratar durante la noche en agua. Al día si -  guiente colar y usar de inmediato.  Por otro lado, si se prefie -  re usar avena, no es necesario hidratar para evitar que quede   babosa. \n56 |  Cocina Sustentable  • Para preparar la bebida vegetal (con frutos secos o con ave -  na) se deben colocar los ingredientes en una juguera y revol -  ver  por  unos  segundos,  sin  moler  demasiado.  Filtrar  en  un    colador usando una gasa. Reservar la bebida para la receta o   refrigerar por hasta un par de días y reservar el bagazo (resi -  duo resultante de la elaboración de la bebida vegetal).  • En un sartén seco (sin aceite) secar el bagazo hasta que ape -  nas  comience  a  dorarse.  Reservar  para  el  momento  de  servir    las tostadas o guardar en un recipiente hermético para usar en   recetas como granola, galletas o queques.  Preparación de las tostadas francesas:  • Mezclar en un plato hondo la leche o la bebida vegetal, con la   linaza o chía molida, esencia de vainilla y azúcar. Dejar reposar   por 5 a 10 minutos para que espese al activarse las semillas.  • Remojar las rebanadas de pan de 20 a 40 segundos, tiempo   que varía según el tipo de pan y qué tan seco pueda estar.  •  Calentar  un  sartén  a  fuego  fuerte,  agregar  un  chorrito  de    aceite  de  oliva  y  dorar  las  rebanadas  de  pan  por  un  minuto    aproximadamente. Dar la vuelta y dorar un minuto más.  •  Servir  de  inmediato  con  el  bagazo  tostado,  yogur  y  fruta,  o    acompañamiento a elección. \nCocina Sustentable   |   57  \n58 |  Cocina Sustentable  QUEQUITOS DE PLÁTANOS CON ARÁNDANOS  12 unidades  Cuando los plátanos están con la cáscara oscura es cuando más   dulces están, por eso una excelente opción es usarlos en recetas   dulces como bizcochos, queques, galletas, batidos e incluso hela -  dos. Para conservarlos, se pueden pelar y congelar guardados en   bolsas herméticas.  Ingredientes:  3 plátanos bien maduros  ¾ tazas de azúcar  ¼ taza de aceite  1 cucharadita de vinagre de manzana  ¼ taza de leche o bebida vegetal (en receta de tostadas france -  sa está la forma de preparar)  1 ¾ tazas de harina sin polvos de hornear  1 cucharadita de polvos de hornear   ¾ tazas de arándanos (se puede reemplazar por pasas, manza -  nas en cubitos, chips de chocolate o simplemente omitir)  Preparación:  • Aceitar y enharinar 12 moldes de quequitos o muffins.  • Precalentar el horno a 180°C (fuego medio).  • Disponer en una juguera o en un bowl y moler con una mini -  pimer los plátanos en trozos con el azúcar, el aceite, vinagre de   manzana, leche o bebida vegetal, harina y polvos de hornear.   • Procesar hasta obtener una mezcla homogénea.   • Agregar los arándanos (o ingrediente a elección). Mezclar con   un mezquino y distribuir en 12 moldes de quequitos.  • Hornear por 20 minutos o hasta que estén dorados en la su -  perficie.  • Retirar y dejar enfriar unos minutos antes de desmoldar.  • Guardar en un pote con tapa por hasta un par de días. \nCocina Sustentable   |   59  \n60 |  Cocina Sustentable  ZANAHORIAS FERMENTADAS ESPECIADAS  1 frasco de 500ml  Las zanahorias suelen venir en ramos o paquetes de varias uni -  dades, por lo que pueden terminar echándose a perder antes de   ser consumidas. Esta receta es una alternativa para que duren   más, estén listas para llegar y consumir, mientras además propor -  cionamos un alimento lleno de probióticos beneficiosos para la   salud. La misma receta puede aplicarse a rabanitos y betarragas,   los ingredientes como ajo, semillas y hojas se pueden omitir o   cambiar a gusto.  Ingredientes:  3 a 4 zanahorias  1 ½ taza de agua  1 cucharadita de sal   1 diente de ajo  ½ cucharadita de semillas de anís  1 hoja de apio  Preparación  • Disolver la sal en ½ taza de agua caliente, agregar 1 taza de   agua fría y reservar.  • Pelar y cortar las zanahorias en bastones o rodajas.   • Disponer dentro de un frasco de vidrio de 500ml previamente   esterilizado.  • Agregar el ajo, las semillas y hoja de apio. Agregar la salmuera   preparada hasta cubrir las zanahorias.  • Colocar un frasco pequeño muy limpio sobre las zanahorias   para evitar que floten, deben quedar completamente sumer -  gidas.  • Cubrir con una gasa amarrada con una pita o elástico.  • Dejar en un mueble de la cocina donde no llegue la luz direc -  tamente y fermentar por 3 a 7 días. Esto dependerá de cuánto   calor haga y cuán fermentada se quieran las zanahorias, en el   proceso debe comenzar a formarse una especie de espuma. \nCocina Sustentable   |   61   • Una vez transcurrido los días de fermentación, tapar y refrige -  rar. Puede durar varias semanas, en caso de observarse hongos   o adquirir una consistencia babosa deben ser descartadas.  • Estas zanahorias fermentadas se pueden comer como snack o   usar directamente en ensaladas. \n62 |  Cocina Sustentable \nCocina Sustentable   |   63   QUEQUE CHOCOLATE-NARANJA DE AQUAFABA  8 porciones  El líquido de cocción espeso resultante al cocer los garbanzos o   al colar los que vienen en conserva se llama aquafaba y es una   alternativa a la clara de huevo. Al batirla se logra un merengue,   se puede emulsionar con aceite para hacer mayonesa o se puede   usar para ligar mezclar como hamburguesas vegetarianas.  Ingredientes:  1 taza de aquafaba  ¾ taza de azúcar  1 ½ taza de harina  1 cucharadita de polvos de hornear  1 cucharadita de extracto de vainilla  ½ taza de aceite  1/3 taza de cacao en polvo amargo  ½ taza de leche o bebida vegetal  1 cucharada de ralladura de naranja.   Preparación:  • Precalentar el horno a 180ºC.  • Aceitar y enharinar un molde de queque.  • Batir el aquafaba a nieve, puede demorar un poco más de lo   que demoran las claras de huevo. Agregar el azúcar como lluvia,   seguir batiendo hasta que el merengue tenga consistencia firme.  • Agregar la mitad de los ingredientes secos cernidos, incorporar   con movimientos envolventes.   • Añadir el aceite y bebida vegetal, revolver con cuidado. Final -  mente, agregar el resto de los ingredientes secos y ralladura de   naranja. Mezclar con movimientos suaves hasta lograr una mez -  cla homogénea y verter en el molde de queque.  • Hornear por 30 minutos o hasta que se vea cocido y se sienta   firme al tacto.  • Enfriar 30 minutos antes de desmoldar.  • Mantener refrigerado. \n64 |  Cocina Sustentable \nCocina Sustentable   |   65   ARROZ DE BRÓCOLI CON ESCABECHE DE GARBANZOS  5 porciones  Generalmente el brócoli se consume cocido, aliñado con limón,   aceite y sal. Sin embargo, esta verdura tiene un sinfín de posibi -  lidades ya que se puede comer tanto crudo como cocido u hor -  neado  y  darle  una  vuelta  de  sabor  con  diferentes  condimentos.    Además, se puede aprovechar el tallo retirando la parte exterior   que es más fibrosa, quedando un centro muy tierno.  Ingredientes para el arroz de brócoli:  1 brócoli con su tallo  ⅓ taza de aceite de oliva  1 cucharadita de sal  Ingredientes para el escabeche de garbanzos:  1 cebolla pequeña corte pluma  2 zanahorias peladas y en rodajas  ½ pimentón en trozos  1 taza de lechuga, acelga o espinaca lacia   1 taza de verduras viejas como zapallito italiano, kale, etc. (op -  cional)   1 taza de garbanzos cocidos  1 cucharada de aliño completo  1 diente de ajo  2 cucharadas de aceite de oliva  1 cucharadita de sal  Preparación para el arroz:  • Precalentar el horno a 180°C.  • Pelar el tallo de brócoli, retirando la parte fibrosa exterior. La -  var y cortar en trozos el brócoli y cortar en trozos grande. Pro -  cesar el brócoli cortado en una 1,2,3 hasta lograr que quede en   granos de tamaño similar a un grano de arroz.  • Disponer en una lata de horno, agregar el aceite de oliva y sal.  \n66 |  Cocina Sustentable  Mezclar con las manos. Opcionalmente se pueden agregar hier -  bas, ralladura de limón o algún condimento a elección.  • Hornear por 30 minutos o hasta que comience a dorarse. Re -  volver un par de veces en el proceso  En paralelo, preparar los garbanzos en escabeche.   Preparación para los garbanzos en escabeche:  • Calentar una olla  • Agregar 2 cucharadas de aceite de oliva y sofreír la cebolla con   el ajo.   •  Incorporar  el  pimentón,  zanahorias,  hojas  verdes,  verduras  a    elección si se quiere, garbanzos cocidos y el aliño completo. Re -  volver unos minutos.   • Cubrir con agua, llevar a ebullición y cocinar a fuego suave por   5 minutos.   • Corregir sazón y servir con el arroz de brócoli.  Nota:  En esta receta se puede aprovechar cualquier verdura que esté   lacia,  seca  o  a  punto  de  echarse  a  perder.  También  se  puede    aprovechar resto de cerveza, vino blanco o espumante sobrante   de días anteriores y que se haya refrigerado, para incorporar en   la receta. Antes del agua, agregar ½ taza del alcohol a elección y   dejar evaporar unos minutos antes de agregar el agua. \nCocina Sustentable   |   67  \n68 |  Cocina Sustentable  ENSALADA DE CÁSCARAS DE SANDÍA Y ZANAHORIAS   5 porciones  La cáscara de sandía se puede aprovechar tanto en recetas sala -  das como dulces. Para eso solo basta pelar y retirar la capa exte -  rior, de color verde oscuro, quedando la parte de verde pálido.   Se puede confitar, usar en batidos como también en ensaladas o   salteados.  Ingredientes:  Cáscara de ½ sandía  3 zanahorias peladas  Hojas de 2 cebollines  ½ taza de maní picado  Ingredientes del aliño:  1 diente de ajo picado  ½ taza de jugo de limón  ⅓ taza de aceite de oliva  1 cucharada de aceite de sésamo  1 cucharadita de ralladura de jengibre fresco  1 cucharadita de sal o 2 cucharadas de salsa de soya  Preparación:  • En un frasco con tapa agregar todos los ingredientes. Tapar y   batir. Reservar.  • Lavar y pelar las cáscaras de sandías, retirando la capa verde   oscuro del exterior.   • Cortar en julianas o rallar las zanahorias y cáscaras de sandías.   • Picar las hojas de los cebollines.   • Agregar todas las verduras en un bowl, mezclar con el aliño y   el maní picado.   • Servir de inmediato. \n\n";
+    const PDF_NAME = "Tema 1 Lec 1 CocinaSustentable_y_ConsumoResponsable.pdf";
+    const CHATBOT_THEME = "Tema 1 Lec 1 CocinaSustentable_y_ConsumoResponsable";
+    const PDF2_TEXT_EMBEDDED = "";
+    const PDF2_NAME_EMBEDDED = "";
+    const MODEL = "openai";
+    const PROPOSED_QUESTIONS = ["¿Por qué la crisis climática y ecológica afecta directamente la disponibilidad de alimentos?","¿Qué relación explica el texto entre cambio climático, agua y calidad de tierras cultivables?","Según la introducción, ¿qué objetivo tiene el libro respecto a las decisiones diarias de consumidores?","¿Cómo define la FAO la cadena de valor alimentario (CV) y qué características destaca de ella?","En una cadena de valor alimentaria, ¿qué cinco elementos se usan para verificar valor añadido y sostenibilidad?","¿Qué busca el capítulo 2 al relacionar cadena de valor, residuos y economía circular?","¿Qué condiciones básicas necesitan las plantas para crecer según el texto (agua, luz y sustrato)?,","¿Cómo puedes diferenciar plantas por longevidad (por ejemplo, cereales versus geófitas) y para qué sirve esa clasificación?","Si vives en un departamento con balcón o terraza con sol, ¿qué tipo de cultivos propone el texto iniciar (hierbas aromáticas) y por qué?","¿Qué pasos clave describe el texto para hacer y manejar compost con lombrices en casa (incluyendo el uso de composteras)?","¿Qué criterios ambientales, sociales y económicos sugiere considerar el capítulo 4 al elegir alimentos y hábitos de alimentación?","El recetario propone prácticas de aprovechamiento: ¿cómo se usan ingredientes “viejos” o partes que normalmente se descartan en recetas como el arroz de brócoli o la ensalada de cáscaras de sandía?"];
+    const INITIAL_PALETTE = {"primaryColor":"#63cf17","secondaryColor":"#4fa612","bgColor":"#ffffff","textColor":"#111827","cardBgColor":"#ffffff","cardBorderColor":"#d1d5db","inputBgColor":"#ffffff","inputBorderColor":"#cbd5e1","chatBubbleBotBg":"#f3f4f6","chatBubbleBotText":"#111827","chatBubbleUserBg":"#63cf17","chatBubbleUserText":"#f8fafc","headerBorderColor":"#d1d5db","systemMessageBg":"#fef3c7","systemMessageText":"#92400e"};
+
+    let pdf2Text = PDF2_TEXT_EMBEDDED;
+    let pdf2Name = PDF2_NAME_EMBEDDED;
+    let isProcessing = false;
+
+    const BACKEND_BASE = 'https://node.proyectodescartes.org';
+    function extractTextFromBackendResponse(raw) {
+        if (raw == null) return '';
+        const s = String(raw).trim();
+        if (!s) return '';
+        try {
+            const j = JSON.parse(s);
+            if (Array.isArray(j)) return JSON.stringify(j);
+            if (j && typeof j === 'object') {
+                const c = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+                if (typeof c === 'string') return c.trim();
+                if (typeof j.content === 'string') return j.content.trim();
+                if (typeof j.text === 'string') return j.text.trim();
+            }
+            if (typeof j === 'string') return j;
+        } catch (e) {}
+        return s;
+    }
+    async function postBackendText(payload) {
+        const body = { model: payload.model || 'openai-fast', prompt: payload.prompt };
+        if (payload.system) body.system = payload.system;
+        if (payload.json) body.json = true;
+        const res = await fetch(BACKEND_BASE + '/api/ia/text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const raw = await res.text();
+        if (!res.ok) throw new Error('Error de API: ' + res.status + ' ' + res.statusText + '. ' + raw.substring(0, 200));
+        return extractTextFromBackendResponse(raw);
+    }
+
+    const chatDisplay = document.getElementById('chat-display');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+    const sendButtonText = document.getElementById('send-button-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const themeBtn = document.getElementById('theme-btn');
+    const paletteBtn = document.getElementById('palette-btn');
+    const pdf2Upload = document.getElementById('pdf2-upload');
+    const pdf2NameDisplay = document.getElementById('pdf2-name');
+    const pdf2StatusDisplay = document.getElementById('pdf2-status');
+    const questionsSelector = document.getElementById('questions-selector');
+
+    function getAvatarUrl(type) {
+        const fallbackSvg = function(letter) {
+            return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#6c757d"/><text x="50" y="68" text-anchor="middle" fill="#fff" font-size="44" font-family="system-ui,sans-serif">' + letter + '</text></svg>');
+        };
+        return type === 'bot' ? fallbackSvg('B') : fallbackSvg('U');
+    }
+
+    PROPOSED_QUESTIONS.forEach(function(q, i) {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        const label = q.length > 72 ? q.substring(0, 69) + '...' : q;
+        opt.textContent = label;
+        opt.title = q;
+        questionsSelector.appendChild(opt);
+    });
+    questionsSelector.addEventListener('change', function(e) {
+        const v = e.target.value;
+        if (v !== '') {
+            questionInput.value = PROPOSED_QUESTIONS[Number(v)];
+            questionInput.focus();
+            questionsSelector.value = '';
+        }
+    });
+
+    // Theme and palette
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPalette = null;
+
+    function hexToRgb(hex) {
+        const normalized = String(hex || '#000000').replace('#', '');
+        const full = normalized.length === 3 ? normalized.split('').map(ch => ch + ch).join('') : normalized;
+        const value = parseInt(full, 16);
+        return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+    }
+    function rgbToHex(r, g, b) {
+        const toHex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+        return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function mixColors(colorA, colorB, amount) {
+        const a = hexToRgb(colorA);
+        const b = hexToRgb(colorB);
+        return rgbToHex(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount);
+    }
+    function getLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const toLinear = (value) => {
+            const s = value / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    function hslToHex(h, s, l) {
+        const hue = ((h % 360) + 360) % 360;
+        const saturation = Math.max(0, Math.min(100, s)) / 100;
+        const lightness = Math.max(0, Math.min(100, l)) / 100;
+        const hueToRgb = (p, q, t) => {
+            let temp = t;
+            if (temp < 0) temp += 1;
+            if (temp > 1) temp -= 1;
+            if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+            if (temp < 1 / 2) return q;
+            if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+            return p;
+        };
+        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+        const p = 2 * lightness - q;
+        const r = hueToRgb(p, q, hue / 360 + 1 / 3);
+        const g = hueToRgb(p, q, hue / 360);
+        const b = hueToRgb(p, q, hue / 360 - 1 / 3);
+        return rgbToHex(r * 255, g * 255, b * 255);
+    }
+    function getReadableTextColor(bgColor) { return getLuminance(bgColor) > 0.56 ? '#111827' : '#f8fafc'; }
+    function generatePalette() {
+        const hue = Math.floor(Math.random() * 360);
+        const bg = hslToHex(hue, 45 + Math.floor(Math.random() * 20), 16 + Math.floor(Math.random() * 70));
+        const text = getReadableTextColor(bg);
+        const isDark = getLuminance(bg) < 0.5;
+        const accent = hslToHex((hue + 35 + Math.floor(Math.random() * 60)) % 360, 80, isDark ? 55 : 45);
+        const card = isDark ? mixColors(bg, '#ffffff', 0.08) : mixColors(bg, '#000000', 0.05);
+        const border = isDark ? mixColors(card, '#ffffff', 0.18) : mixColors(card, '#000000', 0.12);
+        const input = isDark ? mixColors(card, '#ffffff', 0.07) : mixColors(card, '#000000', 0.04);
+        const inputBorder = isDark ? mixColors(border, '#ffffff', 0.12) : mixColors(border, '#000000', 0.1);
+        const botBg = isDark ? mixColors(bg, '#ffffff', 0.12) : mixColors(bg, '#000000', 0.06);
+        return {
+            bgColor: bg,
+            textColor: text,
+            cardBgColor: card,
+            cardBorderColor: border,
+            inputBgColor: input,
+            inputBorderColor: inputBorder,
+            chatBubbleBotBg: botBg,
+            chatBubbleBotText: text,
+            chatBubbleUserBg: accent,
+            chatBubbleUserText: getReadableTextColor(accent),
+            primaryColor: accent,
+            secondaryColor: isDark ? mixColors(accent, '#ffffff', 0.2) : mixColors(accent, '#000000', 0.2),
+            headerBorderColor: border,
+            systemMessageBg: isDark ? mixColors(bg, '#fde68a', 0.2) : mixColors(bg, '#fde68a', 0.28),
+            systemMessageText: isDark ? '#fef3c7' : '#78350f'
+        };
+    }
+    function buildThemePalette(theme, palette) {
+        const base = palette || {
+            primaryColor: '#2563eb',
+            secondaryColor: '#6b7280',
+            bgColor: '#ffffff',
+            textColor: '#1f2937',
+            cardBgColor: '#ffffff',
+            cardBorderColor: '#d1d5db',
+            inputBgColor: '#ffffff',
+            inputBorderColor: '#cbd5e1',
+            chatBubbleBotBg: '#f3f4f6',
+            chatBubbleBotText: '#1f2937',
+            chatBubbleUserBg: '#2563eb',
+            chatBubbleUserText: '#ffffff',
+            headerBorderColor: '#e5e7eb',
+            systemMessageBg: '#fef3c7',
+            systemMessageText: '#92400e'
+        };
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? mixColors(base.bgColor || '#ffffff', '#000000', 0.72) : '#ffffff';
+        const textColor = getReadableTextColor(bgColor);
+        const cardBgColor = isDark ? mixColors(bgColor, '#ffffff', 0.08) : '#ffffff';
+        const cardBorderColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.16) : '#d1d5db';
+        const inputBgColor = isDark ? mixColors(cardBgColor, '#ffffff', 0.06) : '#ffffff';
+        const inputBorderColor = isDark ? mixColors(cardBorderColor, '#ffffff', 0.12) : '#cbd5e1';
+        const chatBubbleBotBg = isDark ? mixColors(bgColor, '#ffffff', 0.12) : '#f3f4f6';
+        const chatBubbleBotText = textColor;
+        const headerBorderColor = cardBorderColor;
+        const systemMessageBg = isDark ? mixColors(bgColor, '#fde68a', 0.2) : '#fef3c7';
+        const systemMessageText = isDark ? '#fef3c7' : '#92400e';
+        return {
+            ...base,
+            bgColor,
+            textColor,
+            cardBgColor,
+            cardBorderColor,
+            inputBgColor,
+            inputBorderColor,
+            chatBubbleBotBg,
+            chatBubbleBotText,
+            headerBorderColor,
+            systemMessageBg,
+            systemMessageText
+        };
+    }
+    function setPaletteVariables(target, palette) {
+        if (!palette) return;
+        target.style.setProperty('--primary', palette.primaryColor || '#007bff');
+        target.style.setProperty('--secondary', palette.secondaryColor || '#6c757d');
+        target.style.setProperty('--bg', palette.bgColor || '#f8f9fa');
+        target.style.setProperty('--text', palette.textColor || '#343a40');
+        target.style.setProperty('--card', palette.cardBgColor || '#ffffff');
+        target.style.setProperty('--border', palette.cardBorderColor || '#dddddd');
+        target.style.setProperty('--input', palette.inputBgColor || '#ffffff');
+        target.style.setProperty('--iborder', palette.inputBorderColor || '#cccccc');
+        target.style.setProperty('--bot-bg', palette.chatBubbleBotBg || '#e9ecef');
+        target.style.setProperty('--bot-text', palette.chatBubbleBotText || '#343a40');
+        target.style.setProperty('--user-bg', palette.chatBubbleUserBg || '#007bff');
+        target.style.setProperty('--user-text', palette.chatBubbleUserText || '#ffffff');
+        target.style.setProperty('--sys-bg', palette.systemMessageBg || '#fff3cd');
+        target.style.setProperty('--sys-text', palette.systemMessageText || '#856404');
+    }
+    function applyPalette(palette) {
+        currentPalette = palette;
+        applyTheme(currentTheme);
+        localStorage.setItem('downloaded-palette', JSON.stringify(palette));
+    }
+    function applyTheme(t) {
+        currentTheme = t;
+        document.body.classList.toggle('dark-mode', t === 'dark');
+        themeBtn.textContent = t === 'dark' ? '☀️ Tema' : '🌙 Tema';
+        const effectivePalette = buildThemePalette(t, currentPalette);
+        setPaletteVariables(document.body, effectivePalette);
+        setPaletteVariables(document.documentElement, effectivePalette);
+        document.body.style.backgroundColor = effectivePalette.bgColor;
+        document.body.style.color = effectivePalette.textColor;
+        localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => { const n = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(n); });
+    paletteBtn.addEventListener('click', () => { applyPalette(generatePalette()); });
+    const savedPalette = JSON.parse(localStorage.getItem('downloaded-palette') || 'null');
+    if (savedPalette) { applyPalette(savedPalette); }
+    else if (INITIAL_PALETTE) { applyPalette(INITIAL_PALETTE); }
+    else { applyPalette(generatePalette()); }
+    applyTheme(currentTheme);
+
+    // Second PDF (embedded or user-loaded)
+    if (pdf2Text) { pdf2NameDisplay.textContent = pdf2Name + ' (incluido)'; pdf2StatusDisplay.textContent = '"' + pdf2Name + '" ya incluido.'; pdf2StatusDisplay.style.color = 'var(--success)'; }
+    pdf2Upload.addEventListener('change', async (ev) => {
+        const file = ev.target.files[0]; if (!file) return;
+        if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+            pdf2StatusDisplay.textContent = 'No es un PDF válido.'; pdf2StatusDisplay.style.color = 'var(--danger)'; return;
+        }
+        pdf2Name = file.name; pdf2NameDisplay.textContent = file.name;
+        pdf2StatusDisplay.textContent = 'Procesando...'; pdf2StatusDisplay.style.color = 'var(--warning)';
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+                let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tc = await page.getTextContent();
+                    tc.items.forEach(item => text += item.str + ' ');
+                    text += '\n';
+                }
+                pdf2Text = text;
+                pdf2StatusDisplay.textContent = '"' + pdf2Name + '" cargado.'; pdf2StatusDisplay.style.color = 'var(--success)';
+                addMsg('Segundo documento "' + pdf2Name + '" listo.', 'system');
+            } catch(err) { pdf2StatusDisplay.textContent = 'Error al procesar.'; pdf2StatusDisplay.style.color = 'var(--danger)'; pdf2Text = ''; }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function dismissThinkingAsSystem(text, asError) {
+        const el = document.getElementById('thinking-msg');
+        if (!el) return;
+        el.className = 'system-message' + (asError ? ' error' : '');
+        el.textContent = text;
+        el.removeAttribute('id');
+    }
+
+    function addMsg(message, sender, isThinking = false) {
+        const el = document.createElement('div');
+        el.classList.add(sender === 'user' ? 'user-message' : sender.includes('system') ? 'system-message' : 'bot-message');
+        if (sender.includes('error')) el.classList.add('error');
+        if (sender === 'bot' && !isThinking) {
+            const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+            const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else if (sender === 'bot') {
+            const botAvatarUrl = getAvatarUrl('bot');
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong> <span class="thinking-animation">' + message + '</span></div></div>';
+            el.id = 'thinking-msg';
+        } else if (sender === 'user') {
+            const userAvatarUrl = getAvatarUrl('user');
+            el.innerHTML = '<div class="message user-message"><div class="message-bubble user-bubble"></div><img class="avatar-img" src="' + userAvatarUrl + '" alt=""></div>';
+            el.querySelector('.user-bubble').textContent = message;
+        } else {
+            el.textContent = message;
+        }
+        chatDisplay.appendChild(el); chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    function updateLastMsg(message) {
+        const el = document.getElementById('thinking-msg');
+        const botAvatarUrl = getAvatarUrl('bot');
+        const processedMessage = message.replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        const html = marked.parse ? marked.parse(processedMessage) : processedMessage;
+        if (el) {
+            el.className = 'bot-message';
+            el.innerHTML = '<div class="message"><img class="avatar-img" src="' + botAvatarUrl + '" alt=""><div class="message-bubble bot-bubble"><strong>Chatbot:</strong><div class="tex2jax_process" style="margin-top:5px;">' + html + '</div><div style="margin-top:10px;font-size:.8em;color:var(--secondary);font-style:italic;">Modelo: ' + MODEL + '</div></div></div>';
+            el.removeAttribute('id');
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(err => console.error(err));
+        } else addMsg(message, 'bot');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question || isProcessing) return;
+        addMsg(question, 'user'); questionInput.value = '';
+        isProcessing = true; sendButton.disabled = true; questionInput.disabled = true;
+        loadingSpinner.style.display = 'inline-block'; sendButtonText.textContent = 'Enviando';
+        addMsg('Pensando...', 'bot', true);
+        const maxLen = 800000;
+        const t1 = PDF_TEXT.length > maxLen ? PDF_TEXT.substring(0, maxLen) + '... (truncado)' : PDF_TEXT;
+        const systemInstructions = 'Eres un asistente que SOLO debe ayudar con preguntas relacionadas con el contenido del/los documento(s) PDF de esta sesión y con el tema del chatbot: «' + CHATBOT_THEME + '». ' +
+            'No respondas temas claramente ajenos (vida personal sin relación, otros libros o materiales no incluidos, programación o tareas arbitrarias no vinculadas al texto, cotilleo, política o entretenimiento sin conexión con el PDF, etc.). ' +
+            'Si la pregunta no guarda relación razonable con el documento ni con ese tema, responde ÚNICAMENTE con UNA línea que empiece exactamente con [FUERA_DE_ALCANCE] seguida de una frase breve en español. ' +
+            'Para preguntas válidas, fundamenta la respuesta en los textos del documento; si falta información en el PDF, dilo con claridad.';
+
+        let prompt = 'Instrucciones del sistema:\n' + systemInstructions + '\n\n';
+        prompt += 'Documento 1 ("' + PDF_NAME + '"): "' + t1 + '"\n\n';
+        if (pdf2Text) {
+            const t2 = pdf2Text.length > maxLen ? pdf2Text.substring(0, maxLen) + '... (truncado)' : pdf2Text;
+            prompt += 'Documento 2 ("' + pdf2Name + '"): "' + t2 + '"\n\n';
+        }
+        prompt += '(Instrucción: Para expresiones matemáticas, utiliza SÓLO el formato $$...$$ para bloque y $...$ para texto en línea.)\n\nPregunta: ' + question + '\n\nRespuesta:';
+        try {
+            const raw = (await postBackendText({
+                model: MODEL,
+                prompt: prompt,
+                system: systemInstructions
+            }) || '').trim();
+            if (raw.startsWith('[FUERA_DE_ALCANCE]')) {
+                dismissThinkingAsSystem(raw.replace('[FUERA_DE_ALCANCE]', '').trim(), true);
+            } else {
+                updateLastMsg(raw || 'La IA no proporcionó una respuesta.');
+            }
+        } catch(err) { updateLastMsg('Lo siento, ocurrió un error: ' + err.message); }
+        finally {
+            isProcessing = false; sendButton.disabled = false; questionInput.disabled = false;
+            loadingSpinner.style.display = 'none'; sendButtonText.textContent = 'Enviar'; questionInput.focus();
+        }
+    }
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getSessionHTML() {
+        const clone = chatDisplay.cloneNode(true);
+        const exportStyles =
+            'body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;line-height:1.65;padding:28px;color:#333;max-width:880px;margin:0 auto;background:#fafafa;}' +
+            'h1{color:#007bff;font-size:1.45em;margin-bottom:6px;}' +
+            '.meta{color:#444;margin:6px 0;font-size:.95em;}' +
+            'hr{border:none;border-top:1px solid #dee2e6;margin:22px 0;}' +
+            '.chat-export{padding:4px 0;}' +
+            '.chat-export .user-message,.chat-export .bot-message,.chat-export .system-message{margin-bottom:18px;}' +
+            '.chat-export .system-message{text-align:center;color:#555;font-style:italic;padding:10px 14px;background:#fff3cd;border-radius:10px;border:1px solid #ffeaa7;}' +
+            '.chat-export .system-message.error{background:#f8d7da;color:#721c24;border-color:#f5c6cb;}' +
+            '.chat-export .message{display:flex;align-items:flex-end;gap:12px;}' +
+            '.chat-export .message.user-message{flex-direction:row-reverse;}' +
+            '.chat-export .avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid #e0e0e0;}' +
+            '.chat-export .message-bubble{padding:12px 16px;border-radius:18px;max-width:78%;box-shadow:0 1px 2px rgba(0,0,0,.06);}' +
+            '.chat-export .user-bubble{background:#007bff;color:#fff;}' +
+            '.chat-export .bot-bubble{background:#e9ecef;color:#212529;}' +
+            '.chat-export .bot-bubble strong{color:#007bff;}' +
+            '.chat-export .bot-bubble p{margin:0 0 10px;}.chat-export .bot-bubble p:last-child{margin:0;}' +
+            '.chat-export pre{background:#2d2d2d;color:#f8f8f2;padding:12px;border-radius:8px;overflow-x:auto;font-size:.9em;}' +
+            '.chat-export code{background:#eee;padding:2px 6px;border-radius:4px;font-size:.9em;}' +
+            '.chat-export ul,.chat-export ol{margin:8px 0;padding-left:22px;}';
+        return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sesión de chat</title><style>' + exportStyles + '</style></head><body>' +
+            '<h1>Sesión de chat</h1>' +
+            '<p class="meta"><strong>Documento:</strong> ' + escapeHtml(PDF_NAME) + '</p>' +
+            '<p class="meta"><strong>Tema del chatbot:</strong> ' + escapeHtml(CHATBOT_THEME) + '</p>' +
+            '<p class="meta"><strong>Modelo:</strong> ' + escapeHtml(MODEL) + '</p>' +
+            '<hr><div class="chat-export">' + clone.innerHTML + '</div></body></html>';
+    }
+
+    function downloadSessionHtml() {
+        const blob = new Blob([getSessionHTML()], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Sesion_Chat_' + Date.now() + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function processHtmlToDocx(htmlContent) {
+        const paragraphs = [];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const elements = tempDiv.children;
+        if (elements.length === 0 && htmlContent.replace(/\s/g, '').length > 0) {
+            return [new docx.Paragraph({ text: tempDiv.textContent || htmlContent, spacing: { after: 200 } })];
+        }
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const tagName = element.tagName.toLowerCase();
+            const text = element.textContent || element.innerText || '';
+            if (tagName === 'h1' || tagName === 'h2') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: tagName === 'h1' ? docx.HeadingLevel.HEADING_1 : docx.HeadingLevel.HEADING_2,
+                    spacing: { before: 400, after: 200 }
+                }));
+            } else if (tagName === 'h3') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    heading: docx.HeadingLevel.HEADING_3,
+                    spacing: { before: 300, after: 200 }
+                }));
+            } else if (tagName === 'ul' || tagName === 'ol') {
+                const listItems = element.querySelectorAll('li');
+                listItems.forEach(function(li) {
+                    paragraphs.push(new docx.Paragraph({
+                        text: li.textContent,
+                        bullet: { level: 0 },
+                        spacing: { after: 100 }
+                    }));
+                });
+            } else if (tagName === 'p') {
+                const textRuns = [];
+                if (element.children.length === 0) {
+                    textRuns.push(new docx.TextRun({ text: text }));
+                } else {
+                    processInlineElements(element, textRuns);
+                }
+                paragraphs.push(new docx.Paragraph({
+                    children: textRuns.length > 0 ? textRuns : [new docx.TextRun({ text: text })],
+                    spacing: { after: 200 }
+                }));
+            } else if (tagName === 'blockquote') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    italics: true,
+                    indent: { left: 720 },
+                    spacing: { after: 200 },
+                    border: { left: { color: 'CCCCCC', size: 6, style: docx.BorderStyle.SINGLE } }
+                }));
+            } else if (tagName === 'code') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: 'F5F5F5' },
+                    spacing: { after: 100 }
+                }));
+            } else if (tagName === 'pre') {
+                paragraphs.push(new docx.Paragraph({
+                    text: text,
+                    font: 'Courier New',
+                    shading: { type: docx.ShadingType.SOLID, color: '2D2D2D' },
+                    color: 'FFFFFF',
+                    spacing: { after: 200 }
+                }));
+            } else {
+                paragraphs.push(new docx.Paragraph({ text: text, spacing: { after: 200 } }));
+            }
+        }
+        return paragraphs;
+    }
+
+    function processInlineElements(element, textRuns) {
+        for (let j = 0; j < element.childNodes.length; j++) {
+            const node = element.childNodes[j];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textRuns.push(new docx.TextRun({ text: node.textContent }));
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                const nodeText = node.textContent || '';
+                if (tagName === 'strong' || tagName === 'b') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, bold: true }));
+                } else if (tagName === 'em' || tagName === 'i') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, italics: true }));
+                } else if (tagName === 'u') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, underline: {} }));
+                } else if (tagName === 'code') {
+                    textRuns.push(new docx.TextRun({
+                        text: nodeText,
+                        font: 'Courier New',
+                        shading: { type: docx.ShadingType.SOLID, color: 'F0F0F0' }
+                    }));
+                } else if (tagName === 'a') {
+                    textRuns.push(new docx.TextRun({ text: nodeText, color: '0066CC', underline: {} }));
+                } else {
+                    processInlineElements(node, textRuns);
+                }
+            }
+        }
+    }
+
+    function downloadSessionWord() {
+        if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+            alert('Las librerías para exportar Word aún se están cargando. Espera unos segundos e inténtalo de nuevo.');
+            return;
+        }
+        const chatMessages = chatDisplay.querySelectorAll('.user-message, .bot-message, .system-message');
+        const children = [];
+        children.push(new docx.Paragraph({
+            text: 'Sesión de Chat (documento PDF)',
+            heading: docx.HeadingLevel.HEADING_1,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: { after: 400 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Documento: ', bold: true }),
+                new docx.TextRun({ text: PDF_NAME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Tema del chatbot: ', bold: true }),
+                new docx.TextRun({ text: CHATBOT_THEME })
+            ],
+            spacing: { after: 100 }
+        }));
+        children.push(new docx.Paragraph({
+            children: [
+                new docx.TextRun({ text: 'Modelo: ', bold: true }),
+                new docx.TextRun({ text: MODEL })
+            ],
+            spacing: { after: 200 }
+        }));
+        children.push(new docx.Paragraph({
+            text: '________________________________________________________________________________________________',
+            spacing: { after: 400 }
+        }));
+
+        chatMessages.forEach(function(msg) {
+            if (msg.classList.contains('system-message')) {
+                children.push(new docx.Paragraph({
+                    text: msg.textContent,
+                    italics: true,
+                    alignment: docx.AlignmentType.CENTER,
+                    spacing: { after: 200 },
+                    color: '666666'
+                }));
+            } else if (msg.classList.contains('user-message')) {
+                const ub = msg.querySelector('.user-bubble');
+                const userText = ub ? ub.textContent.trim() : msg.textContent.replace(/^Usuario:\s*/i, '').trim();
+                children.push(new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Usuario: ', bold: true, color: '0066CC' }),
+                        new docx.TextRun({ text: userText })
+                    ],
+                    spacing: { after: 200 },
+                    alignment: docx.AlignmentType.RIGHT,
+                    shading: { type: docx.ShadingType.SOLID, color: 'E3F2FD' }
+                }));
+            } else if (msg.classList.contains('bot-message')) {
+                const botBubble = msg.querySelector('.message-bubble');
+                if (botBubble) {
+                    const contentDiv = botBubble.querySelector('.tex2jax_process') || botBubble.querySelector('div[style*="margin-top:5px"]');
+                    const modelInfoEl = botBubble.querySelector('div[style*="font-size:0.8em"]');
+                    const modelInfo = modelInfoEl ? modelInfoEl.textContent : '';
+                    if (contentDiv) {
+                        const formatted = processHtmlToDocx(contentDiv.innerHTML);
+                        formatted.forEach(function(paragraph) { children.push(paragraph); });
+                        if (modelInfo) {
+                            children.push(new docx.Paragraph({
+                                children: [new docx.TextRun({ text: modelInfo, italics: true, size: 20, color: '666666' })],
+                                spacing: { after: 200 }
+                            }));
+                        }
+                    } else {
+                        let plain = botBubble.textContent || '';
+                        if (modelInfo) plain = plain.split(modelInfo).join('').trim();
+                        plain = plain.replace(/^Chatbot:\s*/i, '').trim();
+                        children.push(new docx.Paragraph({ text: plain, spacing: { after: 200 } }));
+                    }
+                }
+            }
+        });
+
+        const doc = new docx.Document({
+            sections: [{ properties: {}, children: children }]
+        });
+        docx.Packer.toBlob(doc).then(function(blob) {
+            saveAs(blob, 'Sesion_Chat_' + Date.now() + '.docx');
+        });
+    }
+
+    sendButton.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } });
+    document.getElementById('download-html-session-btn').addEventListener('click', downloadSessionHtml);
+    document.getElementById('download-word-session-btn').addEventListener('click', downloadSessionWord);
+    addMsg('Documento "' + PDF_NAME + '" listo. Solo respondo preguntas sobre este contenido o el tema «' + CHATBOT_THEME + '». ¡Puedes empezar!', 'system');
+    questionInput.focus();
+</script>
+</body>
+</html>
